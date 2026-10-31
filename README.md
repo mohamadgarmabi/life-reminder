@@ -55,4 +55,5 @@ notifications only work after "Add to Home Screen".
 In the repo settings, set **Pages → Source: GitHub Actions**. `BASE_PATH` is derived from the repo name;
 set it to `/` for a custom domain. The SPA shell is emitted as `index.html` and `404.html`, so deep links
 and refreshes work, and the service worker serves it offline.
+
 # life-reminder

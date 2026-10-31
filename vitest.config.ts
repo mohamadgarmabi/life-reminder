@@ -2,7 +2,7 @@ import { defineConfig } from 'vitest/config'
 import viteReact from '@vitejs/plugin-react'
 
 // Separate from vite.config.ts so tests don't run the TanStack Start/PWA build plugins.
-export default defineConfig({
+const config = defineConfig({
   plugins: [viteReact()],
   resolve: { tsconfigPaths: true },
   test: {
@@ -11,3 +11,5 @@ export default defineConfig({
     env: { TZ: 'Asia/Tehran' },
   },
 })
+
+export default config

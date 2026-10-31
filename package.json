@@ -12,7 +12,10 @@
     "preview": "vite preview --outDir dist/client",
     "typecheck": "tsr generate && tsc --noEmit",
     "test": "vitest run",
-    "generate-routes": "tsr generate"
+    "generate-routes": "tsr generate",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "dependencies": {
     "@daypicker/persian": "10.0.2",
@@ -44,6 +47,9 @@
     "zod": "^4.3.6"
   },
   "devDependencies": {
+    "@babel/core": "^8.0.10",
+    "@eslint/js": "^10.0.1",
+    "@rolldown/plugin-babel": "^0.3.0",
     "@tanstack/router-cli": "^1.132.0",
     "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/react": "^16.3.3",
@@ -53,9 +59,16 @@
     "@types/react-dom": "^19.2.0",
     "@vite-pwa/assets-generator": "^2.0.0",
     "@vitejs/plugin-react": "^6.0.1",
+    "babel-plugin-react-compiler": "^1.0.0",
+    "eslint": "^10.13.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-react-hooks": "^7.1.1",
     "fake-indexeddb": "^6.2.7",
+    "globals": "^17.13.0",
     "jsdom": "^30.1.3",
+    "prettier": "^3.9.10",
     "typescript": "^6.0.2",
+    "typescript-eslint": "^8.72.1",
     "vite": "^8.0.0",
     "vite-plugin-pwa": "^2.0.0",
     "vitest": "^5.0.5",

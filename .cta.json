@@ -14,9 +14,5 @@
   "includeExamples": false,
   "version": 1,
   "framework": "react",
-  "chosenAddOns": [
-    "shadcn",
-    "form",
-    "store"
-  ]
+  "chosenAddOns": ["shadcn", "form", "store"]
 }
