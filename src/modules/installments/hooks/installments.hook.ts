@@ -22,6 +22,14 @@ type Dialog = { type: 'create' } | { type: 'edit' | 'history' | 'delete'; item: 
 
 const ORDER = ['overdue', 'today', 'soon', 'upcoming', 'paused', 'done']
 
+const SORT_OPTIONS = [
+  { value: 'status', label: 'مرتب‌سازی: وضعیت' },
+  { value: 'next', label: 'نزدیک‌ترین سررسید' },
+  { value: 'amount', label: 'بیشترین مبلغ قسط' },
+  { value: 'remaining', label: 'بیشترین مانده' },
+  { value: 'end', label: 'زودترین پایان اقساط' },
+]
+
 const FILTERS = [
   { value: 'all', label: 'همه', match: () => true },
   { value: 'running', label: 'در جریان', match: (s: string) => s !== 'done' && s !== 'paused' },
@@ -33,6 +41,7 @@ const useInstallments = () => {
   const search = useSearch({ from: '/installments' })
   const navigate = useNavigate({ from: '/installments' })
   const [filter, setFilter] = useState('all')
+  const [sort, setSort] = useState('status')
   const [year, setYear] = useState('all')
   const [month, setMonth] = useState('all')
   const [dialog, setDialog] = useState<Dialog>(search.new ? { type: 'create' } : null)
@@ -53,10 +62,19 @@ const useInstallments = () => {
     }
   }
 
-  const items = [...(q.data ?? [])].sort((a, b) => {
-    const s = ORDER.indexOf(installmentStatus(a, today)) - ORDER.indexOf(installmentStatus(b, today))
-    return s || (nextPayment(a)?.dueDate ?? '').localeCompare(nextPayment(b)?.dueDate ?? '')
-  })
+  const byStatus = (a: Installment, b: Installment) =>
+    ORDER.indexOf(installmentStatus(a, today)) - ORDER.indexOf(installmentStatus(b, today))
+  // '~' sorts after any date, so finished installments go last
+  const nextDue = (i: Installment) => nextPayment(i)?.dueDate ?? '~'
+  const lastDue = (i: Installment) => paymentDueDate(i, i.totalPayments - 1)
+  const SORTS: Record<string, (a: Installment, b: Installment) => number> = {
+    status: (a, b) => byStatus(a, b) || nextDue(a).localeCompare(nextDue(b)),
+    next: (a, b) => nextDue(a).localeCompare(nextDue(b)),
+    amount: (a, b) => b.amount - a.amount,
+    remaining: (a, b) => remainingPayments(b) * b.amount - remainingPayments(a) * a.amount,
+    end: (a, b) => lastDue(a).localeCompare(lastDue(b)),
+  }
+  const items = [...(q.data ?? [])].sort((a, b) => (SORTS[sort] ?? SORTS.status)(a, b) || byStatus(a, b))
   const active = items.filter((i) => i.isActive)
   const remainingTotal = active.reduce((sum, i) => sum + remainingPayments(i) * i.amount, 0)
   const monthlyTotal = active.reduce((sum, i) => sum + (remainingPayments(i) ? i.amount : 0), 0)
@@ -124,6 +142,9 @@ const useInstallments = () => {
       if (v === 'all') setMonth('all')
     },
     handleMonthChange: setMonth,
+    sort,
+    sortOptions: SORT_OPTIONS,
+    handleSortChange: setSort,
     headerDescription: items.length
       ? `پرداخت ماهانه: ${formatMoney(monthlyTotal)} · مانده کل: ${formatMoney(remainingTotal)}`
       : undefined,

@@ -29,6 +29,9 @@ const InstallmentsView = () => {
     periodSummary,
     handleYearChange,
     handleMonthChange,
+    sort,
+    sortOptions,
+    handleSortChange,
     headerDescription,
     isFormOpen,
     formTitle,
@@ -84,6 +87,18 @@ const InstallmentsView = () => {
       )}
       {hasItems && (
         <div className="mb-3 grid grid-cols-2 gap-2">
+          <Select value={sort} onValueChange={handleSortChange}>
+            <SelectTrigger className="col-span-2 w-full" aria-label="مرتب‌سازی">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {sortOptions.map((o) => (
+                <SelectItem key={o.value} value={o.value}>
+                  {o.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
           <Select value={month} onValueChange={handleMonthChange} disabled={isMonthDisabled}>
             <SelectTrigger className="w-full" aria-label="ماه">
               <SelectValue />

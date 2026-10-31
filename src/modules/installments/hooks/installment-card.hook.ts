@@ -3,7 +3,12 @@ import { toast } from 'sonner'
 import { formatDate, formatDateLong, formatMoney, relativeDay, toFaDigits } from '#/modules/shell/utils/format'
 import { installmentRepo } from '#/modules/installments/apis/installments.api'
 import type { InstallmentCardProps, InstallmentStatus } from '#/modules/installments/types'
-import { installmentStatus, nextPayment, paymentDueDate, remainingPayments } from '#/modules/installments/utils/schedule'
+import {
+  installmentStatus,
+  nextPayment,
+  paymentDueDate,
+  remainingPayments,
+} from '#/modules/installments/utils/schedule'
 
 const STATUS: Record<
   InstallmentStatus,
