@@ -1,6 +1,6 @@
 import { ImagePlus, X } from 'lucide-react'
-import { Button } from '#/modules/shell/components/ui/button'
-import { Field, FieldLabel } from '#/modules/shell/components/ui/field'
+import { Button } from '#/components/button'
+import { Field, FieldLabel } from '#/components/field'
 import { usePlantForm } from '#/modules/plants/hooks/plant-form.hook'
 import type { PlantFormProps } from '#/modules/plants/types'
 

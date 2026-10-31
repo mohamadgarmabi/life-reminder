@@ -1,6 +1,6 @@
 import { Link } from '@tanstack/react-router'
 import { ChevronLeft, Gamepad2 } from 'lucide-react'
-import { Card, CardTitle } from '#/modules/shell/components/ui/card'
+import { Card, CardTitle } from '#/components/card'
 
 const GamesCard = () => {
   return (

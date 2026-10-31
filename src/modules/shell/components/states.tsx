@@ -1,7 +1,7 @@
 import { AlertTriangle, type LucideIcon } from 'lucide-react'
 import type { ReactNode } from 'react'
-import { Alert, AlertDescription, AlertTitle } from '#/modules/shell/components/ui/alert'
-import { Skeleton } from '#/modules/shell/components/ui/skeleton'
+import { Alert, AlertDescription, AlertTitle } from '#/components/alert'
+import { Skeleton } from '#/components/skeleton'
 import { useListSkeleton } from '#/modules/shell/hooks/states.hook'
 
 // Sticky on every page; children (e.g. filter tabs) stick with it.

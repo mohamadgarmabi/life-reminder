@@ -1,6 +1,6 @@
 import { Download, Upload } from 'lucide-react'
 import { ConfirmDialog } from '#/modules/shell/components/dialogs'
-import { Button } from '#/modules/shell/components/ui/button'
+import { Button } from '#/components/button'
 import { SettingsSection } from '#/modules/settings/components/settings-section'
 import { useDataCard } from '#/modules/settings/hooks/data-card.hook'
 

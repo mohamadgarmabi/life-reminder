@@ -1,12 +1,12 @@
 import { Sparkles } from 'lucide-react'
-import { Button } from '#/modules/shell/components/ui/button'
+import { Button } from '#/components/button'
 import {
   Drawer,
   DrawerContent,
   DrawerDescription,
   DrawerHeader,
   DrawerTitle,
-} from '#/modules/shell/components/ui/drawer'
+} from '#/components/drawer'
 import { useUpdatePrompt } from '#/modules/shell/hooks/update-prompt.hook'
 
 const UpdatePrompt = () => {

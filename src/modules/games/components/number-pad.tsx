@@ -1,5 +1,5 @@
 import { Eraser } from 'lucide-react'
-import { Button } from '#/modules/shell/components/ui/button'
+import { Button } from '#/components/button'
 import { toFaDigits } from '#/modules/shell/utils/format'
 
 const DIGITS = [1, 2, 3, 4, 5, 6, 7, 8, 9]

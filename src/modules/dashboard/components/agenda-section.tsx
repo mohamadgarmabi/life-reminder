@@ -1,6 +1,6 @@
 import { Link } from '@tanstack/react-router'
 import { CalendarCheck } from 'lucide-react'
-import { Card, CardContent, CardHeader, CardTitle } from '#/modules/shell/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '#/components/card'
 import { useAgendaSection } from '#/modules/dashboard/hooks/agenda-section.hook'
 import type { AgendaSectionProps } from '#/modules/dashboard/types'
 

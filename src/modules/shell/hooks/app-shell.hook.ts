@@ -34,21 +34,34 @@ const useLiquidGlass = (stageRef: RefObject<HTMLDivElement | null>, navRef: RefO
     const root = stageRef.current
     const nav = navRef.current
     if (!root || !nav || matchMedia('(prefers-reduced-transparency: reduce)').matches) return
-    let instance: { destroy(): void; markChanged(el?: HTMLElement): void } | undefined
-    let cancelled = false
-    // Theme switches recolour the mesh via CSS variables, which the library can't detect.
-    const themeObserver = new MutationObserver(() => instance?.markChanged())
-    import('@ybouane/liquidglass')
-      .then(({ LiquidGlass }) => LiquidGlass.init({ root, glassElements: [nav] }))
-      .then((lg) => {
-        if (cancelled) return lg.destroy()
-        instance = lg
-        themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] })
-        setLive(true)
-      })
-      .catch(() => setLive(false)) // no WebGL: keep the CSS glass fallback
+    let instance: { destroy(): void } | undefined
+    let generation = 0
+    const start = () => {
+      const run = ++generation
+      instance?.destroy()
+      instance = undefined
+      import('@ybouane/liquidglass')
+        .then(({ LiquidGlass }) => LiquidGlass.init({ root, glassElements: [nav] }))
+        .then((lg) => {
+          if (run !== generation) return lg.destroy()
+          instance = lg
+          setLive(true)
+        })
+        .catch(() => run === generation && setLive(false)) // no WebGL: keep the CSS glass fallback
+    }
+    // The library caches DOM snapshots (mesh, nav tint, icon colours); markChanged() only re-shades them,
+    // so a theme switch needs a fresh instance, same as a reload.
+    let dark = document.documentElement.classList.contains('dark')
+    const themeObserver = new MutationObserver(() => {
+      const next = document.documentElement.classList.contains('dark')
+      if (next === dark) return
+      dark = next
+      start()
+    })
+    themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] })
+    start()
     return () => {
-      cancelled = true
+      generation++
       themeObserver.disconnect()
       instance?.destroy()
     }

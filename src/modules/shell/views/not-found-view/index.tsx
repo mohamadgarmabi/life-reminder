@@ -1,7 +1,7 @@
 import { Link } from '@tanstack/react-router'
 import { DatabaseZap } from 'lucide-react'
 import { EmptyState } from '#/modules/shell/components/states'
-import { Button } from '#/modules/shell/components/ui/button'
+import { Button } from '#/components/button'
 
 const NotFoundView = () => {
   return (

@@ -1,6 +1,6 @@
 import { HeadContent, Scripts } from '@tanstack/react-router'
 import type { ReactNode } from 'react'
-import { DirectionProvider } from '#/modules/shell/components/ui/direction'
+import { DirectionProvider } from '#/components/direction'
 import { themeScriptHtml } from '#/modules/shell/utils/theme-script'
 
 const RootDocument = ({ children }: { children: ReactNode }) => {

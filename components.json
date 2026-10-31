@@ -13,7 +13,7 @@
   "aliases": {
     "components": "#/modules/shell/components",
     "utils": "#/modules/shell/utils/cn",
-    "ui": "#/modules/shell/components/ui",
+    "ui": "#/components",
     "lib": "#/modules/shell/utils",
     "hooks": "#/modules/shell/hooks"
   },

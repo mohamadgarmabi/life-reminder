@@ -1,7 +1,7 @@
 import { Outlet } from '@tanstack/react-router'
 import { AppShell } from '#/modules/shell/components/app-shell'
 import { StorageError } from '#/modules/shell/components/storage-error'
-import { Toaster } from '#/modules/shell/components/ui/sonner'
+import { Toaster } from '#/components/sonner'
 import { UpdatePrompt } from '#/modules/shell/components/update-prompt'
 import { useRootApp } from '#/modules/shell/hooks/shell.hook'
 

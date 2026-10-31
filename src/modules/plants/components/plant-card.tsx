@@ -1,13 +1,13 @@
 import { Droplets, History, MoreVertical, Pencil, Sprout } from 'lucide-react'
 import { SwipeRow } from '#/modules/shell/components/swipe-row'
-import { Button } from '#/modules/shell/components/ui/button'
-import { Card, CardContent } from '#/modules/shell/components/ui/card'
+import { Button } from '#/components/button'
+import { Card, CardContent } from '#/components/card'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '#/modules/shell/components/ui/dropdown-menu'
+} from '#/components/dropdown-menu'
 import { usePlantCard } from '#/modules/plants/hooks/plant-card.hook'
 import type { PlantCardProps } from '#/modules/plants/types'
 

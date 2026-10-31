@@ -1,6 +1,6 @@
 import { Link } from '@tanstack/react-router'
 import { ChevronRight } from 'lucide-react'
-import { Button } from '#/modules/shell/components/ui/button'
+import { Button } from '#/components/button'
 
 const BackButton = ({ to, label }: { to: '/games' | '/settings'; label: string }) => {
   return (

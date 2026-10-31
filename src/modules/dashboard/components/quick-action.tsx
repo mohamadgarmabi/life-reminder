@@ -1,6 +1,6 @@
 import { Link } from '@tanstack/react-router'
 import { Plus } from 'lucide-react'
-import { Button } from '#/modules/shell/components/ui/button'
+import { Button } from '#/components/button'
 import type { QuickActionProps } from '#/modules/dashboard/types'
 
 const QuickAction = ({ to, icon: Icon, label }: QuickActionProps) => {

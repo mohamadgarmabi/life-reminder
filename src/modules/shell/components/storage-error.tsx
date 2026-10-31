@@ -1,6 +1,6 @@
 import { DatabaseZap } from 'lucide-react'
 import { EmptyState } from '#/modules/shell/components/states'
-import { Button } from '#/modules/shell/components/ui/button'
+import { Button } from '#/components/button'
 import { useStorageError } from '#/modules/shell/hooks/shell.hook'
 
 const StorageError = ({ message }: { message: string }) => {

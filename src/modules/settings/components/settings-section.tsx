@@ -1,4 +1,4 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '#/modules/shell/components/ui/card'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '#/components/card'
 import type { SettingsSectionProps } from '#/modules/settings/types'
 
 const SettingsSection = ({ title, description, children }: SettingsSectionProps) => {

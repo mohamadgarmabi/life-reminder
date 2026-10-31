@@ -1,8 +1,8 @@
 import { TimeSelect } from '#/modules/shell/components/form-fields'
-import { Badge } from '#/modules/shell/components/ui/badge'
-import { Button } from '#/modules/shell/components/ui/button'
-import { Label } from '#/modules/shell/components/ui/label'
-import { Switch } from '#/modules/shell/components/ui/switch'
+import { Badge } from '#/components/badge'
+import { Button } from '#/components/button'
+import { Label } from '#/components/label'
+import { Switch } from '#/components/switch'
 import { SettingsSection } from '#/modules/settings/components/settings-section'
 import { useNotificationsCard } from '#/modules/settings/hooks/notifications-card.hook'
 

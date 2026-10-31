@@ -1,5 +1,5 @@
 import { Info } from 'lucide-react'
-import { Alert, AlertDescription, AlertTitle } from '#/modules/shell/components/ui/alert'
+import { Alert, AlertDescription, AlertTitle } from '#/components/alert'
 import { SettingsSection } from '#/modules/settings/components/settings-section'
 import { useStorageCard } from '#/modules/settings/hooks/storage-card.hook'
 

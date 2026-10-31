@@ -1,6 +1,6 @@
 import { Moon, Sun } from 'lucide-react'
-import { Button } from '#/modules/shell/components/ui/button'
-import { Card, CardTitle } from '#/modules/shell/components/ui/card'
+import { Button } from '#/components/button'
+import { Card, CardTitle } from '#/components/card'
 import { useThemeCard } from '#/modules/settings/hooks/theme-card.hook'
 
 const ThemeCard = () => {

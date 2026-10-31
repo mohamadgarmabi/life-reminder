@@ -1,15 +1,15 @@
 import { Check, History, MoreVertical, Pencil } from 'lucide-react'
 import { SwipeRow } from '#/modules/shell/components/swipe-row'
-import { Badge } from '#/modules/shell/components/ui/badge'
-import { Button } from '#/modules/shell/components/ui/button'
-import { Card, CardContent } from '#/modules/shell/components/ui/card'
+import { Badge } from '#/components/badge'
+import { Button } from '#/components/button'
+import { Card, CardContent } from '#/components/card'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '#/modules/shell/components/ui/dropdown-menu'
-import { Progress } from '#/modules/shell/components/ui/progress'
+} from '#/components/dropdown-menu'
+import { Progress } from '#/components/progress'
 import { useInstallmentCard } from '#/modules/installments/hooks/installment-card.hook'
 import type { InstallmentCardProps } from '#/modules/installments/types'
 

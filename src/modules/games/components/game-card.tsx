@@ -1,6 +1,6 @@
 import { Link } from '@tanstack/react-router'
 import { ChevronLeft, type LucideIcon } from 'lucide-react'
-import { Card } from '#/modules/shell/components/ui/card'
+import { Card } from '#/components/card'
 
 type GameCardProps = { to: '/games/sudoku' | '/games/match3'; icon: LucideIcon; title: string; description: string }
 

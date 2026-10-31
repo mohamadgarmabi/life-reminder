@@ -4,7 +4,7 @@ import { NumberPad } from '#/modules/games/components/number-pad'
 import { SudokuBoard } from '#/modules/games/components/sudoku-board'
 import { useSudoku } from '#/modules/games/hooks/sudoku.hook'
 import { PageHeader } from '#/modules/shell/components/states'
-import { Button } from '#/modules/shell/components/ui/button'
+import { Button } from '#/components/button'
 
 const SudokuView = () => {
   const {

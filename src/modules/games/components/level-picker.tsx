@@ -1,6 +1,6 @@
 import { Lock } from 'lucide-react'
 import type { Match3LevelItem } from '#/modules/games/types'
-import { Button } from '#/modules/shell/components/ui/button'
+import { Button } from '#/components/button'
 
 const LevelPicker = ({ levels, onPick }: { levels: Match3LevelItem[]; onPick: (level: number) => void }) => {
   return (

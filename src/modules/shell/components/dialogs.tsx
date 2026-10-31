@@ -8,14 +8,14 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '#/modules/shell/components/ui/alert-dialog'
+} from '#/components/alert-dialog'
 import {
   Drawer,
   DrawerContent,
   DrawerDescription,
   DrawerHeader,
   DrawerTitle,
-} from '#/modules/shell/components/ui/drawer'
+} from '#/components/drawer'
 import { useFormDialog } from '#/modules/shell/hooks/dialogs.hook'
 
 const FormDialog = ({

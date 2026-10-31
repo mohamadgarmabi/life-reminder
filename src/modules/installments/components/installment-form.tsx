@@ -1,8 +1,8 @@
-import { Field, FieldDescription, FieldLegend, FieldSet } from '#/modules/shell/components/ui/field'
+import { Field, FieldDescription, FieldLegend, FieldSet } from '#/components/field'
 import { Plus, X } from 'lucide-react'
-import { Badge } from '#/modules/shell/components/ui/badge'
-import { Button } from '#/modules/shell/components/ui/button'
-import { Input } from '#/modules/shell/components/ui/input'
+import { Badge } from '#/components/badge'
+import { Button } from '#/components/button'
+import { Input } from '#/components/input'
 import { useInstallmentForm } from '#/modules/installments/hooks/installment-form.hook'
 import type { InstallmentFormProps } from '#/modules/installments/types'
 

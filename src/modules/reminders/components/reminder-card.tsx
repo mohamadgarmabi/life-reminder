@@ -1,8 +1,8 @@
 import { AlarmClock, Check, History, MoreVertical, Pencil, Repeat } from 'lucide-react'
 import { SwipeRow } from '#/modules/shell/components/swipe-row'
-import { Badge } from '#/modules/shell/components/ui/badge'
-import { Button } from '#/modules/shell/components/ui/button'
-import { Card, CardContent } from '#/modules/shell/components/ui/card'
+import { Badge } from '#/components/badge'
+import { Button } from '#/components/button'
+import { Card, CardContent } from '#/components/card'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,7 +10,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '#/modules/shell/components/ui/dropdown-menu'
+} from '#/components/dropdown-menu'
 import { useReminderCard } from '#/modules/reminders/hooks/reminder-card.hook'
 import type { ReminderCardProps } from '#/modules/reminders/types'
 

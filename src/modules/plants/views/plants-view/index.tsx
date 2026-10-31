@@ -1,7 +1,7 @@
 import { Flower2, Plus } from 'lucide-react'
 import { FormDialog } from '#/modules/shell/components/dialogs'
 import { EmptyState, ErrorState, ListSkeleton, PageHeader } from '#/modules/shell/components/states'
-import { Button } from '#/modules/shell/components/ui/button'
+import { Button } from '#/components/button'
 import { PlantCard } from '#/modules/plants/components/plant-card'
 import { PlantForm } from '#/modules/plants/components/plant-form'
 import { WateringHistory } from '#/modules/plants/components/watering-history'

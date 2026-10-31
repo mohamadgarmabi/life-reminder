@@ -4,8 +4,8 @@ import { LevelPicker } from '#/modules/games/components/level-picker'
 import { Match3Board } from '#/modules/games/components/match3-board'
 import { useMatch3 } from '#/modules/games/hooks/match3.hook'
 import { PageHeader } from '#/modules/shell/components/states'
-import { Button } from '#/modules/shell/components/ui/button'
-import { Progress } from '#/modules/shell/components/ui/progress'
+import { Button } from '#/components/button'
+import { Progress } from '#/components/progress'
 
 const Match3View = () => {
   const {
