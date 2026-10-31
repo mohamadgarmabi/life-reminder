@@ -1,3 +1,4 @@
+import { createFetch } from 'tanstack-fetch'
 import type { PermissionStatus, AppNotification } from '#/modules/notifications/types'
 
 const permissionStatus = (): PermissionStatus => {
@@ -45,10 +46,9 @@ const syncPush = async (items: (AppNotification & { fireAt: Date; keys: string[]
       c.charCodeAt(0),
     ),
   })
-  const res = await fetch(`${PUSH_URL.replace(/\/$/, '')}/sync`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
+  // Throws FetchError on non-2xx.
+  await createFetch({ baseUrl: PUSH_URL.replace(/\/$/, '') }).post('/sync', {
+    body: {
       subscription: subscription.toJSON(),
       items: (items ?? []).map((n) => ({
         at: n.fireAt.getTime(),
@@ -58,9 +58,8 @@ const syncPush = async (items: (AppNotification & { fireAt: Date; keys: string[]
         url: `${import.meta.env.BASE_URL}${n.path.replace(/^\//, '')}`,
         keys: n.keys,
       })),
-    }),
+    },
   })
-  if (!res.ok) throw new Error(`push sync failed: ${res.status}`)
 }
 
 export { permissionStatus, requestPermission, showNotification, syncPush }
