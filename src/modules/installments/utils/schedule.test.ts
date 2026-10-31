@@ -18,6 +18,7 @@ const inst = (over: Partial<Installment>): Installment => ({
   totalPayments: 12,
   paidPayments: 0,
   reminderDaysBefore: [1],
+  tags: [],
   notes: null,
   isActive: true,
   createdAt: '2026-10-01T00:00:00.000Z',

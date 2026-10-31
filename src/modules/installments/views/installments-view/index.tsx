@@ -32,6 +32,10 @@ const InstallmentsView = () => {
     sort,
     sortOptions,
     handleSortChange,
+    tag,
+    hasTags,
+    tagOptions,
+    handleTagChange,
     headerDescription,
     isFormOpen,
     formTitle,
@@ -88,7 +92,7 @@ const InstallmentsView = () => {
       {hasItems && (
         <div className="mb-3 grid grid-cols-2 gap-2">
           <Select value={sort} onValueChange={handleSortChange}>
-            <SelectTrigger className="col-span-2 w-full" aria-label="مرتب‌سازی">
+            <SelectTrigger className={hasTags ? 'w-full' : 'col-span-2 w-full'} aria-label="مرتب‌سازی">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -99,6 +103,20 @@ const InstallmentsView = () => {
               ))}
             </SelectContent>
           </Select>
+          {hasTags && (
+            <Select value={tag} onValueChange={handleTagChange}>
+              <SelectTrigger className="w-full" aria-label="تگ">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {tagOptions.map((o) => (
+                  <SelectItem key={o.value} value={o.value}>
+                    {o.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
           <Select value={month} onValueChange={handleMonthChange} disabled={isMonthDisabled}>
             <SelectTrigger className="w-full" aria-label="ماه">
               <SelectValue />

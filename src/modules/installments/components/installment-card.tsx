@@ -69,6 +69,15 @@ const InstallmentCard = ({ inst, today, onEdit, onHistory, onDelete }: Installme
             {remainingLabel}
           </p>
           <p className="text-xs text-muted-foreground">آخرین قسط: {lastDueLabel}</p>
+          {inst.tags.length > 0 && (
+            <div className="flex flex-wrap gap-1 pt-0.5">
+              {inst.tags.map((t) => (
+                <Badge key={t} variant="outline" className="text-[11px] font-normal">
+                  {t}
+                </Badge>
+              ))}
+            </div>
+          )}
         </div>
 
         {hasNext && (

@@ -13,6 +13,8 @@ const installmentSchema = z
     totalPayments: z.number().int().min(1, 'حداقل یک قسط').max(600),
     paidPayments: z.number().int().min(0),
     reminderDaysBefore: z.array(z.number().int().min(0).max(30)),
+    // default: records saved before tags existed
+    tags: z.array(z.string().trim().min(1).max(30)).max(20).default([]),
     notes,
     isActive: z.boolean(),
     createdAt: isoDateTime,
@@ -42,6 +44,7 @@ const installmentFormSchema = z
     totalPayments: z.number().int().min(1, 'حداقل یک قسط').max(600, 'حداکثر ۶۰۰ قسط'),
     paidPayments: z.number().int().min(0),
     reminderDaysBefore: z.array(z.number().int()),
+    tags: z.array(z.string().trim().min(1).max(30, 'تگ طولانی است')).max(20, 'حداکثر ۲۰ تگ'),
     notes: z.string().max(2000),
     isActive: z.boolean(),
   })

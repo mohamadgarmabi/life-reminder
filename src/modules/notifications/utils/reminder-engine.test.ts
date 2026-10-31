@@ -25,6 +25,7 @@ const installment: Installment = {
   totalPayments: 12,
   paidPayments: 0,
   reminderDaysBefore: [3, 1],
+  tags: [],
   notes: null,
   isActive: true,
   createdAt: ts,

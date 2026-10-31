@@ -17,6 +17,7 @@ const installmentValues: InstallmentFormValues = {
   totalPayments: 3,
   paidPayments: 0,
   reminderDaysBefore: [1],
+  tags: [],
   notes: '',
   isActive: true,
 }

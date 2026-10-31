@@ -42,6 +42,7 @@ const useInstallments = () => {
   const navigate = useNavigate({ from: '/installments' })
   const [filter, setFilter] = useState('all')
   const [sort, setSort] = useState('status')
+  const [tag, setTag] = useState('all')
   const [year, setYear] = useState('all')
   const [month, setMonth] = useState('all')
   const [dialog, setDialog] = useState<Dialog>(search.new ? { type: 'create' } : null)
@@ -99,7 +100,10 @@ const useInstallments = () => {
     : []
   const periodCount = (i: Installment) =>
     year === 'all' ? 1 : paymentsIn(i, Number(year), month === 'all' ? undefined : Number(month))
-  const visible = items.filter((i) => match(statusOf(i)) && periodCount(i) > 0)
+  const allTags = [...new Set(items.flatMap((i) => i.tags))].sort((a, b) => a.localeCompare(b, 'fa'))
+  const visible = items.filter(
+    (i) => match(statusOf(i)) && periodCount(i) > 0 && (tag === 'all' || i.tags.includes(tag)),
+  )
   const periodTotal = visible.reduce((sum, i) => sum + periodCount(i) * i.amount, 0)
   const periodLabel = `${month === 'all' ? '' : `${JALALI_MONTHS[Number(month)]} `}${toFaDigits(year)}`
 
@@ -145,6 +149,10 @@ const useInstallments = () => {
     sort,
     sortOptions: SORT_OPTIONS,
     handleSortChange: setSort,
+    tag,
+    hasTags: allTags.length > 0,
+    tagOptions: [{ value: 'all', label: 'همهٔ تگ‌ها' }, ...allTags.map((t) => ({ value: t, label: t }))],
+    handleTagChange: setTag,
     headerDescription: items.length
       ? `پرداخت ماهانه: ${formatMoney(monthlyTotal)} · مانده کل: ${formatMoney(remainingTotal)}`
       : undefined,

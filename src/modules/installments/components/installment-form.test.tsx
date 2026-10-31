@@ -36,4 +36,15 @@ describe('InstallmentForm', () => {
       }),
     )
   })
+
+  it('adds tags with Enter and removes them', async () => {
+    const onSubmit = vi.fn(async () => {})
+    render(<InstallmentForm onSubmit={onSubmit} />)
+    await userEvent.type(screen.getByLabelText('عنوان'), 'وام')
+    await userEvent.type(screen.getByLabelText('مبلغ هر قسط'), '100')
+    await userEvent.type(screen.getByLabelText('تگ جدید'), 'بانک{Enter}خودرو{Enter}بانک{Enter}')
+    await userEvent.click(screen.getByRole('button', { name: 'حذف تگ خودرو' }))
+    await userEvent.click(screen.getByRole('button', { name: 'افزودن قسط' }))
+    await waitFor(() => expect(onSubmit).toHaveBeenCalledWith(expect.objectContaining({ tags: ['بانک'] })))
+  })
 })
