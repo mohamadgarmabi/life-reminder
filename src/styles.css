@@ -116,16 +116,19 @@
 @layer base {
   * {
     @apply border-border outline-ring/50;
+    touch-action: pan-y pan-x;
   }
   html {
     -webkit-tap-highlight-color: transparent;
     -webkit-text-size-adjust: 100%;
     background-color: var(--background);
+    touch-action: pan-y pan-x;
   }
   body {
     @apply bg-background text-foreground antialiased;
     font-feature-settings: 'ss01';
     overscroll-behavior-y: none;
+    touch-action: pan-y pan-x;
   }
   /* Backdrop the LiquidGlass tab bar refracts (see app-shell). */
   .mesh {

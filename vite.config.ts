@@ -21,8 +21,8 @@ const pwa = VitePWA({
   injectRegister: false, // registered by <UpdatePrompt /> via virtual:pwa-register/react
   includeAssets: ['favicon.svg', 'favicon.ico', 'apple-touch-icon-180x180.png'],
   manifest: {
-    name: 'یادآور زندگی',
-    short_name: 'یادآور',
+    name: 'Life Reminder',
+    short_name: 'Life Reminder',
     description: 'مدیریت اقساط، آبیاری گل‌ها و یادآورهای شخصی',
     lang: 'fa',
     dir: 'rtl',
