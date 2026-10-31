@@ -10,9 +10,10 @@ import { redact } from '@tanstack/redact/vite'
 
 // GitHub Pages project sites live under /<repo>/; CI sets BASE_PATH, local dev uses "/".
 const base = process.env.BASE_PATH ?? '/'
-const { version } = JSON.parse(readFileSync('package.json', 'utf8')) as {
-  version: string
-}
+const pkg = JSON.parse(readFileSync('package.json', 'utf8')) as { version: string }
+// Every CI deploy gets a new patch (1.0.<run number>); bump major/minor in package.json by hand.
+const runNumber = process.env.GITHUB_RUN_NUMBER
+const version = runNumber ? pkg.version.replace(/\d+$/, runNumber) : pkg.version
 const outDir = 'dist/client'
 
 const pwa = VitePWA({
