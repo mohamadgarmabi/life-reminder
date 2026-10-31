@@ -24,6 +24,7 @@ const InstallmentCard = ({ inst, today, onEdit, onHistory, onDelete }: Installme
     paidCountLabel,
     totalCountLabel,
     remainingLabel,
+    lastDueLabel,
     nextDueLabel,
     nextRelativeLabel,
     relativeClassName,
@@ -67,6 +68,7 @@ const InstallmentCard = ({ inst, today, onEdit, onHistory, onDelete }: Installme
             {paidCountLabel} از {totalCountLabel} قسط پرداخت شده
             {remainingLabel}
           </p>
+          <p className="text-xs text-muted-foreground">آخرین قسط: {lastDueLabel}</p>
         </div>
 
         {hasNext && (

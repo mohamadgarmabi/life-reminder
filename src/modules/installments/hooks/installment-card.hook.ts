@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import { toast } from 'sonner'
-import { formatDateLong, formatMoney, relativeDay, toFaDigits } from '#/modules/shell/utils/format'
+import { formatDate, formatDateLong, formatMoney, relativeDay, toFaDigits } from '#/modules/shell/utils/format'
 import { installmentRepo } from '#/modules/installments/apis/installments.api'
 import type { InstallmentCardProps, InstallmentStatus } from '#/modules/installments/types'
-import { installmentStatus, nextPayment, remainingPayments } from '#/modules/installments/utils/schedule'
+import { installmentStatus, nextPayment, paymentDueDate, remainingPayments } from '#/modules/installments/utils/schedule'
 
 const STATUS: Record<
   InstallmentStatus,
@@ -53,6 +53,7 @@ const useInstallmentCard = ({ inst, today }: Pick<InstallmentCardProps, 'inst' |
     paidCountLabel: toFaDigits(inst.paidPayments),
     totalCountLabel: toFaDigits(inst.totalPayments),
     remainingLabel: next && `، ${toFaDigits(remainingPayments(inst))} قسط باقی‌مانده`,
+    lastDueLabel: formatDate(paymentDueDate(inst, inst.totalPayments - 1)),
     nextDueLabel: next ? formatDateLong(next.dueDate) : '',
     nextRelativeLabel: next ? relativeDay(next.dueDate) : '',
     relativeClassName: status === 'overdue' ? 'font-medium text-destructive' : 'text-muted-foreground',
