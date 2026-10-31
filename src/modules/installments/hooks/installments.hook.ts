@@ -18,7 +18,7 @@ import {
   remainingPayments,
 } from '#/modules/installments/utils/schedule'
 
-type Dialog = { type: 'create' } | { type: 'edit' | 'history' | 'delete'; item: Installment } | null
+type Dialog = { type: 'create' } | { type: 'edit' | 'history'; item: Installment } | null
 
 const ORDER = ['overdue', 'today', 'soon', 'upcoming', 'paused', 'done']
 
@@ -111,12 +111,11 @@ const useInstallments = () => {
     inst,
     onEdit: () => setDialog({ type: 'edit', item: inst }),
     onHistory: () => setDialog({ type: 'history', item: inst }),
-    onDelete: () => setDialog({ type: 'delete', item: inst }),
+    onDelete: () => void save(installmentRepo.remove(inst.id), 'قسط حذف شد.'),
   }))
 
   const editItem = dialog?.type === 'edit' ? dialog.item : undefined
   const historyItem = dialog?.type === 'history' ? dialog.item : undefined
-  const deleteItem = dialog?.type === 'delete' ? dialog.item : undefined
 
   return {
     today,
@@ -162,8 +161,6 @@ const useInstallments = () => {
     editItem,
     historyItem,
     isHistoryOpen: !!historyItem,
-    isDeleteOpen: !!deleteItem,
-    deleteDescription: deleteItem ? `«${deleteItem.title}» و سابقهٔ پرداخت آن برای همیشه حذف می‌شود.` : '',
     handleOpenCreate: () => setDialog({ type: 'create' }),
     handleOpenChange: (o: boolean) => {
       if (!o) close()
@@ -172,9 +169,6 @@ const useInstallments = () => {
     // the edit form only renders while editItem is set
     handleUpdate: async (v: InstallmentFormValues) => {
       if (editItem) await save(installmentRepo.update(editItem.id, v), 'تغییرات ذخیره شد.')
-    },
-    handleDelete: () => {
-      if (deleteItem) void save(installmentRepo.remove(deleteItem.id), 'قسط حذف شد.')
     },
   }
 }

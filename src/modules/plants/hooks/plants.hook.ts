@@ -36,11 +36,10 @@ const usePlants = () => {
     plant,
     onEdit: () => setDialog({ type: 'edit', item: plant }),
     onHistory: () => setDialog({ type: 'history', item: plant }),
-    onDelete: () => setDialog({ type: 'delete', item: plant }),
+    onDelete: () => void save(plantRepo.remove(plant.id), 'گیاه حذف شد.'),
   }))
   const editingPlant = dialog?.type === 'edit' ? dialog.item : undefined
   const historyPlant = dialog?.type === 'history' ? dialog.item : undefined
-  const deletingPlant = dialog?.type === 'delete' ? dialog.item : undefined
 
   return {
     today,
@@ -67,11 +66,6 @@ const usePlants = () => {
     historyPlant,
     isHistoryOpen: !!historyPlant,
     historyDescription: historyPlant?.name,
-    isDeleteOpen: !!deletingPlant,
-    deleteDescription: deletingPlant ? `«${deletingPlant.name}» و سابقهٔ آبیاری آن برای همیشه حذف می‌شود.` : '',
-    handleDelete: () => {
-      if (deletingPlant) void save(plantRepo.remove(deletingPlant.id), 'گیاه حذف شد.')
-    },
   }
 }
 

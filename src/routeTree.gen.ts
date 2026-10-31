@@ -14,6 +14,9 @@ import { Route as InstallmentsRouteImport } from './routes/installments'
 import { Route as PlantsRouteImport } from './routes/plants'
 import { Route as RemindersRouteImport } from './routes/reminders'
 import { Route as SettingsRouteImport } from './routes/settings'
+import { Route as GamesIndexRouteImport } from './routes/games.index'
+import { Route as GamesMatch3RouteImport } from './routes/games.match3'
+import { Route as GamesSudokuRouteImport } from './routes/games.sudoku'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -40,6 +43,21 @@ const SettingsRoute = SettingsRouteImport.update({
   path: '/settings',
   getParentRoute: () => rootRouteImport,
 } as any)
+const GamesIndexRoute = GamesIndexRouteImport.update({
+  id: '/games/',
+  path: '/games/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GamesMatch3Route = GamesMatch3RouteImport.update({
+  id: '/games/match3',
+  path: '/games/match3',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GamesSudokuRoute = GamesSudokuRouteImport.update({
+  id: '/games/sudoku',
+  path: '/games/sudoku',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -47,6 +65,9 @@ export interface FileRoutesByFullPath {
   '/plants': typeof PlantsRoute
   '/reminders': typeof RemindersRoute
   '/settings': typeof SettingsRoute
+  '/games/match3': typeof GamesMatch3Route
+  '/games/sudoku': typeof GamesSudokuRoute
+  '/games/': typeof GamesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -54,6 +75,9 @@ export interface FileRoutesByTo {
   '/plants': typeof PlantsRoute
   '/reminders': typeof RemindersRoute
   '/settings': typeof SettingsRoute
+  '/games/match3': typeof GamesMatch3Route
+  '/games/sudoku': typeof GamesSudokuRoute
+  '/games': typeof GamesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -62,14 +86,41 @@ export interface FileRoutesById {
   '/plants': typeof PlantsRoute
   '/reminders': typeof RemindersRoute
   '/settings': typeof SettingsRoute
+  '/games/match3': typeof GamesMatch3Route
+  '/games/sudoku': typeof GamesSudokuRoute
+  '/games/': typeof GamesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/installments' | '/plants' | '/reminders' | '/settings'
+  fullPaths:
+    | '/'
+    | '/installments'
+    | '/plants'
+    | '/reminders'
+    | '/settings'
+    | '/games/match3'
+    | '/games/sudoku'
+    | '/games/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/installments' | '/plants' | '/reminders' | '/settings'
+  to:
+    | '/'
+    | '/installments'
+    | '/plants'
+    | '/reminders'
+    | '/settings'
+    | '/games/match3'
+    | '/games/sudoku'
+    | '/games'
   id:
-    '__root__' | '/' | '/installments' | '/plants' | '/reminders' | '/settings'
+    | '__root__'
+    | '/'
+    | '/installments'
+    | '/plants'
+    | '/reminders'
+    | '/settings'
+    | '/games/match3'
+    | '/games/sudoku'
+    | '/games/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -78,6 +129,9 @@ export interface RootRouteChildren {
   PlantsRoute: typeof PlantsRoute
   RemindersRoute: typeof RemindersRoute
   SettingsRoute: typeof SettingsRoute
+  GamesMatch3Route: typeof GamesMatch3Route
+  GamesSudokuRoute: typeof GamesSudokuRoute
+  GamesIndexRoute: typeof GamesIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -117,6 +171,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SettingsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/games/': {
+      id: '/games/'
+      path: '/games'
+      fullPath: '/games/'
+      preLoaderRoute: typeof GamesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/games/match3': {
+      id: '/games/match3'
+      path: '/games/match3'
+      fullPath: '/games/match3'
+      preLoaderRoute: typeof GamesMatch3RouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/games/sudoku': {
+      id: '/games/sudoku'
+      path: '/games/sudoku'
+      fullPath: '/games/sudoku'
+      preLoaderRoute: typeof GamesSudokuRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -126,6 +201,9 @@ const rootRouteChildren: RootRouteChildren = {
   PlantsRoute: PlantsRoute,
   RemindersRoute: RemindersRoute,
   SettingsRoute: SettingsRoute,
+  GamesMatch3Route: GamesMatch3Route,
+  GamesSudokuRoute: GamesSudokuRoute,
+  GamesIndexRoute: GamesIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

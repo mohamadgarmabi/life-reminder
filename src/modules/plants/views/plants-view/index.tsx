@@ -1,5 +1,5 @@
 import { Flower2, Plus } from 'lucide-react'
-import { ConfirmDialog, FormDialog } from '#/modules/shell/components/dialogs'
+import { FormDialog } from '#/modules/shell/components/dialogs'
 import { EmptyState, ErrorState, ListSkeleton, PageHeader } from '#/modules/shell/components/states'
 import { Button } from '#/modules/shell/components/ui/button'
 import { PlantCard } from '#/modules/plants/components/plant-card'
@@ -26,9 +26,6 @@ const PlantsView = () => {
     historyPlant,
     isHistoryOpen,
     historyDescription,
-    isDeleteOpen,
-    deleteDescription,
-    handleDelete,
   } = usePlants()
 
   return (
@@ -83,14 +80,6 @@ const PlantsView = () => {
       >
         {historyPlant && <WateringHistory plantId={historyPlant.id} />}
       </FormDialog>
-
-      <ConfirmDialog
-        open={isDeleteOpen}
-        onOpenChange={handleOpenChange}
-        title="حذف گیاه؟"
-        description={deleteDescription}
-        onConfirm={handleDelete}
-      />
     </>
   )
 }

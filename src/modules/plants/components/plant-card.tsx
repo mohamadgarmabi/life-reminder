@@ -1,4 +1,5 @@
-import { Droplets, History, MoreVertical, Pencil, Sprout, Trash2 } from 'lucide-react'
+import { Droplets, History, MoreVertical, Pencil, Sprout } from 'lucide-react'
+import { SwipeRow } from '#/modules/shell/components/swipe-row'
 import { Button } from '#/modules/shell/components/ui/button'
 import { Card, CardContent } from '#/modules/shell/components/ui/card'
 import {
@@ -24,52 +25,69 @@ const PlantCard = ({ plant, today, onEdit, onHistory, onDelete }: PlantCardProps
   } = usePlantCard({ plant, today })
 
   return (
-    <Card className="gap-0 overflow-hidden py-0">
-      <div className="relative aspect-[4/3] bg-accent">
-        {image && <img src={image} alt={plant.name} className="size-full object-cover" loading="lazy" />}
-        {!image && (
-          <div className="flex size-full items-center justify-center text-primary/60">
-            <Sprout className="size-12" aria-hidden />
-          </div>
-        )}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant="secondary"
-              size="icon"
-              className="absolute end-2 top-2 rounded-full bg-background/80 backdrop-blur"
-              aria-label={menuLabel}
-            >
-              <MoreVertical />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem onSelect={onEdit}>
-              <Pencil /> ویرایش
-            </DropdownMenuItem>
-            <DropdownMenuItem onSelect={onHistory}>
-              <History /> سابقهٔ آبیاری
-            </DropdownMenuItem>
-            <DropdownMenuItem variant="destructive" onSelect={onDelete}>
-              <Trash2 /> حذف
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
-      <CardContent className="space-y-3 p-4">
-        <div>
-          <h3 className="truncate font-semibold">{plant.name}</h3>
-          <p className="text-xs text-muted-foreground">هر {intervalLabel} روز</p>
+    <SwipeRow
+      direction="right"
+      label={plant.name}
+      actionWidth={64}
+      actions={[
+        { id: 'delete', label: 'حذف', onSelect: onDelete },
+        ...(waterDisabled
+          ? []
+          : [
+              {
+                id: 'water',
+                label: 'آب دادم',
+                icon: <Droplets className="size-5" />,
+                color: '#0090ff',
+                onSelect: water,
+              },
+            ]),
+      ]}
+    >
+      <Card className="gap-0 overflow-hidden py-0">
+        <div className="relative aspect-[4/3] bg-accent">
+          {image && <img src={image} alt={plant.name} className="size-full object-cover" loading="lazy" />}
+          {!image && (
+            <div className="flex size-full items-center justify-center text-primary/60">
+              <Sprout className="size-12" aria-hidden />
+            </div>
+          )}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="secondary"
+                size="icon"
+                className="absolute end-2 top-2 rounded-full bg-background/80 backdrop-blur"
+                aria-label={menuLabel}
+              >
+                <MoreVertical />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onSelect={onEdit}>
+                <Pencil /> ویرایش
+              </DropdownMenuItem>
+              <DropdownMenuItem onSelect={onHistory}>
+                <History /> سابقهٔ آبیاری
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
-        <p className={statusClassName}>
-          <Droplets className="me-1 inline size-4" aria-hidden />
-          {statusLabel}
-        </p>
-        <Button className="w-full" variant={waterVariant} onClick={water} disabled={waterDisabled}>
-          <Droplets /> {waterLabel}
-        </Button>
-      </CardContent>
-    </Card>
+        <CardContent className="space-y-3 p-4">
+          <div>
+            <h3 className="truncate font-semibold">{plant.name}</h3>
+            <p className="text-xs text-muted-foreground">هر {intervalLabel} روز</p>
+          </div>
+          <p className={statusClassName}>
+            <Droplets className="me-1 inline size-4" aria-hidden />
+            {statusLabel}
+          </p>
+          <Button className="w-full" variant={waterVariant} onClick={water} disabled={waterDisabled}>
+            <Droplets /> {waterLabel}
+          </Button>
+        </CardContent>
+      </Card>
+    </SwipeRow>
   )
 }
 

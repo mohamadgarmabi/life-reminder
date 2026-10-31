@@ -4,14 +4,27 @@ import { Alert, AlertDescription, AlertTitle } from '#/modules/shell/components/
 import { Skeleton } from '#/modules/shell/components/ui/skeleton'
 import { useListSkeleton } from '#/modules/shell/hooks/states.hook'
 
-const PageHeader = ({ title, description, action }: { title: string; description?: string; action?: ReactNode }) => {
+// Sticky on every page; children (e.g. filter tabs) stick with it.
+const PageHeader = ({
+  title,
+  description,
+  action,
+  children,
+}: {
+  title: string
+  description?: string
+  action?: ReactNode
+  children?: ReactNode
+}) => {
   return (
-    <header className="mb-5 flex items-end justify-between gap-3 pt-1">
-      <div>
-        <h1 className="text-[1.75rem] leading-tight font-bold tracking-tight">{title}</h1>
-        {description && <p className="mt-1 text-sm text-muted-foreground">{description}</p>}
+    <header className="sticky top-0 z-20 -mx-4 -mt-[max(1.25rem,env(safe-area-inset-top))] bg-[linear-gradient(to_bottom,var(--background)_calc(100%-1.25rem),transparent)] px-4 pt-[calc(max(1.25rem,env(safe-area-inset-top))+0.25rem)] pb-5">
+      {/* Action shares the title row so a long description can't push it down into the content. */}
+      <div className="flex min-h-10 items-center justify-between gap-3">
+        <h1 className="min-w-0 truncate text-[1.75rem] leading-tight font-bold tracking-tight">{title}</h1>
+        {action && <div className="shrink-0">{action}</div>}
       </div>
-      {action}
+      {description && <p className="mt-1 text-sm text-muted-foreground">{description}</p>}
+      {children && <div className="mt-3">{children}</div>}
     </header>
   )
 }

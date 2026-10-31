@@ -29,7 +29,7 @@ type ReminderFormProps = {
 
 type ReminderHistoryProps = { reminderId: string }
 
-type RemindersDialog = { type: 'create' } | { type: 'edit' | 'history' | 'delete'; item: Reminder } | null
+type RemindersDialog = { type: 'create' } | { type: 'edit' | 'history'; item: Reminder } | null
 
 export type {
   Recurrence,

@@ -1,8 +1,9 @@
 import { Plus, Wallet } from 'lucide-react'
-import { ConfirmDialog, FormDialog } from '#/modules/shell/components/dialogs'
+import { FormDialog } from '#/modules/shell/components/dialogs'
 import { EmptyState, ErrorState, ListSkeleton, PageHeader } from '#/modules/shell/components/states'
+import { GlassFilter } from '#/modules/shell/components/glass-filter'
 import { Button } from '#/modules/shell/components/ui/button'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '#/modules/shell/components/ui/select'
+import { Select } from '#/modules/shell/components/ui/select'
 import { Tabs, TabsList, TabsTrigger } from '#/modules/shell/components/ui/tabs'
 import { InstallmentCard } from '#/modules/installments/components/installment-card'
 import { InstallmentForm } from '#/modules/installments/components/installment-form'
@@ -43,13 +44,10 @@ const InstallmentsView = () => {
     editItem,
     historyItem,
     isHistoryOpen,
-    isDeleteOpen,
-    deleteDescription,
     handleOpenCreate,
     handleOpenChange,
     handleCreate,
     handleUpdate,
-    handleDelete,
   } = useInstallments()
 
   return (
@@ -62,7 +60,21 @@ const InstallmentsView = () => {
             <Plus /> قسط جدید
           </Button>
         }
-      />
+      >
+        {hasItems && (
+          <Tabs value={filter} onValueChange={handleFilterChange} dir="rtl">
+            <GlassFilter>
+              <TabsList className="w-full">
+                {filters.map((f) => (
+                  <TabsTrigger key={f.value} value={f.value}>
+                    {f.label}
+                  </TabsTrigger>
+                ))}
+              </TabsList>
+            </GlassFilter>
+          </Tabs>
+        )}
+      </PageHeader>
 
       {isLoading && <ListSkeleton />}
       {error && <ErrorState error={error} />}
@@ -79,68 +91,26 @@ const InstallmentsView = () => {
         />
       )}
       {hasItems && (
-        <Tabs value={filter} onValueChange={handleFilterChange} dir="rtl">
-          <TabsList className="mb-3 w-full">
-            {filters.map((f) => (
-              <TabsTrigger key={f.value} value={f.value}>
-                {f.label}
-              </TabsTrigger>
-            ))}
-          </TabsList>
-        </Tabs>
-      )}
-      {hasItems && (
         <div className="mb-3 grid grid-cols-2 gap-2">
-          <Select value={sort} onValueChange={handleSortChange}>
-            <SelectTrigger className={hasTags ? 'w-full' : 'col-span-2 w-full'} aria-label="مرتب‌سازی">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {sortOptions.map((o) => (
-                <SelectItem key={o.value} value={o.value}>
-                  {o.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <Select
+            label="مرتب‌سازی"
+            value={sort}
+            onValueChange={handleSortChange}
+            options={sortOptions}
+            className={hasTags ? 'w-full' : 'col-span-2 w-full'}
+          />
           {hasTags && (
-            <Select value={tag} onValueChange={handleTagChange}>
-              <SelectTrigger className="w-full" aria-label="تگ">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {tagOptions.map((o) => (
-                  <SelectItem key={o.value} value={o.value}>
-                    {o.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <Select label="تگ" value={tag} onValueChange={handleTagChange} options={tagOptions} className="w-full" />
           )}
-          <Select value={month} onValueChange={handleMonthChange} disabled={isMonthDisabled}>
-            <SelectTrigger className="w-full" aria-label="ماه">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {monthOptions.map((o) => (
-                <SelectItem key={o.value} value={o.value}>
-                  {o.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Select value={year} onValueChange={handleYearChange}>
-            <SelectTrigger className="w-full" aria-label="سال">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {yearOptions.map((o) => (
-                <SelectItem key={o.value} value={o.value}>
-                  {o.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <Select
+            label="ماه"
+            value={month}
+            onValueChange={handleMonthChange}
+            options={monthOptions}
+            disabled={isMonthDisabled}
+            className="w-full"
+          />
+          <Select label="سال" value={year} onValueChange={handleYearChange} options={yearOptions} className="w-full" />
         </div>
       )}
       {periodSummary && <p className="mb-3 text-sm font-medium">{periodSummary}</p>}
@@ -171,14 +141,6 @@ const InstallmentsView = () => {
       >
         {historyItem && <PaymentHistory inst={historyItem} />}
       </FormDialog>
-
-      <ConfirmDialog
-        open={isDeleteOpen}
-        onOpenChange={handleOpenChange}
-        title="حذف قسط؟"
-        description={deleteDescription}
-        onConfirm={handleDelete}
-      />
     </>
   )
 }

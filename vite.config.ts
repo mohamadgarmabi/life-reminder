@@ -1,3 +1,4 @@
+import { execFileSync } from 'node:child_process'
 import { readFileSync, writeFileSync } from 'node:fs'
 import { defineConfig, type Plugin } from 'vite'
 import { tanstackStart } from '@tanstack/react-start/plugin/vite'
@@ -16,6 +17,24 @@ const runNumber = process.env.GITHUB_RUN_NUMBER
 const version = runNumber ? pkg.version.replace(/\d+$/, runNumber) : pkg.version
 const outDir = 'dist/client'
 
+// Recent commits feed the in-app "what's new" sheet: the running build knows its own sha and
+// lists the commits newer than it (see update-prompt.hook). No git (e.g. tarball build) = no notes.
+const git = (...args: string[]) => {
+  try {
+    return execFileSync('git', args, { encoding: 'utf8' }).trim()
+  } catch {
+    return ''
+  }
+}
+const commit = git('rev-parse', 'HEAD')
+const commits = git('log', '-50', '--pretty=%H%x09%s')
+  .split('\n')
+  .filter(Boolean)
+  .map((line) => {
+    const [sha, subject] = line.split('\t')
+    return { sha, subject }
+  })
+
 const pwa = VitePWA({
   outDir,
   registerType: 'prompt',
@@ -30,7 +49,7 @@ const pwa = VitePWA({
     start_url: base,
     scope: base,
     display: 'standalone',
-    orientation: 'portrait',
+    orientation: 'any', // games can be played in landscape
     background_color: '#f2f2f7',
     theme_color: '#f2f2f7',
     icons: [
@@ -102,6 +121,8 @@ const staticSpaOutput: Plugin = {
       const html = injectSplash(readFileSync(`${outDir}/_shell.html`, 'utf8'))
       writeFileSync(`${outDir}/index.html`, html)
       writeFileSync(`${outDir}/404.html`, html)
+      // Not precached (globPatterns has no json), so the old app fetches the new file from the network.
+      writeFileSync(`${outDir}/version.json`, JSON.stringify({ version, commits }))
       const api = pwa.find((p) => p.name === 'vite-plugin-pwa')?.api as VitePluginPWAAPI | undefined
       if (!api) throw new Error('vite-plugin-pwa API not found')
       await api.generateSW()
@@ -111,7 +132,7 @@ const staticSpaOutput: Plugin = {
 
 const config = defineConfig({
   base,
-  define: { __APP_VERSION__: JSON.stringify(version) },
+  define: { __APP_VERSION__: JSON.stringify(version), __APP_COMMIT__: JSON.stringify(commit) },
   resolve: { tsconfigPaths: true },
   ssr: { noExternal: true },
   plugins: [

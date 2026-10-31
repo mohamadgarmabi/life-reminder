@@ -2,6 +2,8 @@
 /// <reference types="vite-plugin-pwa/react" />
 
 declare const __APP_VERSION__: string
+/** Git sha of this build ('' when built without git). */
+declare const __APP_COMMIT__: string
 
 interface ImportMetaEnv {
   /** Push relay URL (push-worker/); without it notifications only fire while the app is open. */

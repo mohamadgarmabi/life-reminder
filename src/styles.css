@@ -76,6 +76,11 @@
   box-shadow: 0 0 0 0.5px var(--border);
 }
 
+/* SwipeRow surfaces: no grey flash on tap. */
+@utility no-highlight {
+  -webkit-tap-highlight-color: transparent;
+}
+
 /* Floating, frosted surface: menus, dialogs, sheets, toasts. */
 @utility glass-strong {
   background-color: var(--material);

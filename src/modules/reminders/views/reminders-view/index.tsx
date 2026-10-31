@@ -1,6 +1,7 @@
 import { Bell, Plus } from 'lucide-react'
-import { ConfirmDialog, FormDialog } from '#/modules/shell/components/dialogs'
+import { FormDialog } from '#/modules/shell/components/dialogs'
 import { EmptyState, ErrorState, ListSkeleton, PageHeader } from '#/modules/shell/components/states'
+import { GlassFilter } from '#/modules/shell/components/glass-filter'
 import { Button } from '#/modules/shell/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '#/modules/shell/components/ui/tabs'
 import { ReminderCard } from '#/modules/reminders/components/reminder-card'
@@ -19,22 +20,19 @@ const RemindersView = () => {
     isCreate,
     isEdit,
     isHistory,
-    isDelete,
     isFormOpen,
     formTitle,
     editItem,
     historyReminderId,
     historyDescription,
-    deleteDescription,
     handleOpenCreate,
     handleOpenChange,
     handleCreate,
     handleEdit,
-    handleConfirmDelete,
   } = useReminders()
 
   return (
-    <>
+    <Tabs defaultValue="active" dir="rtl" className="block">
       <PageHeader
         title="یادآورها"
         action={
@@ -42,7 +40,19 @@ const RemindersView = () => {
             <Plus /> یادآور جدید
           </Button>
         }
-      />
+      >
+        {hasItems && (
+          <GlassFilter>
+            <TabsList className="w-full">
+              {tabs.map((tab) => (
+                <TabsTrigger key={tab.value} value={tab.value}>
+                  {tab.label}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+          </GlassFilter>
+        )}
+      </PageHeader>
 
       {isLoading && <ListSkeleton />}
       {error && <ErrorState error={error} />}
@@ -59,14 +69,7 @@ const RemindersView = () => {
         />
       )}
       {hasItems && (
-        <Tabs defaultValue="active" dir="rtl">
-          <TabsList className="mb-3 w-full">
-            {tabs.map((tab) => (
-              <TabsTrigger key={tab.value} value={tab.value}>
-                {tab.label}
-              </TabsTrigger>
-            ))}
-          </TabsList>
+        <>
           {tabs.map((tab) => (
             <TabsContent key={tab.value} value={tab.value}>
               {tab.hasRows && (
@@ -86,7 +89,7 @@ const RemindersView = () => {
               {!tab.hasRows && <p className="py-10 text-center text-sm text-muted-foreground">{tab.emptyText}</p>}
             </TabsContent>
           ))}
-        </Tabs>
+        </>
       )}
 
       <FormDialog open={isFormOpen} onOpenChange={handleOpenChange} title={formTitle}>
@@ -102,15 +105,7 @@ const RemindersView = () => {
       >
         {isHistory && <ReminderHistory reminderId={historyReminderId} />}
       </FormDialog>
-
-      <ConfirmDialog
-        open={isDelete}
-        onOpenChange={handleOpenChange}
-        title="حذف یادآور؟"
-        description={deleteDescription}
-        onConfirm={handleConfirmDelete}
-      />
-    </>
+    </Tabs>
   )
 }
 

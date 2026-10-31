@@ -23,6 +23,6 @@ type PlantFormProps = {
 
 type WateringHistoryProps = { plantId: string }
 
-type PlantsDialog = { type: 'create' } | { type: 'edit' | 'history' | 'delete'; item: Plant } | null
+type PlantsDialog = { type: 'create' } | { type: 'edit' | 'history'; item: Plant } | null
 
 export type { Plant, Watering, PlantFormValues, PlantCardProps, PlantFormProps, WateringHistoryProps, PlantsDialog }

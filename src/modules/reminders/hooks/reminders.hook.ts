@@ -38,7 +38,7 @@ const useReminders = () => {
       reminder: r,
       onEdit: () => setDialog({ type: 'edit', item: r }),
       onHistory: () => setDialog({ type: 'history', item: r }),
-      onDelete: () => setDialog({ type: 'delete', item: r }),
+      onDelete: () => void save(reminderRepo.remove(r.id), 'یادآور حذف شد.'),
     }))
 
   const tabs = [
@@ -60,7 +60,6 @@ const useReminders = () => {
 
   const editItem = dialog?.type === 'edit' ? dialog.item : undefined
   const historyItem = dialog?.type === 'history' ? dialog.item : undefined
-  const deleteItem = dialog?.type === 'delete' ? dialog.item : undefined
 
   const handleOpenCreate = () => setDialog({ type: 'create' })
   const handleOpenChange = (open: boolean) => {
@@ -69,9 +68,6 @@ const useReminders = () => {
   const handleCreate = (v: ReminderFormValues) => save(reminderRepo.create(v), 'یادآور اضافه شد.')
   const handleEdit = async (v: ReminderFormValues) => {
     if (editItem) await save(reminderRepo.update(editItem.id, v), 'تغییرات ذخیره شد.')
-  }
-  const handleConfirmDelete = () => {
-    if (deleteItem) void save(reminderRepo.remove(deleteItem.id), 'یادآور حذف شد.')
   }
 
   return {
@@ -84,18 +80,15 @@ const useReminders = () => {
     isCreate: dialog?.type === 'create',
     isEdit: !!editItem,
     isHistory: !!historyItem,
-    isDelete: !!deleteItem,
     isFormOpen: dialog?.type === 'create' || dialog?.type === 'edit',
     formTitle: dialog?.type === 'edit' ? 'ویرایش یادآور' : 'یادآور جدید',
     editItem,
     historyReminderId: historyItem?.id ?? '',
     historyDescription: historyItem?.title,
-    deleteDescription: deleteItem ? `«${deleteItem.title}» و سابقهٔ آن برای همیشه حذف می‌شود.` : '',
     handleOpenCreate,
     handleOpenChange,
     handleCreate,
     handleEdit,
-    handleConfirmDelete,
   }
 }
 

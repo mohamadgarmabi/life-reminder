@@ -7,7 +7,7 @@ import { Button } from '#/modules/shell/components/ui/button'
 import { Field, FieldContent, FieldDescription, FieldError, FieldLabel } from '#/modules/shell/components/ui/field'
 import { Input } from '#/modules/shell/components/ui/input'
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '#/modules/shell/components/ui/drawer'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '#/modules/shell/components/ui/select'
+import { Select } from '#/modules/shell/components/ui/select'
 import { Switch } from '#/modules/shell/components/ui/switch'
 import { Textarea } from '#/modules/shell/components/ui/textarea'
 import {
@@ -180,11 +180,13 @@ const TimeSelect = ({
   onChange,
   id,
   invalid,
+  nested,
 }: {
   value: string
   onChange: (value: string) => void
   id?: string
   invalid?: boolean
+  nested?: boolean
 }) => {
   const { hour, minute, hourOptions, minuteOptions, handleHourChange, handleMinuteChange } = useTimeSelect({
     value,
@@ -192,31 +194,25 @@ const TimeSelect = ({
   })
   return (
     <div className="flex items-center gap-2" dir="ltr">
-      <Select value={hour} onValueChange={handleHourChange}>
-        <SelectTrigger id={id} aria-invalid={invalid} className="w-full" aria-label="ساعت">
-          <SelectValue />
-        </SelectTrigger>
-        <SelectContent>
-          {hourOptions.map((x) => (
-            <SelectItem key={x.value} value={x.value}>
-              {x.label}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+      <Select
+        nested={nested}
+        label="ساعت"
+        id={id}
+        aria-invalid={invalid}
+        value={hour}
+        onValueChange={handleHourChange}
+        options={hourOptions}
+        className="w-full"
+      />
       <span aria-hidden>:</span>
-      <Select value={minute} onValueChange={handleMinuteChange}>
-        <SelectTrigger className="w-full" aria-label="دقیقه">
-          <SelectValue />
-        </SelectTrigger>
-        <SelectContent>
-          {minuteOptions.map((x) => (
-            <SelectItem key={x.value} value={x.value}>
-              {x.label}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+      <Select
+        nested={nested}
+        label="دقیقه"
+        value={minute}
+        onValueChange={handleMinuteChange}
+        options={minuteOptions}
+        className="w-full"
+      />
     </div>
   )
 }
@@ -225,7 +221,7 @@ const TimeField = ({ label, description }: Omit<ShellProps, 'children'>) => {
   const { field, invalid } = useFieldA11y<string>()
   return (
     <FieldShell label={label} description={description}>
-      <TimeSelect id={field.name} invalid={invalid} value={field.state.value} onChange={field.handleChange} />
+      <TimeSelect nested id={field.name} invalid={invalid} value={field.state.value} onChange={field.handleChange} />
     </FieldShell>
   )
 }
@@ -238,18 +234,15 @@ const SelectField = <T extends string | number>({
   const { controlProps, value, items, handleValueChange } = useSelectField(options)
   return (
     <FieldShell label={label} description={description}>
-      <Select value={value} onValueChange={handleValueChange}>
-        <SelectTrigger {...controlProps} className="w-full">
-          <SelectValue />
-        </SelectTrigger>
-        <SelectContent>
-          {items.map((o) => (
-            <SelectItem key={o.key} value={o.value}>
-              {o.label}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+      <Select
+        nested
+        {...controlProps}
+        label={label}
+        value={value}
+        onValueChange={handleValueChange}
+        options={items}
+        className="w-full"
+      />
     </FieldShell>
   )
 }

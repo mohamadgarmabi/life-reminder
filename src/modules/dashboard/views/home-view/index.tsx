@@ -1,4 +1,4 @@
-import { ErrorState, ListSkeleton } from '#/modules/shell/components/states'
+import { ErrorState, ListSkeleton, PageHeader } from '#/modules/shell/components/states'
 import { AgendaSection } from '#/modules/dashboard/components/agenda-section'
 import { QuickAction } from '#/modules/dashboard/components/quick-action'
 import { Stat } from '#/modules/dashboard/components/stat'
@@ -9,10 +9,7 @@ const HomeView = () => {
 
   return (
     <>
-      <header className="mb-5 pt-1">
-        <p className="text-sm text-muted-foreground">امروز</p>
-        <h1 className="text-[1.75rem] leading-tight font-bold tracking-tight">{dateLabel}</h1>
-      </header>
+      <PageHeader title="امروز" description={dateLabel} />
 
       <div className="mb-6 grid grid-cols-3 gap-2">
         {quickActions.map((action) => (
