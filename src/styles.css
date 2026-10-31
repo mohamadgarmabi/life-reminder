@@ -1,0 +1,137 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+@import '@fontsource-variable/vazirmatn';
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  --radius: 0.75rem;
+  /* iOS neutral: grouped grey background, white cards, black accent (white in dark). */
+  --background: oklch(0.966 0.003 286);   /* #F2F2F7 */
+  --foreground: oklch(0 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0 0 0);
+  --primary: oklch(0 0 0);
+  --primary-foreground: oklch(1 0 0);
+  --secondary: oklch(0.47 0.01 286 / 0.12);  /* iOS tertiary fill */
+  --secondary-foreground: oklch(0 0 0);
+  --muted: oklch(0.47 0.01 286 / 0.08);
+  --muted-foreground: oklch(0.52 0.008 286); /* #6E6E73, 5:1 on white */
+  --accent: oklch(0 0 0 / 0.05);
+  --accent-foreground: oklch(0 0 0);
+  --destructive: oklch(0.55 0.22 27);        /* #D70015 */
+  --destructive-foreground: oklch(1 0 0);
+  --warning: oklch(0.6 0.15 55);
+  --border: oklch(0.33 0.01 286 / 0.14);     /* hairline separator */
+  --input: oklch(0.33 0.01 286 / 0.14);
+  --ring: oklch(0.55 0 0);
+
+  /* Floating material (menus, sheets, tab bar); cards stay flat. */
+  --material: oklch(0.99 0 0 / 0.82);
+  --material-blur: 20px;
+  --material-shadow: 0 0 0 0.5px oklch(0 0 0 / 0.06), 0 8px 28px -6px oklch(0 0 0 / 0.14);
+  --field: oklch(0.47 0.01 286 / 0.08);
+}
+
+.dark {
+  --background: oklch(0 0 0);
+  --foreground: oklch(1 0 0);
+  --card: oklch(0.22 0.003 286);              /* #1C1C1E */
+  --card-foreground: oklch(1 0 0);
+  --popover: oklch(0.27 0.004 286);           /* #2C2C2E */
+  --popover-foreground: oklch(1 0 0);
+  --primary: oklch(1 0 0);
+  --primary-foreground: oklch(0 0 0);
+  --secondary: oklch(0.6 0.01 286 / 0.24);
+  --secondary-foreground: oklch(1 0 0);
+  --muted: oklch(0.6 0.01 286 / 0.16);
+  --muted-foreground: oklch(0.69 0.008 286);  /* #98989F */
+  --accent: oklch(1 0 0 / 0.08);
+  --accent-foreground: oklch(1 0 0);
+  --destructive: oklch(0.68 0.2 25);          /* #FF453A */
+  --destructive-foreground: oklch(1 0 0);
+  --warning: oklch(0.8 0.15 70);
+  --border: oklch(1 0 0 / 0.1);
+  --input: oklch(1 0 0 / 0.1);
+  --ring: oklch(0.75 0 0);
+
+  --material: oklch(0.24 0.003 286 / 0.82);
+  --material-shadow: 0 0 0 0.5px oklch(1 0 0 / 0.08), 0 8px 28px -6px oklch(0 0 0 / 0.6);
+  --field: oklch(0.6 0.01 286 / 0.16);
+}
+
+/* Users who ask iOS to reduce transparency get solid surfaces. */
+@media (prefers-reduced-transparency: reduce) {
+  :root { --material: var(--popover); --material-blur: 0px; }
+}
+
+/* Flat surface: cards, tiles. */
+@utility glass {
+  background-color: var(--card);
+  box-shadow: 0 0 0 0.5px var(--border);
+}
+
+/* Floating, frosted surface: menus, dialogs, sheets, toasts. */
+@utility glass-strong {
+  background-color: var(--material);
+  -webkit-backdrop-filter: blur(var(--material-blur)) saturate(180%);
+  backdrop-filter: blur(var(--material-blur)) saturate(180%);
+  box-shadow: var(--material-shadow);
+}
+
+@theme inline {
+  --font-sans: 'Vazirmatn Variable', -apple-system, ui-sans-serif, system-ui, sans-serif;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-warning: var(--warning);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-field: var(--field);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-text-size-adjust: 100%;
+    background-color: var(--background);
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: 'ss01';
+    overscroll-behavior-y: none;
+  }
+  /* Backdrop the LiquidGlass tab bar refracts (see app-shell). */
+  .mesh {
+    background: var(--background);
+  }
+  /* Theme toggle (settings) animates its own circular reveal instead of the default cross-fade. */
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none;
+    mix-blend-mode: normal;
+  }
+}

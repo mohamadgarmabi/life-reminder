@@ -1,0 +1,4 @@
+allowBuilds:
+  '@ybouane/liquidglass': false # postinstall only runs patch-package for its own dev build; dist is prebuilt
+  esbuild: true
+  lightningcss: true
