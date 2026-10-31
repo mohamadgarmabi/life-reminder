@@ -1,11 +1,12 @@
 import { createFormHook } from '@tanstack/react-form'
 import { CalendarIcon } from 'lucide-react'
+import { WheelPicker, WheelPickerWrapper } from '@ncdai/react-wheel-picker'
+import '@ncdai/react-wheel-picker/style.css'
 import type { ReactNode } from 'react'
 import { Button } from '#/modules/shell/components/ui/button'
-import { Calendar } from '#/modules/shell/components/ui/calendar'
 import { Field, FieldContent, FieldDescription, FieldError, FieldLabel } from '#/modules/shell/components/ui/field'
 import { Input } from '#/modules/shell/components/ui/input'
-import { Popover, PopoverContent, PopoverTrigger } from '#/modules/shell/components/ui/popover'
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '#/modules/shell/components/ui/drawer'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '#/modules/shell/components/ui/select'
 import { Switch } from '#/modules/shell/components/ui/switch'
 import { Textarea } from '#/modules/shell/components/ui/textarea'
@@ -103,26 +104,73 @@ const NumberField = ({ label, description, suffix }: Omit<ShellProps, 'children'
   )
 }
 
+const WHEEL_CLASSES = {
+  optionItem: 'text-muted-foreground',
+  // `!`: the library's unlayered CSS (font-weight: 500) beats Tailwind's layered utilities otherwise
+  highlightWrapper: 'rounded-md bg-muted font-normal! text-foreground',
+}
+
 const DateField = ({ label, description }: Omit<ShellProps, 'children'>) => {
-  const { controlProps, open, setOpen, selected, dateLabel, handleSelect } = useDateField()
+  const {
+    controlProps,
+    open,
+    setOpen,
+    year,
+    month,
+    day,
+    dateLabel,
+    yearOptions,
+    monthOptions,
+    dayOptions,
+    handleYearChange,
+    handleMonthChange,
+    handleDayChange,
+  } = useDateField()
   return (
     <FieldShell label={label} description={description}>
-      <Popover open={open} onOpenChange={setOpen}>
-        <PopoverTrigger asChild>
-          <Button
-            {...controlProps}
-            type="button"
-            variant="ghost"
-            className="h-10 w-full justify-between rounded-lg bg-field px-3 font-normal hover:bg-field active:scale-100"
-          >
-            {dateLabel}
-            <CalendarIcon className="text-muted-foreground" />
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent className="w-auto p-0" align="start">
-          <Calendar mode="single" selected={selected} defaultMonth={selected} onSelect={handleSelect} />
-        </PopoverContent>
-      </Popover>
+      <Button
+        {...controlProps}
+        type="button"
+        variant="ghost"
+        className="h-10 w-full justify-between rounded-lg bg-field px-3 font-normal hover:bg-field active:scale-100"
+        onClick={() => setOpen(true)}
+      >
+        {dateLabel}
+        <CalendarIcon className="text-muted-foreground" />
+      </Button>
+      {/* nested: the forms already live inside a drawer */}
+      <Drawer nested open={open} onOpenChange={setOpen}>
+        <DrawerContent>
+          <DrawerHeader>
+            <DrawerTitle>{label}</DrawerTitle>
+          </DrawerHeader>
+          {/* data-vaul-no-drag: let the wheels scroll instead of dragging the sheet */}
+          <div className="px-4 pb-8" data-vaul-no-drag>
+            <WheelPickerWrapper>
+              <WheelPicker
+                options={dayOptions}
+                value={day}
+                onValueChange={handleDayChange}
+                classNames={WHEEL_CLASSES}
+                infinite
+              />
+              <WheelPicker
+                options={monthOptions}
+                value={month}
+                onValueChange={handleMonthChange}
+                classNames={WHEEL_CLASSES}
+                infinite
+              />
+              <WheelPicker
+                options={yearOptions}
+                value={year}
+                onValueChange={handleYearChange}
+                classNames={WHEEL_CLASSES}
+              />
+            </WheelPickerWrapper>
+          </div>
+        </DrawerContent>
+      </Drawer>
     </FieldShell>
   )
 }

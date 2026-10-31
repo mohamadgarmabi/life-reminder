@@ -2,6 +2,8 @@ import { Plus, Wallet } from 'lucide-react'
 import { ConfirmDialog, FormDialog } from '#/modules/shell/components/dialogs'
 import { EmptyState, ErrorState, ListSkeleton, PageHeader } from '#/modules/shell/components/states'
 import { Button } from '#/modules/shell/components/ui/button'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '#/modules/shell/components/ui/select'
+import { Tabs, TabsList, TabsTrigger } from '#/modules/shell/components/ui/tabs'
 import { InstallmentCard } from '#/modules/installments/components/installment-card'
 import { InstallmentForm } from '#/modules/installments/components/installment-form'
 import { PaymentHistory } from '#/modules/installments/components/payment-history'
@@ -14,6 +16,19 @@ const InstallmentsView = () => {
     isLoading,
     error,
     isEmpty,
+    hasItems,
+    isFilterEmpty,
+    filters,
+    filter,
+    handleFilterChange,
+    year,
+    month,
+    yearOptions,
+    monthOptions,
+    isMonthDisabled,
+    periodSummary,
+    handleYearChange,
+    handleMonthChange,
     headerDescription,
     isFormOpen,
     formTitle,
@@ -56,7 +71,48 @@ const InstallmentsView = () => {
           }
         />
       )}
-      <div className="space-y-3">
+      {hasItems && (
+        <Tabs value={filter} onValueChange={handleFilterChange} dir="rtl">
+          <TabsList className="mb-3 w-full">
+            {filters.map((f) => (
+              <TabsTrigger key={f.value} value={f.value}>
+                {f.label}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        </Tabs>
+      )}
+      {hasItems && (
+        <div className="mb-3 grid grid-cols-2 gap-2">
+          <Select value={month} onValueChange={handleMonthChange} disabled={isMonthDisabled}>
+            <SelectTrigger className="w-full" aria-label="ماه">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {monthOptions.map((o) => (
+                <SelectItem key={o.value} value={o.value}>
+                  {o.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Select value={year} onValueChange={handleYearChange}>
+            <SelectTrigger className="w-full" aria-label="سال">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {yearOptions.map((o) => (
+                <SelectItem key={o.value} value={o.value}>
+                  {o.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      )}
+      {periodSummary && <p className="mb-3 text-sm font-medium">{periodSummary}</p>}
+      {isFilterEmpty && <p className="py-10 text-center text-sm text-muted-foreground">قسطی در این دسته نیست.</p>}
+      <div className="grid gap-2 sm:grid-cols-2">
         {cards.map((card) => (
           <InstallmentCard
             key={card.inst.id}

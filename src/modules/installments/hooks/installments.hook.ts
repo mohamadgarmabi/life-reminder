@@ -3,19 +3,38 @@ import { useState } from 'react'
 import { toast } from 'sonner'
 import { useLiveQuery } from '#/modules/database/hooks/database.hook'
 import { toIsoDate } from '#/modules/shell/utils/dates'
-import { formatMoney } from '#/modules/shell/utils/format'
+import { formatMoney, toFaDigits } from '#/modules/shell/utils/format'
 import { useNow } from '#/modules/shell/hooks/now.hook'
 import { installmentRepo } from '#/modules/installments/apis/installments.api'
 import type { Installment, InstallmentFormValues } from '#/modules/installments/types'
-import { installmentStatus, nextPayment, remainingPayments } from '#/modules/installments/utils/schedule'
+import { getYear } from 'date-fns-jalali'
+import { JALALI_MONTHS } from '#/modules/shell/hooks/form-fields.hook'
+import { parseIsoDate } from '#/modules/shell/utils/dates'
+import {
+  installmentStatus,
+  nextPayment,
+  paymentDueDate,
+  paymentsIn,
+  remainingPayments,
+} from '#/modules/installments/utils/schedule'
 
 type Dialog = { type: 'create' } | { type: 'edit' | 'history' | 'delete'; item: Installment } | null
 
 const ORDER = ['overdue', 'today', 'soon', 'upcoming', 'paused', 'done']
 
+const FILTERS = [
+  { value: 'all', label: 'همه', match: () => true },
+  { value: 'running', label: 'در جریان', match: (s: string) => s !== 'done' && s !== 'paused' },
+  { value: 'overdue', label: 'معوق', match: (s: string) => s === 'overdue' },
+  { value: 'done', label: 'تسویه', match: (s: string) => s === 'done' },
+]
+
 const useInstallments = () => {
   const search = useSearch({ from: '/installments' })
   const navigate = useNavigate({ from: '/installments' })
+  const [filter, setFilter] = useState('all')
+  const [year, setYear] = useState('all')
+  const [month, setMonth] = useState('all')
   const [dialog, setDialog] = useState<Dialog>(search.new ? { type: 'create' } : null)
   const today = toIsoDate(useNow())
   const q = useLiveQuery(() => installmentRepo.list())
@@ -38,9 +57,35 @@ const useInstallments = () => {
     const s = ORDER.indexOf(installmentStatus(a, today)) - ORDER.indexOf(installmentStatus(b, today))
     return s || (nextPayment(a)?.dueDate ?? '').localeCompare(nextPayment(b)?.dueDate ?? '')
   })
-  const remainingTotal = items.filter((i) => i.isActive).reduce((sum, i) => sum + remainingPayments(i) * i.amount, 0)
+  const active = items.filter((i) => i.isActive)
+  const remainingTotal = active.reduce((sum, i) => sum + remainingPayments(i) * i.amount, 0)
+  const monthlyTotal = active.reduce((sum, i) => sum + (remainingPayments(i) ? i.amount : 0), 0)
+  const statusOf = (i: Installment) => installmentStatus(i, today)
+  const filters = FILTERS.map((f) => ({
+    value: f.value,
+    label: `${f.label} (${toFaDigits(items.filter((i) => f.match(statusOf(i))).length)})`,
+  }))
+  const match = FILTERS.find((f) => f.value === filter)?.match ?? (() => true)
 
-  const cards = items.map((inst) => ({
+  const yearOf = (i: Installment, n: number) => getYear(parseIsoDate(paymentDueDate(i, n)))
+  const years = items.length
+    ? Array.from(
+        {
+          length:
+            Math.max(...items.map((i) => yearOf(i, i.totalPayments - 1))) -
+            Math.min(...items.map((i) => yearOf(i, 0))) +
+            1,
+        },
+        (_, k) => Math.min(...items.map((i) => yearOf(i, 0))) + k,
+      )
+    : []
+  const periodCount = (i: Installment) =>
+    year === 'all' ? 1 : paymentsIn(i, Number(year), month === 'all' ? undefined : Number(month))
+  const visible = items.filter((i) => match(statusOf(i)) && periodCount(i) > 0)
+  const periodTotal = visible.reduce((sum, i) => sum + periodCount(i) * i.amount, 0)
+  const periodLabel = `${month === 'all' ? '' : `${JALALI_MONTHS[Number(month)]} `}${toFaDigits(year)}`
+
+  const cards = visible.map((inst) => ({
     inst,
     onEdit: () => setDialog({ type: 'edit', item: inst }),
     onHistory: () => setDialog({ type: 'history', item: inst }),
@@ -57,7 +102,31 @@ const useInstallments = () => {
     isLoading: q.status === 'loading',
     error: q.status === 'error' ? q.error : undefined,
     isEmpty: q.status === 'success' && !items.length,
-    headerDescription: items.length ? `مانده کل: ${formatMoney(remainingTotal)}` : undefined,
+    hasItems: items.length > 0,
+    isFilterEmpty: items.length > 0 && !cards.length,
+    filters,
+    filter,
+    handleFilterChange: setFilter,
+    year,
+    month,
+    yearOptions: [
+      { value: 'all', label: 'همهٔ سال‌ها' },
+      ...years.map((y) => ({ value: String(y), label: toFaDigits(y) })),
+    ],
+    monthOptions: [
+      { value: 'all', label: 'همهٔ ماه‌ها' },
+      ...JALALI_MONTHS.map((label, m) => ({ value: String(m), label })),
+    ],
+    isMonthDisabled: year === 'all',
+    periodSummary: year === 'all' ? undefined : `جمع اقساط ${periodLabel}: ${formatMoney(periodTotal)}`,
+    handleYearChange: (v: string) => {
+      setYear(v)
+      if (v === 'all') setMonth('all')
+    },
+    handleMonthChange: setMonth,
+    headerDescription: items.length
+      ? `پرداخت ماهانه: ${formatMoney(monthlyTotal)} · مانده کل: ${formatMoney(remainingTotal)}`
+      : undefined,
     isFormOpen: dialog?.type === 'create' || dialog?.type === 'edit',
     formTitle: dialog?.type === 'edit' ? 'ویرایش قسط' : 'قسط جدید',
     isCreate: dialog?.type === 'create',

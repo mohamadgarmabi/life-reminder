@@ -3,7 +3,7 @@ import { newDate } from 'date-fns-jalali'
 import { toIsoDate } from '#/modules/shell/utils/dates'
 import { formatDate } from '#/modules/shell/utils/format'
 import type { Installment } from '#/modules/installments/types'
-import { installmentStatus, nextPayment, paymentDueDate } from '#/modules/installments/utils/schedule'
+import { installmentStatus, nextPayment, paymentDueDate, paymentsIn } from '#/modules/installments/utils/schedule'
 
 /** Jalali y/m/d (1-based month) → stored ISO date. */
 const j = (y: number, m: number, d: number) => toIsoDate(newDate(y, m - 1, d))
@@ -82,5 +82,21 @@ describe('nextPayment / status', () => {
     expect(installmentStatus(i, j(1405, 8, 8))).toBe('soon')
     expect(installmentStatus(i, j(1405, 7, 20))).toBe('upcoming')
     expect(installmentStatus(inst({ isActive: false }), j(1405, 8, 11))).toBe('paused')
+  })
+})
+
+describe('paymentsIn', () => {
+  // 12 payments: Aban 1405 (month 7) .. Mehr 1406 (month 6)
+  const i = inst({})
+  it('counts payments in a year', () => {
+    expect(paymentsIn(i, 1405)).toBe(5)
+    expect(paymentsIn(i, 1406)).toBe(7)
+    expect(paymentsIn(i, 1404)).toBe(0)
+  })
+  it('counts payments in a month', () => {
+    expect(paymentsIn(i, 1405, 6)).toBe(0)
+    expect(paymentsIn(i, 1405, 7)).toBe(1)
+    expect(paymentsIn(i, 1406, 6)).toBe(1)
+    expect(paymentsIn(i, 1406, 7)).toBe(0)
   })
 })

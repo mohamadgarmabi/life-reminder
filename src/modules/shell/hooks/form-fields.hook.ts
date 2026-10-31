@@ -1,4 +1,5 @@
 import { createFormHookContexts } from '@tanstack/react-form'
+import { getDate, getDaysInMonth, getMonth, getYear, newDate } from 'date-fns-jalali'
 import { useState, type ChangeEvent } from 'react'
 import type { SelectOption } from '#/modules/shell/types'
 import { parseIsoDate, toIsoDate } from '#/modules/shell/utils/dates'
@@ -8,6 +9,21 @@ const { fieldContext, formContext, useFieldContext, useFormContext } = createFor
 
 const HOURS = Array.from({ length: 24 }, (_, i) => String(i).padStart(2, '0'))
 const MINUTES = Array.from({ length: 12 }, (_, i) => String(i * 5).padStart(2, '0'))
+const JALALI_MONTHS = [
+  'فروردین',
+  'اردیبهشت',
+  'خرداد',
+  'تیر',
+  'مرداد',
+  'شهریور',
+  'مهر',
+  'آبان',
+  'آذر',
+  'دی',
+  'بهمن',
+  'اسفند',
+]
+const range = (from: number, count: number) => Array.from({ length: count }, (_, i) => from + i)
 
 const toErrors = (errors: unknown[]) => {
   return errors.map((e) => {
@@ -61,18 +77,30 @@ const useDateField = () => {
   const a11y = useFieldA11y<string>()
   const { field } = a11y
   const [open, setOpen] = useState(false)
-  const handleSelect = (d: Date | undefined) => {
-    if (!d) return
-    field.handleChange(toIsoDate(d))
-    setOpen(false)
-  }
+  const date = parseIsoDate(field.state.value)
+  const [year, month, day] = [getYear(date), getMonth(date), getDate(date)]
+  const thisYear = getYear(new Date())
+  const firstYear = Math.min(year, thisYear - 10)
+  // clamp the day so switching to a shorter month (e.g. 31 → Mehr) stays valid
+  const set = (y: number, m: number, d: number) =>
+    field.handleChange(toIsoDate(newDate(y, m, Math.min(d, getDaysInMonth(newDate(y, m, 1))))))
   return {
     ...a11y,
     open,
     setOpen,
-    selected: parseIsoDate(field.state.value),
+    year,
+    month,
+    day,
     dateLabel: formatDateLong(field.state.value),
-    handleSelect,
+    yearOptions: range(firstYear, Math.max(year, thisYear + 10) - firstYear + 1).map((y) => ({
+      value: y,
+      label: toFaDigits(y),
+    })),
+    monthOptions: JALALI_MONTHS.map((label, m) => ({ value: m, label })),
+    dayOptions: range(1, getDaysInMonth(date)).map((d) => ({ value: d, label: toFaDigits(d) })),
+    handleYearChange: (y: number) => set(y, month, day),
+    handleMonthChange: (m: number) => set(year, m, day),
+    handleDayChange: (d: number) => set(year, month, d),
   }
 }
 
@@ -110,6 +138,7 @@ const useSubmitButton = () => {
 }
 
 export {
+  JALALI_MONTHS,
   fieldContext,
   formContext,
   useFieldContext,

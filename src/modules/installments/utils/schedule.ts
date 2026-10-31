@@ -1,4 +1,4 @@
-import { addMonths, getDaysInMonth, setDate, startOfMonth } from 'date-fns-jalali'
+import { addMonths, getDaysInMonth, getMonth, getYear, setDate, startOfMonth } from 'date-fns-jalali'
 import { daysBetween, parseIsoDate, toIsoDate } from '#/modules/shell/utils/dates'
 import { type IsoDate } from '#/modules/shell/types'
 import type { Installment } from '#/modules/installments/types'
@@ -34,4 +34,12 @@ const installmentStatus = (inst: Installment, today: IsoDate): InstallmentStatus
   return days <= Math.max(3, ...inst.reminderDaysBefore) ? 'soon' : 'upcoming'
 }
 
-export { paymentDueDate, remainingPayments, nextPayment, installmentStatus }
+/** How many payments fall in Jalali `year` (and 0-based `month`, if given). */
+const paymentsIn = (inst: Installment, year: number, month?: number) => {
+  const first = parseIsoDate(paymentDueDate(inst, 0))
+  const lo = (year - getYear(first)) * 12 + (month ?? 0) - getMonth(first)
+  const hi = lo + (month === undefined ? 11 : 0)
+  return Math.max(0, Math.min(hi, inst.totalPayments - 1) - Math.max(lo, 0) + 1)
+}
+
+export { paymentDueDate, remainingPayments, nextPayment, installmentStatus, paymentsIn }
