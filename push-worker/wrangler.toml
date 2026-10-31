@@ -8,7 +8,7 @@ crons = ["* * * * *"]
 [[d1_databases]]
 binding = "DB"
 database_name = "life-reminder-push"
-database_id = "REPLACE_WITH_ID_FROM_wrangler_d1_create"
+database_id = "afa672ca-a9a2-4422-8bc1-11767c585c71"
 
 [vars]
 VAPID_PUBLIC_KEY = "BCJneO6p1xRBzPDpKwWW_gT4MYQaMcJwiDekNWXkeImpBadbqqr46XjqerVckv-OyCZBKrXz2RwFCkq2JusfIrA"
