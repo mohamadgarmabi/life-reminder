@@ -31,6 +31,9 @@ jobs:
         env:
           # Project site URL: https://<user>.github.io/<repo>/  (use "/" for a custom domain or <user>.github.io repo)
           BASE_PATH: /${{ github.event.repository.name }}/
+          # Push relay (push-worker/): repo Settings → Secrets and variables → Actions → Variables
+          VITE_PUSH_URL: ${{ vars.PUSH_URL }}
+          VITE_VAPID_PUBLIC_KEY: ${{ vars.VAPID_PUBLIC_KEY }}
       - uses: actions/configure-pages@v6
       - uses: actions/upload-pages-artifact@v5
         with:

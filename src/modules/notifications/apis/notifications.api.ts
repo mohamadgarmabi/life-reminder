@@ -26,4 +26,41 @@ const showNotification = async (n: AppNotification) => {
   new Notification(n.title, options)
 }
 
-export { permissionStatus, requestPermission, showNotification }
+const PUSH_URL = import.meta.env.VITE_PUSH_URL
+const VAPID_PUBLIC_KEY = import.meta.env.VITE_VAPID_PUBLIC_KEY
+
+/**
+ * Uploads the upcoming notifications to the push relay (push-worker/), which delivers them while
+ * the app is closed. `null` unregisters this device. No-op when the relay isn't configured.
+ */
+const syncPush = async (items: (AppNotification & { fireAt: Date; keys: string[] })[] | null) => {
+  if (!PUSH_URL || !VAPID_PUBLIC_KEY || !(await navigator.serviceWorker?.getRegistration())) return
+  const { pushManager } = await navigator.serviceWorker.ready
+  if (!pushManager) return
+  let subscription = await pushManager.getSubscription()
+  if (!items && !subscription) return
+  subscription ??= await pushManager.subscribe({
+    userVisibleOnly: true,
+    applicationServerKey: Uint8Array.from(atob(VAPID_PUBLIC_KEY.replace(/-/g, '+').replace(/_/g, '/')), (c) =>
+      c.charCodeAt(0),
+    ),
+  })
+  const res = await fetch(`${PUSH_URL.replace(/\/$/, '')}/sync`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      subscription: subscription.toJSON(),
+      items: (items ?? []).map((n) => ({
+        at: n.fireAt.getTime(),
+        title: n.title,
+        body: n.body,
+        tag: n.tag,
+        url: `${import.meta.env.BASE_URL}${n.path.replace(/^\//, '')}`,
+        keys: n.keys,
+      })),
+    }),
+  })
+  if (!res.ok) throw new Error(`push sync failed: ${res.status}`)
+}
+
+export { permissionStatus, requestPermission, showNotification, syncPush }

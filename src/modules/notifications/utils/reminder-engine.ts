@@ -12,7 +12,7 @@ import { addDaysIso, atTime } from '#/modules/shell/utils/dates'
 import { formatDate, formatDateTime, formatMoney, relativeDay, toFaDigits } from '#/modules/shell/utils/format'
 import { settingsStore } from '#/modules/settings/stores/settings.store'
 import { claimKeys, pruneLedger } from '#/modules/notifications/utils/notification-ledger'
-import { permissionStatus, showNotification } from '#/modules/notifications/apis/notifications.api'
+import { permissionStatus, showNotification, syncPush } from '#/modules/notifications/apis/notifications.api'
 import type { Candidate } from '#/modules/notifications/types'
 
 interface Data {
@@ -74,18 +74,45 @@ const collectCandidates = (data: Data, defaultTime: string, now: Date): Candidat
   return out.sort((a, b) => a.fireAt.getTime() - b.fireAt.getTime())
 }
 
+/** Every notification that will fire after `now`, each with the text it should have at its own fire time. */
+const upcomingCandidates = (data: Data, defaultTime: string, now: Date): Candidate[] => {
+  const times = [
+    ...data.installments.flatMap((inst) => {
+      const next = inst.isActive ? nextPayment(inst) : null
+      return next ? [...inst.reminderDaysBefore, 0].map((d) => atTime(addDaysIso(next.dueDate, -d), defaultTime)) : []
+    }),
+    ...data.plants.map((p) => atTime(nextWateringDate(p), defaultTime)),
+    ...data.reminders.flatMap((r) => dueAt(r) ?? []),
+  ]
+  const future = [...new Set(times.map((t) => t.getTime()))].filter((t) => t > now.getTime()).sort((a, b) => a - b)
+  // At each fire time, the candidate that fires exactly then is what the open app would have shown.
+  return future.flatMap((t) =>
+    collectCandidates(data, defaultTime, new Date(t)).filter((c) => c.fireAt.getTime() === t),
+  )
+}
+
+const loadData = async (): Promise<Data> => {
+  const [installments, plants, reminders] = await Promise.all([
+    installmentRepo.list(),
+    plantRepo.list(),
+    reminderRepo.list(),
+  ])
+  return { installments, plants, reminders }
+}
+
+const syncPushSchedule = async (now: Date = new Date()) => {
+  const { notificationsEnabled, defaultReminderTime } = settingsStore.state
+  if (!notificationsEnabled || permissionStatus() !== 'granted') return syncPush(null)
+  await syncPush(upcomingCandidates(await loadData(), defaultReminderTime, now))
+}
+
 const SUMMARY_THRESHOLD = 3
 
 const runReminderCheck = async (now: Date = new Date()) => {
   const { notificationsEnabled, defaultReminderTime } = settingsStore.state
   if (!notificationsEnabled || permissionStatus() !== 'granted') return
 
-  const [installments, plants, reminders] = await Promise.all([
-    installmentRepo.list(),
-    plantRepo.list(),
-    reminderRepo.list(),
-  ])
-  const candidates = collectCandidates({ installments, plants, reminders }, defaultReminderTime, now)
+  const candidates = collectCandidates(await loadData(), defaultReminderTime, now)
   if (!candidates.length) return
 
   const claimed = await claimKeys(
@@ -111,18 +138,34 @@ const CHECK_INTERVAL_MS = 60_000
 
 const startReminderEngine = (): (() => void) => {
   const check = () => void runReminderCheck().catch((e: unknown) => console.error('reminder check failed', e))
-  const onVisible = () => document.visibilityState === 'visible' && check()
+  let syncTimer: ReturnType<typeof setTimeout> | undefined
+  // Debounced: a burst of edits or settings changes uploads the schedule once.
+  const sync = () => {
+    clearTimeout(syncTimer)
+    syncTimer = setTimeout(
+      () => void syncPushSchedule().catch((e: unknown) => console.error('push sync failed', e)),
+      1000,
+    )
+  }
+  const onChange = () => {
+    check()
+    sync()
+  }
+  const onVisible = () => document.visibilityState === 'visible' && onChange()
 
-  check()
+  onChange()
   void pruneLedger(new Date(Date.now() - 400 * 86_400_000)).catch(() => {})
   const timer = setInterval(check, CHECK_INTERVAL_MS)
   document.addEventListener('visibilitychange', onVisible)
-  const unsubscribe = subscribeDbChange(check)
+  const unsubscribe = subscribeDbChange(onChange)
+  const settingsSub = settingsStore.subscribe(sync)
   return () => {
     clearInterval(timer)
+    clearTimeout(syncTimer)
     document.removeEventListener('visibilitychange', onVisible)
     unsubscribe()
+    settingsSub.unsubscribe()
   }
 }
 
-export { collectCandidates, runReminderCheck, startReminderEngine }
+export { collectCandidates, upcomingCandidates, runReminderCheck, startReminderEngine }

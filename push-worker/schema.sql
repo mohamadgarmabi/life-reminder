@@ -1,0 +1,4 @@
+CREATE TABLE IF NOT EXISTS subs (id TEXT PRIMARY KEY, sub TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS items (sub_id TEXT NOT NULL, fire_at INTEGER NOT NULL, payload TEXT NOT NULL);
+CREATE INDEX IF NOT EXISTS items_fire_at ON items (fire_at);
+CREATE INDEX IF NOT EXISTS items_sub_id ON items (sub_id);

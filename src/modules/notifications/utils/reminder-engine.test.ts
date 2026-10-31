@@ -6,7 +6,7 @@ import type { Installment } from '#/modules/installments/types'
 import type { Plant } from '#/modules/plants/types'
 import type { Reminder } from '#/modules/reminders/types'
 import { updateSettings } from '#/modules/settings/stores/settings.store'
-import { collectCandidates, runReminderCheck } from '#/modules/notifications/utils/reminder-engine'
+import { collectCandidates, runReminderCheck, upcomingCandidates } from '#/modules/notifications/utils/reminder-engine'
 
 const shown = vi.hoisted(() => [] as { title: string }[])
 vi.mock('#/modules/notifications/apis/notifications.api', () => ({
@@ -88,6 +88,21 @@ describe('collectCandidates', () => {
     const paused = { ...installment, isActive: false }
     const paid = { ...installment, paidPayments: 12 }
     expect(collectCandidates({ installments: [paused, paid], plants: [], reminders: [] }, '09:00', now)).toEqual([])
+  })
+})
+
+describe('upcomingCandidates', () => {
+  it('lists each future fire separately, with text relative to its own fire time', () => {
+    const list = upcomingCandidates(data, '09:00', new Date(2026, 9, 28, 12))
+    expect(list.map((c) => [c.tag, c.fireAt.toString()])).toEqual([
+      ['installment:i1', new Date(2026, 9, 29, 9).toString()],
+      ['reminder:r1', new Date(2026, 9, 31, 8).toString()],
+      ['installment:i1', new Date(2026, 9, 31, 9).toString()],
+      ['plant:p1', new Date(2026, 9, 31, 9).toString()],
+      ['installment:i1', new Date(2026, 10, 1, 9).toString()],
+    ])
+    expect(list[0].body).toContain('۳ روز دیگر')
+    expect(list[4].body).toContain('امروز')
   })
 })
 

@@ -1,7 +1,7 @@
 # یادآور زندگی (life-reminder)
 
 A personal, local-first PWA (Persian, RTL, Jalali calendar) for installments, plant watering and
-recurring reminders. No backend: all data lives in IndexedDB on your device.
+recurring reminders. All data lives in IndexedDB on your device; an optional push relay gets only upcoming notification texts.
 
 ## Commands
 
@@ -41,13 +41,31 @@ src/routes/             pages
   transaction (all or nothing).
 - The app requests persistent storage; if the browser refuses, export backups regularly.
 
-## Notifications: limitations
+## Notifications
 
-There is no server, so there is no Web Push. Reminders are checked while the app is open (on start,
-every minute, on tab focus, after edits). Anything missed while it was closed is shown once on next open
-(more than 3 are collapsed into a summary). A delivery ledger in IndexedDB prevents duplicates across tabs.
-Browsers offer no API to schedule a notification for a future time from a closed page. On iOS (16.4+),
-notifications only work after "Add to Home Screen".
+While the app is open, reminders are checked on start, every minute, on focus and after edits; anything
+missed is shown once (more than 3 are collapsed into a summary). A ledger in IndexedDB prevents duplicates.
+
+A closed PWA can't run code, so notifications on time while it's closed need the push relay in
+`push-worker/` (Cloudflare Worker + D1, free tier). The app uploads its upcoming notifications (title, body,
+time) whenever data or settings change; a cron sends due ones every minute via Web Push. Without
+`VITE_PUSH_URL` the app works as before, open-app only. On iOS (16.4+) this only works after "Add to Home Screen".
+
+Setup (once):
+
+```bash
+cd push-worker
+npx web-push generate-vapid-keys                 # public + private key
+npx wrangler d1 create life-reminder-push        # put database_id in wrangler.toml
+npx wrangler d1 execute life-reminder-push --remote --file=schema.sql
+# wrangler.toml: set VAPID_PUBLIC_KEY, VAPID_SUBJECT (mailto:you@…), ALLOWED_ORIGIN
+npx wrangler secret put VAPID_PRIVATE_KEY
+npx wrangler deploy                              # prints https://life-reminder-push.<you>.workers.dev
+```
+
+Then in GitHub → Settings → Secrets and variables → Actions → **Variables**, add `PUSH_URL` (the worker URL)
+and `VAPID_PUBLIC_KEY`, and redeploy. For local dev, put the same values in `.env.local` as `VITE_PUSH_URL`
+and `VITE_VAPID_PUBLIC_KEY`.
 
 ## Deployment
 

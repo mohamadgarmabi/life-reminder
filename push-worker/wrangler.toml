@@ -1,0 +1,17 @@
+name = "life-reminder-push"
+main = "src/index.ts"
+compatibility_date = "2026-10-01"
+
+[triggers]
+crons = ["* * * * *"]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "life-reminder-push"
+database_id = "REPLACE_WITH_ID_FROM_wrangler_d1_create"
+
+[vars]
+VAPID_PUBLIC_KEY = "REPLACE_WITH_PUBLIC_KEY"
+VAPID_SUBJECT = "mailto:REPLACE_WITH_YOUR_EMAIL"
+# ALLOWED_ORIGIN = "https://<user>.github.io"
+# VAPID_PRIVATE_KEY is a secret: npx wrangler secret put VAPID_PRIVATE_KEY
