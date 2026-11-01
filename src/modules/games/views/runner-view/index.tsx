@@ -1,5 +1,4 @@
-import { useRef, type PointerEvent, type RefObject } from 'react'
-import { Canvas, useFrame } from '@react-three/fiber'
+import { useEffect, useRef, type PointerEvent, type RefObject } from 'react'
 import * as THREE from 'three'
 import { GameShell } from '#/modules/games/components/game-shell'
 import { useArcade } from '#/modules/games/hooks/arcade.hook'
@@ -41,114 +40,170 @@ const DASHES = 24
 const TREES = 16
 const TREE_GAP = 6
 
-type SceneProps = { game: RefObject<Runner>; dark: boolean; onStep: (dt: number) => void }
+type SceneProps = { game: RefObject<Runner>; dark: boolean; playing: boolean; onStep: (dt: number) => void }
 
-const Scene = ({ game, dark, onStep }: SceneProps) => {
-  const player = useRef<THREE.Mesh>(null)
-  const shadow = useRef<THREE.Mesh>(null)
-  const slots = useRef<(THREE.Mesh | null)[]>([])
-  const dashes = useRef<(THREE.Mesh | null)[]>([])
-  const trees = useRef<(THREE.Group | null)[]>([])
-  const sky = dark ? '#0b1026' : '#bfe3ff'
+const mesh = (geometry: THREE.BufferGeometry, material: THREE.Material) => new THREE.Mesh(geometry, material)
 
-  useFrame((state, delta) => {
-    // Clamped so a dropped frame or a background tab can't skip the player through a block.
-    onStep(Math.min(delta, 1 / 30))
-    const r = game.current
-    const t = state.clock.elapsedTime
-
-    if (player.current) {
-      player.current.position.set(r.x, 0.75 + r.y + (r.y === 0 && r.alive ? Math.abs(Math.sin(t * 12)) * 0.08 : 0), 0)
-      player.current.rotation.z = (LANES[r.lane] - r.x) * -0.25
-      player.current.rotation.x = r.alive ? 0 : -1.2
-    }
-    if (shadow.current) {
-      shadow.current.position.x = r.x
-      shadow.current.scale.setScalar(1 / (1 + r.y * 0.6))
-    }
-    r.things.forEach((thing, i) => {
-      const mesh = slots.current[i]
-      if (!mesh) return
-      mesh.visible = thing.active
-      if (!thing.active) return
-      mesh.geometry = GEOMETRY[thing.kind]
-      mesh.material = MATERIAL[thing.kind]
-      mesh.position.set(LANES[thing.lane], Y[thing.kind], thing.z)
-      mesh.rotation.y = thing.kind === 'orb' ? t * 3 : 0
-    })
-    // Lane dashes and roadside trees loop with the distance travelled, which sells the speed.
-    dashes.current.forEach((mesh, i) => {
-      if (mesh) mesh.position.z = SPAWN_Z + ((Math.floor(i / 2) * DASH_GAP + r.distance) % (DASHES * DASH_GAP))
-    })
-    trees.current.forEach((tree, i) => {
-      if (tree)
-        tree.position.z =
-          SPAWN_Z + ((Math.floor(i / 2) * TREE_GAP * 2 + (i % 2) * TREE_GAP + r.distance) % (TREES * TREE_GAP))
-    })
-
-    state.camera.position.set(r.x * 0.5, 3.4, 6.5)
-    state.camera.lookAt(r.x * 0.4, 0.9, -8)
+// Plain three.js, not React Three Fiber: the app runs on @tanstack/redact, which has no react-reconciler.
+const Scene = ({ game, dark, playing, onStep }: SceneProps) => {
+  const host = useRef<HTMLDivElement>(null)
+  const loop = useRef<{ play: (on: boolean) => void } | null>(null)
+  const step = useRef(onStep)
+  useEffect(() => {
+    step.current = onStep
   })
 
-  return (
-    <>
-      <color attach="background" args={[sky]} />
-      <fog attach="fog" args={[sky, 30, 95]} />
-      <hemisphereLight args={[dark ? '#7c8cff' : '#ffffff', dark ? '#1e293b' : '#86efac', dark ? 0.9 : 1.4]} />
-      <directionalLight position={[4, 10, 6]} intensity={dark ? 1 : 1.6} />
+  useEffect(() => {
+    const el = host.current
+    if (!el) return
+    const sky = dark ? '#0b1026' : '#bfe3ff'
+    const scene = new THREE.Scene()
+    scene.background = new THREE.Color(sky)
+    scene.fog = new THREE.Fog(sky, 30, 95)
+    scene.add(new THREE.HemisphereLight(dark ? '#7c8cff' : '#ffffff', dark ? '#1e293b' : '#86efac', dark ? 0.9 : 1.4))
+    const sun = new THREE.DirectionalLight('#ffffff', dark ? 1 : 1.6)
+    sun.position.set(4, 10, 6)
+    scene.add(sun)
 
-      <mesh rotation-x={-Math.PI / 2} position={[0, 0, -40]}>
-        <planeGeometry args={[6.6, 120]} />
-        <meshStandardMaterial color={dark ? '#334155' : '#64748b'} />
-      </mesh>
-      <mesh rotation-x={-Math.PI / 2} position={[0, -0.01, -40]}>
-        <planeGeometry args={[60, 120]} />
-        <meshStandardMaterial color={dark ? '#14532d' : '#4ade80'} />
-      </mesh>
-      {Array.from({ length: DASHES * 2 }, (_, i) => (
-        <mesh
-          key={i}
-          ref={(m) => void (dashes.current[i] = m)}
-          rotation-x={-Math.PI / 2}
-          position={[i % 2 ? 1 : -1, 0.01, 0]}
-        >
-          <planeGeometry args={[0.12, 1.6]} />
-          <meshBasicMaterial color="#f8fafc" />
-        </mesh>
-      ))}
-      {Array.from({ length: TREES * 2 }, (_, i) => (
-        <group key={i} ref={(g) => void (trees.current[i] = g)} position={[(i % 2 ? 1 : -1) * (5 + (i % 3)), 0, 0]}>
-          <mesh position-y={0.5}>
-            <cylinderGeometry args={[0.15, 0.2, 1, 6]} />
-            <meshStandardMaterial color="#92400e" />
-          </mesh>
-          <mesh position-y={1.7}>
-            <coneGeometry args={[0.9, 2, 7]} />
-            <meshStandardMaterial color={dark ? '#166534' : '#16a34a'} flatShading />
-          </mesh>
-        </group>
-      ))}
+    const road = mesh(
+      new THREE.PlaneGeometry(6.6, 120),
+      new THREE.MeshStandardMaterial({ color: dark ? '#334155' : '#64748b' }),
+    )
+    road.rotation.x = -Math.PI / 2
+    road.position.set(0, 0, -40)
+    const grass = mesh(
+      new THREE.PlaneGeometry(60, 120),
+      new THREE.MeshStandardMaterial({ color: dark ? '#14532d' : '#4ade80' }),
+    )
+    grass.rotation.x = -Math.PI / 2
+    grass.position.set(0, -0.01, -40)
+    scene.add(road, grass)
 
-      {Array.from({ length: POOL }, (_, i) => (
-        <mesh
-          key={i}
-          ref={(m) => void (slots.current[i] = m)}
-          visible={false}
-          geometry={GEOMETRY.low}
-          material={MATERIAL.low}
-        />
-      ))}
+    const dashGeometry = new THREE.PlaneGeometry(0.12, 1.6)
+    const dashMaterial = new THREE.MeshBasicMaterial({ color: '#f8fafc' })
+    const dashes = Array.from({ length: DASHES * 2 }, (_, i) => {
+      const dash = mesh(dashGeometry, dashMaterial)
+      dash.rotation.x = -Math.PI / 2
+      dash.position.set(i % 2 ? 1 : -1, 0.01, 0)
+      scene.add(dash)
+      return dash
+    })
 
-      <mesh ref={shadow} rotation-x={-Math.PI / 2} position={[0, 0.02, 0]}>
-        <circleGeometry args={[0.5, 24]} />
-        <meshBasicMaterial color="#000000" transparent opacity={0.25} />
-      </mesh>
-      <mesh ref={player}>
-        <capsuleGeometry args={[0.38, 0.7, 6, 16]} />
-        <meshStandardMaterial color="#6366f1" roughness={0.35} />
-      </mesh>
-    </>
-  )
+    const trunk = new THREE.CylinderGeometry(0.15, 0.2, 1, 6)
+    const trunkMaterial = new THREE.MeshStandardMaterial({ color: '#92400e' })
+    const crown = new THREE.ConeGeometry(0.9, 2, 7)
+    const crownMaterial = new THREE.MeshStandardMaterial({ color: dark ? '#166534' : '#16a34a', flatShading: true })
+    const trees = Array.from({ length: TREES * 2 }, (_, i) => {
+      const tree = new THREE.Group()
+      const t = mesh(trunk, trunkMaterial)
+      t.position.y = 0.5
+      const c = mesh(crown, crownMaterial)
+      c.position.y = 1.7
+      tree.add(t, c)
+      tree.position.x = (i % 2 ? 1 : -1) * (5 + (i % 3))
+      scene.add(tree)
+      return tree
+    })
+
+    const slots = Array.from({ length: POOL }, () => {
+      const slot = mesh(GEOMETRY.low, MATERIAL.low)
+      slot.visible = false
+      scene.add(slot)
+      return slot
+    })
+
+    const shadow = mesh(
+      new THREE.CircleGeometry(0.5, 24),
+      new THREE.MeshBasicMaterial({ color: '#000000', transparent: true, opacity: 0.25 }),
+    )
+    shadow.rotation.x = -Math.PI / 2
+    shadow.position.y = 0.02
+    const player = mesh(
+      new THREE.CapsuleGeometry(0.38, 0.7, 6, 16),
+      new THREE.MeshStandardMaterial({ color: '#6366f1', roughness: 0.35 }),
+    )
+    scene.add(shadow, player)
+
+    const camera = new THREE.PerspectiveCamera(60, 1, 0.1, 120)
+    const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' })
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+    renderer.domElement.style.display = 'block'
+    el.appendChild(renderer.domElement)
+
+    const timer = new THREE.Timer()
+    const draw = (dt: number) => {
+      const r = game.current
+      const t = timer.getElapsed()
+      player.position.set(r.x, 0.75 + r.y + (r.y === 0 && r.alive ? Math.abs(Math.sin(t * 12)) * 0.08 : 0), 0)
+      player.rotation.z = (LANES[r.lane] - r.x) * -0.25
+      player.rotation.x = r.alive ? 0 : -1.2
+      shadow.position.x = r.x
+      shadow.scale.setScalar(1 / (1 + r.y * 0.6))
+      r.things.forEach((thing, i) => {
+        const slot = slots[i]
+        slot.visible = thing.active
+        if (!thing.active) return
+        slot.geometry = GEOMETRY[thing.kind]
+        slot.material = MATERIAL[thing.kind]
+        slot.position.set(LANES[thing.lane], Y[thing.kind], thing.z)
+        slot.rotation.y = thing.kind === 'orb' ? t * 3 : 0
+      })
+      // Lane dashes and roadside trees loop with the distance travelled, which sells the speed.
+      dashes.forEach((dash, i) => {
+        dash.position.z = SPAWN_Z + ((Math.floor(i / 2) * DASH_GAP + r.distance) % (DASHES * DASH_GAP))
+      })
+      trees.forEach((tree, i) => {
+        tree.position.z =
+          SPAWN_Z + ((Math.floor(i / 2) * TREE_GAP * 2 + (i % 2) * TREE_GAP + r.distance) % (TREES * TREE_GAP))
+      })
+      camera.position.set(r.x * 0.5, 3.4, 6.5)
+      camera.lookAt(r.x * 0.4, 0.9, -8)
+      if (dt) step.current(dt)
+      renderer.render(scene, camera)
+    }
+    const tick = (time: number) => {
+      timer.update(time)
+      // Clamped so a dropped frame or a background tab can't skip the player through a block.
+      draw(Math.min(timer.getDelta(), 1 / 30))
+    }
+
+    const resize = new ResizeObserver(() => {
+      const { clientWidth: w, clientHeight: h } = el
+      if (!w || !h) return
+      renderer.setSize(w, h)
+      camera.aspect = w / h
+      camera.updateProjectionMatrix()
+      draw(0)
+    })
+    resize.observe(el)
+    loop.current = {
+      play: (on) => {
+        timer.reset()
+        renderer.setAnimationLoop(on ? tick : null)
+        if (!on) draw(0)
+      },
+    }
+
+    return () => {
+      loop.current = null
+      resize.disconnect()
+      renderer.setAnimationLoop(null)
+      renderer.dispose()
+      renderer.domElement.remove()
+      // Shared GEOMETRY/MATERIAL stay alive for the next run; everything built here is freed.
+      scene.traverse((o) => {
+        if (!(o instanceof THREE.Mesh)) return
+        if (!Object.values(GEOMETRY).includes(o.geometry)) o.geometry.dispose()
+        if (!Object.values(MATERIAL).includes(o.material)) (o.material as THREE.Material).dispose()
+      })
+    }
+  }, [dark, game])
+
+  useEffect(() => {
+    loop.current?.play(playing)
+  }, [playing, dark])
+
+  return <div ref={host} className="size-full" />
 }
 
 const RunnerView = () => {
@@ -242,14 +297,7 @@ const RunnerView = () => {
         onPointerUp={handlePointerUp}
         onPointerCancel={() => (swipe.current = null)}
       >
-        <Canvas
-          dpr={[1, 2]}
-          frameloop={playing ? 'always' : 'demand'}
-          gl={{ antialias: true, powerPreference: 'high-performance' }}
-          camera={{ fov: 60, position: [0, 3.4, 6.5], near: 0.1, far: 120 }}
-        >
-          <Scene game={game} dark={dark} onStep={step} />
-        </Canvas>
+        <Scene game={game} dark={dark} playing={playing} onStep={step} />
       </div>
     </GameShell>
   )
