@@ -15,7 +15,7 @@ export const Route = createRootRoute({
   head: () => ({
     meta: [
       { charSet: 'utf-8' },
-      { name: 'viewport', content: 'width=device-width, initial-scale=1, viewport-fit=cover'},
+      { name: 'viewport', content: 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover'},
       { title: 'یادآور زندگی' },
       { name: 'description', content: 'مدیریت اقساط، آبیاری گل‌ها و یادآورهای شخصی — آفلاین و روی دستگاه خودتان.' },
       { name: 'theme-color', media: '(prefers-color-scheme: light)', content: '#f2f2f7' },
