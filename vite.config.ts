@@ -27,12 +27,14 @@ const git = (...args: string[]) => {
   }
 }
 const commit = git('rev-parse', 'HEAD')
-const commits = git('log', '-50', '--pretty=%H%x09%s')
-  .split('\n')
+// Fields split by \x1f, commits by \x1e: bodies contain newlines and tabs.
+const commits = git('log', '-50', '--pretty=%H%x1f%s%x1f%b%x1e')
+  .split('\x1e')
+  .map((entry) => entry.trim())
   .filter(Boolean)
-  .map((line) => {
-    const [sha, subject] = line.split('\t')
-    return { sha, subject }
+  .map((entry) => {
+    const [sha, subject, body = ''] = entry.split('\x1f')
+    return { sha, subject, body: body.trim() }
   })
 
 const pwa = VitePWA({

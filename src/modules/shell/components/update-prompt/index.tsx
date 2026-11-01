@@ -1,12 +1,6 @@
 import { Sparkles } from 'lucide-react'
 import { Button } from '#/components/button'
-import {
-  Drawer,
-  DrawerContent,
-  DrawerDescription,
-  DrawerHeader,
-  DrawerTitle,
-} from '#/components/drawer'
+import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle } from '#/components/drawer'
 import { useUpdatePrompt } from '#/modules/shell/hooks/update-prompt.hook'
 
 const UpdatePrompt = () => {
@@ -27,9 +21,12 @@ const UpdatePrompt = () => {
           {hasNotes && (
             <ul className="mb-2 space-y-1.5 rounded-2xl glass p-4 text-sm" dir="auto">
               {notes.map((note) => (
-                <li key={note} className="flex gap-2">
+                <li key={note.title} className="flex gap-2">
                   <span aria-hidden className="mt-2 size-1.5 shrink-0 rounded-full bg-foreground/40" />
-                  {note}
+                  <div className="min-w-0">
+                    <p className="font-medium">{note.title}</p>
+                    {note.body && <p className="mt-1 whitespace-pre-line text-muted-foreground">{note.body}</p>}
+                  </div>
                 </li>
               ))}
             </ul>

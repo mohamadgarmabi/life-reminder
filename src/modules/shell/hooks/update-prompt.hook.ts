@@ -3,11 +3,11 @@ import { toast } from 'sonner'
 import { useRegisterSW } from 'virtual:pwa-register/react'
 import { z } from 'zod'
 import { toFaDigits } from '#/modules/shell/utils/format'
-import { notesSince } from '#/modules/shell/utils/release-notes'
+import { notesSince, type ReleaseNote } from '#/modules/shell/utils/release-notes'
 
 const versionSchema = z.object({
   version: z.string(),
-  commits: z.array(z.object({ sha: z.string(), subject: z.string() })),
+  commits: z.array(z.object({ sha: z.string(), subject: z.string(), body: z.string().default('') })),
 })
 
 const useUpdatePrompt = () => {
@@ -16,7 +16,7 @@ const useUpdatePrompt = () => {
     offlineReady: [offlineReady, setOfflineReady],
     updateServiceWorker,
   } = useRegisterSW()
-  const [info, setInfo] = useState<{ version: string; notes: string[] } | null>(null)
+  const [info, setInfo] = useState<{ version: string; notes: ReleaseNote[] } | null>(null)
   const [applying, setApplying] = useState(false)
 
   useEffect(() => {

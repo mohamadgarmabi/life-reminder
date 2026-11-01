@@ -10,7 +10,7 @@ const QuickAction = ({ to, icon: Icon, label }: QuickActionProps) => {
         <span className="relative">
           <Icon className="size-5 text-primary" aria-hidden />
           <Plus
-            className="absolute -end-2 -bottom-1 size-3 rounded-full bg-primary text-primary-foreground"
+            className="absolute -inset-e-2 -bottom-1 size-3 rounded-full bg-primary text-primary-foreground"
             aria-hidden
           />
         </span>
