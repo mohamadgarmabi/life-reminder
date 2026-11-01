@@ -3,11 +3,11 @@ import type { ReactNode } from 'react'
 import { useAppShell } from '#/modules/shell/hooks/app-shell.hook'
 
 const AppShell = ({ children }: { children: ReactNode }) => {
-  const { stageRef, navRef, navClassName, navConfig, navItems, mainStyle } = useAppShell()
+  const { stageRef, navRef, navClassName, navConfig, navItems, mainStyle, immersive } = useAppShell()
 
   return (
     <>
-      <div ref={stageRef} className="fixed inset-0">
+      <div ref={stageRef} className="fixed inset-0" hidden={immersive}>
         <div className="mesh absolute inset-0" />
         <nav ref={navRef} aria-label="منوی اصلی" data-config={navConfig} className={navClassName}>
           {/* Fixed tint over the WebGL canvas so the bar's colour doesn't depend on what the refraction samples. */}
@@ -30,6 +30,7 @@ const AppShell = ({ children }: { children: ReactNode }) => {
         id="app-scroll"
         data-scroll-restoration-id="app-scroll"
         style={mainStyle}
+        hidden={immersive}
         className="fixed inset-x-0 top-0 overflow-y-auto overscroll-contain mask-[linear-gradient(to_bottom,black_calc(100%-1.5rem),transparent)]"
       >
         <div className="mx-auto w-full max-w-lg px-4 pt-[max(1.25rem,env(safe-area-inset-top))] pb-6">{children}</div>

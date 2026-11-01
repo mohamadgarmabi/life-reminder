@@ -8,11 +8,14 @@ import { useListSkeleton } from '#/modules/shell/hooks/states.hook'
 const PageHeader = ({
   title,
   description,
+  leading,
   action,
   children,
 }: {
   title: string
   description?: string
+  /** Shown right before the title (e.g. a back button). */
+  leading?: ReactNode
   action?: ReactNode
   children?: ReactNode
 }) => {
@@ -20,7 +23,8 @@ const PageHeader = ({
     <header className="sticky top-0 z-20 -mx-4 -mt-[max(1.25rem,env(safe-area-inset-top))] bg-[linear-gradient(to_bottom,var(--background)_calc(100%-1.25rem),transparent)] px-4 pt-[calc(max(1.25rem,env(safe-area-inset-top))+0.25rem)] pb-5">
       {/* Action shares the title row so a long description can't push it down into the content. */}
       <div className="flex min-h-10 items-center justify-between gap-3">
-        <h1 className="min-w-0 truncate text-[1.75rem] leading-tight font-bold tracking-tight">{title}</h1>
+        {leading && <div className="-me-1 shrink-0">{leading}</div>}
+        <h1 className="min-w-0 flex-1 truncate text-[1.75rem] leading-tight font-bold tracking-tight">{title}</h1>
         {action && <div className="shrink-0">{action}</div>}
       </div>
       {description && <p className="mt-1 text-sm text-muted-foreground">{description}</p>}

@@ -1,5 +1,6 @@
 import { Bell, Flower2, House, Settings, Wallet } from 'lucide-react'
 import { useEffect, useRef, useState, type RefObject } from 'react'
+import { useRouterState } from '@tanstack/react-router'
 import type { NavItem } from '#/modules/shell/types'
 import { cn } from '#/modules/shell/utils/cn'
 
@@ -28,12 +29,16 @@ const NAV_CONFIG = JSON.stringify({
 const navItems = NAV.map((item) => ({ ...item, activeOptions: { exact: item.to === '/' } }))
 const mainStyle = { bottom: NAV_ZONE }
 
-const useLiquidGlass = (stageRef: RefObject<HTMLDivElement | null>, navRef: RefObject<HTMLElement | null>) => {
+const useLiquidGlass = (
+  stageRef: RefObject<HTMLDivElement | null>,
+  navRef: RefObject<HTMLElement | null>,
+  enabled = true,
+) => {
   const [live, setLive] = useState(false)
   useEffect(() => {
     const root = stageRef.current
     const nav = navRef.current
-    if (!root || !nav || matchMedia('(prefers-reduced-transparency: reduce)').matches) return
+    if (!enabled || !root || !nav || matchMedia('(prefers-reduced-transparency: reduce)').matches) return
     let instance: { destroy(): void } | undefined
     let generation = 0
     const start = () => {
@@ -65,19 +70,21 @@ const useLiquidGlass = (stageRef: RefObject<HTMLDivElement | null>, navRef: RefO
       themeObserver.disconnect()
       instance?.destroy()
     }
-  }, [stageRef, navRef])
+  }, [stageRef, navRef, enabled])
   return live
 }
 
 const useAppShell = () => {
   const stageRef = useRef<HTMLDivElement>(null)
   const navRef = useRef<HTMLElement>(null)
-  const liquid = useLiquidGlass(stageRef, navRef)
+  // A game covers the whole screen; the WebGL tab bar redraws every frame, so it is stopped meanwhile.
+  const immersive = useRouterState({ select: (s) => /\/games\/[^/]+\/?$/.test(s.location.pathname) })
+  const liquid = useLiquidGlass(stageRef, navRef, !immersive)
   const navClassName = cn(
     'absolute inset-x-4 bottom-[max(1rem,env(safe-area-inset-bottom))] z-10 mx-auto grid max-w-sm grid-cols-5 rounded-full p-1',
     !liquid && 'glass-strong', // CSS glass until / unless WebGL glass is running
   )
-  return { stageRef, navRef, navClassName, navConfig: NAV_CONFIG, navItems, mainStyle }
+  return { stageRef, navRef, navClassName, navConfig: NAV_CONFIG, navItems, mainStyle, immersive }
 }
 
 export { useAppShell, useLiquidGlass }

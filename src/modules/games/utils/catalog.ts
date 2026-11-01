@@ -1,0 +1,118 @@
+import type { GameCategory, GameEntry } from '#/modules/games/types'
+
+const GAME_CATEGORIES: { value: GameCategory | 'all'; label: string }[] = [
+  { value: 'all', label: 'همه' },
+  { value: 'arcade', label: 'آرکید' },
+  { value: '3d', label: 'سه‌بعدی' },
+  { value: 'puzzle', label: 'پازل' },
+  { value: 'board', label: 'رومیزی' },
+]
+
+const GAMES: GameEntry[] = [
+  {
+    id: 'runner',
+    title: 'دوندهٔ سه‌بعدی',
+    description: 'در سه مسیر بدو، بپر و از موانع جاخالی بده',
+    category: '3d',
+    emoji: '🏃',
+    tint: 'bg-indigo-500/15',
+  },
+  {
+    id: 'snake',
+    title: 'مار',
+    description: 'میوه بخور، بلندتر شو، به خودت نخور',
+    category: 'arcade',
+    emoji: '🐍',
+    tint: 'bg-green-500/15',
+  },
+  {
+    id: 'blocks',
+    title: 'بلوک‌ریز',
+    description: 'قطعه‌ها را بچرخان و ردیف کامل بساز',
+    category: 'arcade',
+    emoji: '🧱',
+    tint: 'bg-violet-500/15',
+  },
+  {
+    id: 'breakout',
+    title: 'آجرشکن',
+    description: 'با توپ همهٔ آجرها را بشکن',
+    category: 'arcade',
+    emoji: '🏓',
+    tint: 'bg-orange-500/15',
+  },
+  {
+    id: 'firefly',
+    title: 'کرم شب‌تاب',
+    description: 'با هر لمس بال بزن و از ستون‌ها رد شو',
+    category: 'arcade',
+    emoji: '✨',
+    tint: 'bg-yellow-400/20',
+  },
+  {
+    id: 'meteor',
+    title: 'باران شهاب',
+    description: 'سفینه را جابه‌جا کن و شهاب‌ها را بزن',
+    category: 'arcade',
+    emoji: '🚀',
+    tint: 'bg-sky-500/15',
+  },
+  {
+    id: 'match3',
+    title: 'سه‌تایی',
+    description: 'نگین‌های هم‌شکل را جفت‌وجور کن؛ صد مرحله',
+    category: 'puzzle',
+    emoji: '💎',
+    tint: 'bg-pink-500/15',
+  },
+  {
+    id: 'merge',
+    title: 'ادغام اعداد',
+    description: 'کاشی‌های هم‌عدد را روی هم بکش',
+    category: 'puzzle',
+    emoji: '🔢',
+    tint: 'bg-amber-500/15',
+  },
+  {
+    id: 'sudoku',
+    title: 'سودوکو',
+    description: 'سه سطح دشواری، هر کدام هزار مرحله',
+    category: 'puzzle',
+    emoji: '9️⃣',
+    tint: 'bg-blue-500/15',
+  },
+  {
+    id: 'mines',
+    title: 'مین‌یاب',
+    description: 'خانه‌های امن را باز کن، روی مین پرچم بزن',
+    category: 'puzzle',
+    emoji: '💣',
+    tint: 'bg-red-500/15',
+  },
+  {
+    id: 'memory',
+    title: 'کارت حافظه',
+    description: 'جفت کارت‌ها را با کمترین حرکت پیدا کن',
+    category: 'puzzle',
+    emoji: '🃏',
+    tint: 'bg-teal-500/15',
+  },
+  {
+    id: 'water',
+    title: 'رنگ‌چین',
+    description: 'رنگ‌ها را جدا کن تا هر لوله یک‌رنگ شود',
+    category: 'puzzle',
+    emoji: '🧪',
+    tint: 'bg-cyan-500/15',
+  },
+  {
+    id: 'connect4',
+    title: 'چهار در یک ردیف',
+    description: 'در برابر رایانه چهار مهره را ردیف کن',
+    category: 'board',
+    emoji: '🔴',
+    tint: 'bg-rose-500/15',
+  },
+]
+
+export { GAMES, GAME_CATEGORIES }

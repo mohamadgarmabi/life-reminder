@@ -1,9 +1,8 @@
 import { ChevronLeft, ChevronRight, PartyPopper, RotateCcw } from 'lucide-react'
-import { BackButton } from '#/modules/games/components/back-button'
+import { GameShell } from '#/modules/games/components/game-shell'
 import { NumberPad } from '#/modules/games/components/number-pad'
 import { SudokuBoard } from '#/modules/games/components/sudoku-board'
 import { useSudoku } from '#/modules/games/hooks/sudoku.hook'
-import { PageHeader } from '#/modules/shell/components/states'
 import { Button } from '#/components/button'
 
 const SudokuView = () => {
@@ -29,11 +28,10 @@ const SudokuView = () => {
   } = useSudoku()
 
   return (
-    <>
-      <PageHeader title="سودوکو" action={<BackButton to="/games" label="بازی‌ها" />} />
-      <div className="flex flex-col items-center gap-4 landscape:flex-row landscape:items-start">
-        {/* Board must fit the viewport height (header + tab bar + paddings ≈ 13rem in landscape). */}
-        <div className="w-[min(100%,calc(100dvh-20rem))] min-w-56 shrink-0 landscape:w-[min(55%,calc(100dvh-12rem))] landscape:min-w-44">
+    <GameShell title="سودوکو">
+      <div className="flex w-full max-w-3xl flex-col items-center gap-4 landscape:flex-row landscape:items-start">
+        {/* Board fits the play area; portrait keeps ~17rem for the controls below it. */}
+        <div className="w-[min(100%,calc(100cqh-17rem))] min-w-56 shrink-0 landscape:w-[min(55%,100cqh)] landscape:min-w-44">
           <SudokuBoard board={board} givens={givens} solution={solution} selected={selected} onSelect={handleSelect} />
         </div>
 
@@ -81,7 +79,7 @@ const SudokuView = () => {
           </Button>
         </div>
       </div>
-    </>
+    </GameShell>
   )
 }
 

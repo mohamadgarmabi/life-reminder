@@ -1,9 +1,8 @@
 import { LayoutGrid, RotateCcw } from 'lucide-react'
-import { BackButton } from '#/modules/games/components/back-button'
+import { GameShell } from '#/modules/games/components/game-shell'
 import { LevelPicker } from '#/modules/games/components/level-picker'
 import { Match3Board } from '#/modules/games/components/match3-board'
 import { useMatch3 } from '#/modules/games/hooks/match3.hook'
-import { PageHeader } from '#/modules/shell/components/states'
 import { Button } from '#/components/button'
 import { Progress } from '#/components/progress'
 
@@ -35,29 +34,33 @@ const Match3View = () => {
 
   if (level === null) {
     return (
-      <>
-        <PageHeader
-          title="سه‌تایی"
-          description="سه یا چند نگین هم‌شکل را کنار هم بچین."
-          action={<BackButton to="/games" label="بازی‌ها" />}
-        />
-        <LevelPicker levels={levels} onPick={handleStart} />
-      </>
+      <GameShell title="سه‌تایی">
+        <div className="w-full max-w-2xl space-y-3">
+          <p className="text-center text-sm text-muted-foreground">سه یا چند نگین هم‌شکل را کنار هم بچین.</p>
+          <LevelPicker levels={levels} onPick={handleStart} />
+        </div>
+      </GameShell>
     )
   }
 
   return (
-    <>
-      <PageHeader
-        title="سه‌تایی"
-        action={
-          <Button variant="outline" disabled={busy} onClick={handleLevels}>
-            <LayoutGrid /> مراحل
-          </Button>
-        }
-      />
-      <div className="flex flex-col items-center gap-4 landscape:flex-row landscape:items-start">
-        <div className="w-[min(100%,calc(100dvh-20rem))] min-w-56 shrink-0 landscape:w-[min(55%,calc(100dvh-12rem))] landscape:min-w-44">
+    <GameShell
+      title="سه‌تایی"
+      actions={
+        <Button
+          variant="secondary"
+          size="icon"
+          className="size-11 bg-secondary/80 [&_svg:not([class*=size-])]:size-5"
+          disabled={busy}
+          onClick={handleLevels}
+          aria-label="مراحل"
+        >
+          <LayoutGrid />
+        </Button>
+      }
+    >
+      <div className="flex w-full max-w-3xl flex-col items-center gap-4 landscape:flex-row landscape:items-start">
+        <div className="w-[min(100%,calc(100cqh-14rem))] min-w-56 shrink-0 landscape:w-[min(55%,100cqh)] landscape:min-w-44">
           <Match3Board
             grid={grid}
             clearing={clearing}
@@ -113,7 +116,7 @@ const Match3View = () => {
           )}
         </div>
       </div>
-    </>
+    </GameShell>
   )
 }
 

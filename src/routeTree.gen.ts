@@ -15,6 +15,7 @@ import { Route as PlantsRouteImport } from './routes/plants'
 import { Route as RemindersRouteImport } from './routes/reminders'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as GamesIndexRouteImport } from './routes/games.index'
+import { Route as GamesGameIdRouteImport } from './routes/games.$gameId'
 import { Route as GamesMatch3RouteImport } from './routes/games.match3'
 import { Route as GamesSudokuRouteImport } from './routes/games.sudoku'
 
@@ -48,6 +49,11 @@ const GamesIndexRoute = GamesIndexRouteImport.update({
   path: '/games/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const GamesGameIdRoute = GamesGameIdRouteImport.update({
+  id: '/games/$gameId',
+  path: '/games/$gameId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const GamesMatch3Route = GamesMatch3RouteImport.update({
   id: '/games/match3',
   path: '/games/match3',
@@ -65,6 +71,7 @@ export interface FileRoutesByFullPath {
   '/plants': typeof PlantsRoute
   '/reminders': typeof RemindersRoute
   '/settings': typeof SettingsRoute
+  '/games/$gameId': typeof GamesGameIdRoute
   '/games/match3': typeof GamesMatch3Route
   '/games/sudoku': typeof GamesSudokuRoute
   '/games/': typeof GamesIndexRoute
@@ -75,6 +82,7 @@ export interface FileRoutesByTo {
   '/plants': typeof PlantsRoute
   '/reminders': typeof RemindersRoute
   '/settings': typeof SettingsRoute
+  '/games/$gameId': typeof GamesGameIdRoute
   '/games/match3': typeof GamesMatch3Route
   '/games/sudoku': typeof GamesSudokuRoute
   '/games': typeof GamesIndexRoute
@@ -86,6 +94,7 @@ export interface FileRoutesById {
   '/plants': typeof PlantsRoute
   '/reminders': typeof RemindersRoute
   '/settings': typeof SettingsRoute
+  '/games/$gameId': typeof GamesGameIdRoute
   '/games/match3': typeof GamesMatch3Route
   '/games/sudoku': typeof GamesSudokuRoute
   '/games/': typeof GamesIndexRoute
@@ -98,6 +107,7 @@ export interface FileRouteTypes {
     | '/plants'
     | '/reminders'
     | '/settings'
+    | '/games/$gameId'
     | '/games/match3'
     | '/games/sudoku'
     | '/games/'
@@ -108,6 +118,7 @@ export interface FileRouteTypes {
     | '/plants'
     | '/reminders'
     | '/settings'
+    | '/games/$gameId'
     | '/games/match3'
     | '/games/sudoku'
     | '/games'
@@ -118,6 +129,7 @@ export interface FileRouteTypes {
     | '/plants'
     | '/reminders'
     | '/settings'
+    | '/games/$gameId'
     | '/games/match3'
     | '/games/sudoku'
     | '/games/'
@@ -129,6 +141,7 @@ export interface RootRouteChildren {
   PlantsRoute: typeof PlantsRoute
   RemindersRoute: typeof RemindersRoute
   SettingsRoute: typeof SettingsRoute
+  GamesGameIdRoute: typeof GamesGameIdRoute
   GamesMatch3Route: typeof GamesMatch3Route
   GamesSudokuRoute: typeof GamesSudokuRoute
   GamesIndexRoute: typeof GamesIndexRoute
@@ -178,6 +191,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GamesIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/games/$gameId': {
+      id: '/games/$gameId'
+      path: '/games/$gameId'
+      fullPath: '/games/$gameId'
+      preLoaderRoute: typeof GamesGameIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/games/match3': {
       id: '/games/match3'
       path: '/games/match3'
@@ -201,6 +221,7 @@ const rootRouteChildren: RootRouteChildren = {
   PlantsRoute: PlantsRoute,
   RemindersRoute: RemindersRoute,
   SettingsRoute: SettingsRoute,
+  GamesGameIdRoute: GamesGameIdRoute,
   GamesMatch3Route: GamesMatch3Route,
   GamesSudokuRoute: GamesSudokuRoute,
   GamesIndexRoute: GamesIndexRoute,

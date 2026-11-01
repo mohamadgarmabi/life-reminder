@@ -51,7 +51,41 @@ type Match3Progress = {
   best: Record<string, number>
 }
 
+type ScoreEntry = { score: number; at: number }
+
+type GameStatus = 'ready' | 'playing' | 'paused' | 'over'
+
+type CanvasPalette = { bg: string; fg: string; muted: string; line: string; dark: boolean }
+
+type GameCategory = 'arcade' | '3d' | 'puzzle' | 'board'
+
+type GameEntry = {
+  id: string
+  title: string
+  description: string
+  category: GameCategory
+  /** Emoji badge; tint is a Tailwind background class. */
+  emoji: string
+  tint: string
+}
+
+type GameOverlay = {
+  title: string
+  detail?: string
+  action: string
+  /** Defaults to the shell's onRestart. */
+  onAction?: () => void
+  /** Also offer "restart" next to a custom action (e.g. resume). */
+  restart?: boolean
+}
+
 export type {
+  ScoreEntry,
+  GameStatus,
+  CanvasPalette,
+  GameCategory,
+  GameEntry,
+  GameOverlay,
   SudokuDifficulty,
   SudokuPuzzle,
   SudokuProgress,

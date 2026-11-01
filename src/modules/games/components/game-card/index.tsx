@@ -1,22 +1,27 @@
 import { Link } from '@tanstack/react-router'
-import { ChevronLeft, type LucideIcon } from 'lucide-react'
-import { Card } from '#/components/card'
+import type { GameEntry } from '#/modules/games/types'
+import { cn } from '#/modules/shell/utils/cn'
 
-type GameCardProps = { to: '/games/sudoku' | '/games/match3'; icon: LucideIcon; title: string; description: string }
+// Phones and tablets get real fullscreen (hides the browser bars); the tap is the required user gesture.
+// Desktop keeps the window as is and can use the HUD's fullscreen button.
+const enterFullscreen = () => {
+  if (!document.fullscreenEnabled || document.fullscreenElement || !matchMedia('(pointer: coarse)').matches) return
+  void document.documentElement.requestFullscreen({ navigationUI: 'hide' }).catch(() => {})
+}
 
-const GameCard = ({ to, icon: Icon, title, description }: GameCardProps) => {
+const GameCard = ({ game }: { game: GameEntry }) => {
   return (
-    <Link to={to} className="block rounded-2xl outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50">
-      <Card className="flex-row items-center gap-3 px-4 transition-transform active:scale-[0.98]">
-        <div className="rounded-full bg-secondary p-2.5">
-          <Icon className="size-5" aria-hidden />
-        </div>
-        <div className="min-w-0 flex-1">
-          <p className="font-semibold">{title}</p>
-          <p className="text-sm text-muted-foreground">{description}</p>
-        </div>
-        <ChevronLeft className="size-5 text-muted-foreground" aria-hidden />
-      </Card>
+    <Link
+      to="/games/$gameId"
+      params={{ gameId: game.id }}
+      onClick={enterFullscreen}
+      className="flex flex-col gap-2 rounded-2xl glass p-3 transition-transform outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 active:scale-[0.97]"
+    >
+      <span className={cn('flex size-11 items-center justify-center rounded-xl text-2xl', game.tint)} aria-hidden>
+        {game.emoji}
+      </span>
+      <span className="font-semibold">{game.title}</span>
+      <span className="line-clamp-2 text-xs text-muted-foreground">{game.description}</span>
     </Link>
   )
 }
