@@ -4,13 +4,24 @@ import { Card, CardTitle } from '#/components/card'
 import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle } from '#/components/drawer'
 import { Label } from '#/components/label'
 import { Select } from '#/components/select'
+import { Switch } from '#/components/switch'
 import { GlassPreview } from '#/modules/settings/components/glass-preview'
 import { useGlassCard } from '#/modules/settings/hooks/glass-card.hook'
 import { GLASS_CONTROLS, GLASS_MATERIAL_OPTIONS } from '#/modules/settings/utils/settings.constants'
 
 const GlassCard = () => {
-  const { open, setOpen, material, materialLabel, valueOf, handleMaterialChange, handleChange, handleReset } =
-    useGlassCard()
+  const {
+    open,
+    setOpen,
+    enabled,
+    material,
+    materialLabel,
+    valueOf,
+    handleMaterialChange,
+    handleChange,
+    handleEnabledChange,
+    handleReset,
+  } = useGlassCard()
 
   return (
     <Drawer open={open} onOpenChange={setOpen}>
@@ -33,43 +44,51 @@ const GlassCard = () => {
           <DrawerDescription>ظاهر شیشهٔ همهٔ بخش‌های برنامه. تغییرها همان لحظه اعمال می‌شوند.</DrawerDescription>
         </DrawerHeader>
         <div data-vaul-no-drag className="space-y-4 overflow-y-auto px-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
-          {/* Pinned so the effect stays in view while scrolling the sliders. */}
-          <div className="sticky top-0 z-10 pb-2">
-            <GlassPreview />
-          </div>
           <div className="flex items-center justify-between gap-3">
-            <Select
-              nested
-              label="جنس شیشه"
-              value={material}
-              onValueChange={handleMaterialChange}
-              options={GLASS_MATERIAL_OPTIONS}
-            />
-            <Button variant="ghost" size="sm" onClick={handleReset}>
-              <RotateCcw aria-hidden />
-              بازنشانی
-            </Button>
+            <Label htmlFor="glass-enabled">شیشهٔ مایع روشن باشد</Label>
+            <Switch id="glass-enabled" checked={enabled} onCheckedChange={handleEnabledChange} />
           </div>
-          {GLASS_CONTROLS.map(({ key, label, min, max, step }) => (
-            <div key={key} className="space-y-1.5">
-              <div className="flex items-center justify-between">
-                <Label htmlFor={`glass-${key}`}>{label}</Label>
-                <output htmlFor={`glass-${key}`} dir="ltr" className="text-xs text-muted-foreground tabular-nums">
-                  {valueOf(key)}
-                </output>
+          {enabled && (
+            <>
+              {/* Pinned so the effect stays in view while scrolling the sliders. */}
+              <div className="sticky top-0 z-10 pb-2">
+                <GlassPreview />
               </div>
-              <input
-                id={`glass-${key}`}
-                type="range"
-                min={min}
-                max={max}
-                step={step}
-                value={valueOf(key)}
-                onChange={handleChange(key)}
-                className="h-6 w-full cursor-pointer accent-primary"
-              />
-            </div>
-          ))}
+              <div className="flex items-center justify-between gap-3">
+                <Select
+                  nested
+                  label="جنس شیشه"
+                  value={material}
+                  onValueChange={handleMaterialChange}
+                  options={GLASS_MATERIAL_OPTIONS}
+                />
+                <Button variant="ghost" size="sm" onClick={handleReset}>
+                  <RotateCcw aria-hidden />
+                  بازنشانی
+                </Button>
+              </div>
+              {GLASS_CONTROLS.map(({ key, label, min, max, step }) => (
+                <div key={key} className="space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor={`glass-${key}`}>{label}</Label>
+                    <output htmlFor={`glass-${key}`} dir="ltr" className="text-xs text-muted-foreground tabular-nums">
+                      {valueOf(key)}
+                    </output>
+                  </div>
+                  <input
+                    id={`glass-${key}`}
+                    type="range"
+                    min={min}
+                    max={max}
+                    step={step}
+                    value={valueOf(key)}
+                    onChange={handleChange(key)}
+                    className="h-6 w-full cursor-pointer accent-primary"
+                  />
+                </div>
+              ))}
+            </>
+          )}
         </div>
       </DrawerContent>
     </Drawer>

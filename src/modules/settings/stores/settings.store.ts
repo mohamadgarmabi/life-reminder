@@ -6,6 +6,8 @@ const settingsSchema = z.object({
   theme: z.enum(['system', 'light', 'dark']),
   notificationsEnabled: z.boolean(),
   defaultReminderTime: z.string().regex(/^\d{2}:\d{2}$/),
+  /** Off: every surface is a plain solid colour and the glass renderer stays idle. */
+  glassEnabled: z.boolean(),
   /** Liquid glass on every surface (simple-liquid-glass). Unset numbers inherit the material preset. */
   glass: z.object({
     material: z.enum(['clear', 'frosted', 'smoked', 'subtle']),
@@ -29,8 +31,9 @@ const DEFAULT_GLASS: Settings['glass'] = { material: 'frosted', tint: 0.55, rim:
 
 const DEFAULT_SETTINGS: Settings = {
   theme: 'system',
-  notificationsEnabled: false,
+  notificationsEnabled: true,
   defaultReminderTime: '09:00',
+  glassEnabled: false,
   glass: DEFAULT_GLASS,
 }
 

@@ -17,6 +17,7 @@ const LIBRARY_DEFAULTS: Partial<Record<GlassControlKey, number>> = {
 const useGlassCard = () => {
   const [open, setOpen] = useState(false)
   const glass = useSelector(settingsStore, (s) => s.glass)
+  const enabled = useSelector(settingsStore, (s) => s.glassEnabled)
   const preset: Partial<Record<string, unknown>> = MATERIAL_PRESETS[glass.material]
 
   /** What the slider shows: your value, else the material's, else the library's. */
@@ -30,16 +31,20 @@ const useGlassCard = () => {
   const handleChange = (key: GlassControlKey) => (e: ChangeEvent<HTMLInputElement>) =>
     updateSettings({ glass: { ...settingsStore.state.glass, [key]: Number(e.target.value) } })
 
+  const handleEnabledChange = (glassEnabled: boolean) => updateSettings({ glassEnabled })
+
   const handleReset = () => updateSettings({ glass: DEFAULT_GLASS })
 
   return {
     open,
     setOpen,
+    enabled,
     material: glass.material,
-    materialLabel: GLASS_MATERIAL_OPTIONS.find((o) => o.value === glass.material)?.label,
+    materialLabel: enabled ? GLASS_MATERIAL_OPTIONS.find((o) => o.value === glass.material)?.label : 'خاموش',
     valueOf,
     handleMaterialChange,
     handleChange,
+    handleEnabledChange,
     handleReset,
   }
 }

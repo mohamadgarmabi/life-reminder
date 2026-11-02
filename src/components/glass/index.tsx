@@ -23,10 +23,11 @@ const LAYER_STYLE = { position: 'absolute', inset: 0, zIndex: -1, pointerEvents:
  */
 const GlassLayer = ({ radius, thick = false, soft = false, tone = 'surface', className }: GlassLayerProps) => {
   const mode = useGlassMode()
+  const enabled = useSelector(settingsStore, (s) => s.glassEnabled)
   const { material, tint, rim, ...optics } = useSelector(settingsStore, (s) => s.glass)
   const fill = thick ? Math.max(tint, THICK_TINT) : tint
 
-  if (mode === 'solid') {
+  if (!enabled || mode === 'solid') {
     return <div aria-hidden className={cn(tone === 'page' ? 'bg-background' : 'bg-card', className)} style={{ ...LAYER_STYLE, borderRadius: radius }} />
   }
   return (
