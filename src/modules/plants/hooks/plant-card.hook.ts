@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { toast } from 'sonner'
+import { toast } from '#/components/sonner'
 import { formatDayMonth, relativeDay, toFaDigits } from '#/modules/shell/utils/format'
 import { cn } from '#/modules/shell/utils/cn'
 import { plantRepo } from '#/modules/plants/apis/plants.api'

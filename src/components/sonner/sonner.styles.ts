@@ -13,16 +13,15 @@ const toastIconVariants = cva('size-4', {
 const toastStyle: CSSProperties = {
   fontFamily: FONT,
   fontSize: '0.875rem',
-  boxShadow: '0 0 0 0.5px var(--border), 0 8px 24px -6px rgb(0 0 0 / 0.2)',
 }
 
 const toasterStyle = {
   fontFamily: FONT,
-  // Solid, not translucent: page text showing through made toasts unreadable.
-  '--normal-bg': 'var(--popover)',
+  // Toasts are glass cards (toast.tsx, thick glass keeps them legible); the wrapper adds no box of its own.
+  '--normal-bg': 'transparent',
   '--normal-text': 'var(--popover-foreground)',
-  '--normal-border': 'var(--border)',
-  '--border-radius': '1rem',
+  '--normal-border': 'transparent',
+  '--border-radius': '1rem', // same 16px as the cards
 } as CSSProperties
 
 export { toasterVariants, toastIconVariants, toastStyle, toasterStyle }

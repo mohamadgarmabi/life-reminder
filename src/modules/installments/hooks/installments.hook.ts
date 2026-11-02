@@ -1,6 +1,6 @@
 import { useNavigate, useSearch } from '@tanstack/react-router'
 import { useState } from 'react'
-import { toast } from 'sonner'
+import { toast } from '#/components/sonner'
 import { useLiveQuery } from '#/modules/database/hooks/database.hook'
 import { toIsoDate } from '#/modules/shell/utils/dates'
 import { formatMoney, toFaDigits } from '#/modules/shell/utils/format'

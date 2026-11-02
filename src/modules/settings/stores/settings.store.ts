@@ -6,16 +6,32 @@ const settingsSchema = z.object({
   theme: z.enum(['system', 'light', 'dark']),
   notificationsEnabled: z.boolean(),
   defaultReminderTime: z.string().regex(/^\d{2}:\d{2}$/),
+  /** Liquid glass on every surface (simple-liquid-glass). Unset numbers inherit the material preset. */
+  glass: z.object({
+    material: z.enum(['clear', 'frosted', 'smoked', 'subtle']),
+    blur: z.number().optional(),
+    saturation: z.number().optional(),
+    scale: z.number().optional(),
+    aberrationIntensity: z.number().optional(),
+    frost: z.number().optional(),
+    /** Opacity of the theme-coloured tint (white in light theme, #2C2C2E in dark). */
+    tint: z.number(),
+    /** Opacity of the light rim around each surface. */
+    rim: z.number(),
+  }),
 })
 
 // UI preferences live in localStorage (not IndexedDB) because the theme must be readable
 // synchronously before first paint. They are included in JSON export/import.
 const SETTINGS_KEY = 'life-reminder:settings'
 
+const DEFAULT_GLASS: Settings['glass'] = { material: 'frosted', tint: 0.55, rim: 0.75 }
+
 const DEFAULT_SETTINGS: Settings = {
   theme: 'system',
   notificationsEnabled: false,
   defaultReminderTime: '09:00',
+  glass: DEFAULT_GLASS,
 }
 
 const load = (): Settings => {
@@ -47,4 +63,4 @@ const initSettings = () => {
 
 const updateSettings = (patch: Partial<Settings>) => settingsStore.setState((s) => ({ ...s, ...patch }))
 
-export { settingsSchema, SETTINGS_KEY, DEFAULT_SETTINGS, settingsStore, initSettings, updateSettings }
+export { settingsSchema, SETTINGS_KEY, DEFAULT_SETTINGS, DEFAULT_GLASS, settingsStore, initSettings, updateSettings }

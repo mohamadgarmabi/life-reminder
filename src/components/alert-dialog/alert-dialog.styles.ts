@@ -7,7 +7,7 @@ const alertDialogOverlayVariants = cva([
 ])
 
 const alertDialogContentVariants = cva([
-  'group/alert-dialog-content fixed top-[50%] start-[50%] z-50 grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] gap-4 rounded-2xl glass-strong p-6 duration-200',
+  'group/alert-dialog-content fixed top-[50%] start-[50%] z-50 grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] gap-4 isolate rounded-2xl p-6 duration-200',
   'rtl:-translate-x-[-50%]',
   'data-[size=sm]:max-w-xs',
   'data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95',

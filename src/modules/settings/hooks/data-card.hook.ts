@@ -1,5 +1,5 @@
 import { useRef, useState, type ChangeEvent } from 'react'
-import { toast } from 'sonner'
+import { toast } from '#/components/sonner'
 import { downloadText, exportData, importData, parseBackup } from '#/modules/settings/apis/backup.api'
 import type { Backup } from '#/modules/settings/types'
 import { todayIso } from '#/modules/shell/utils/dates'

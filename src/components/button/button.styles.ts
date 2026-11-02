@@ -22,7 +22,7 @@ const buttonVariants = cva(
           'focus-visible:ring-destructive/20',
           'dark:bg-destructive/60 dark:focus-visible:ring-destructive/40',
         ],
-        outline: 'glass hover:bg-accent hover:text-accent-foreground',
+        outline: 'bg-card shadow-[0_0_0_0.5px_var(--border)] hover:bg-accent hover:text-accent-foreground',
         secondary: 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
         ghost: 'hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50',
         link: 'text-primary underline-offset-4 hover:underline',

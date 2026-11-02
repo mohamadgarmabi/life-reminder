@@ -76,6 +76,51 @@
   box-shadow: 0 0 0 0.5px var(--border);
 }
 
+/* simple-liquid-glass sets its drop shadow inline together with the rim highlights; soft glass keeps the
+   highlights and swaps the heavy shadow for a small one. */
+.glass-soft [style*='box-shadow'] {
+  box-shadow:
+    inset 0 1px 2px #ffffffa0,
+    inset 0 -1px 2px #ffffff30,
+    0 4px 14px -4px rgb(0 0 0 / 0.14) !important;
+}
+/* Page-toned glass (headers) has no rim light either, so it melts into the background. */
+.glass-bare [style*='box-shadow'] {
+  box-shadow: none !important;
+}
+
+/* Tab bar water drop: one pill shared by all tabs. The outer span slides (overshooting ease = spring), the inner
+   one squashes and stretches like a drop of water each time the active tab changes (restarted via React key). */
+.nav-drop {
+  position: absolute;
+  inset-block: 0.25rem;
+  inset-inline-start: 0.25rem;
+  width: calc((100% - 0.5rem) / 5);
+  pointer-events: none;
+  /* RTL: tab 0 is on the right, later tabs move left. */
+  transform: translateX(calc(var(--i) * -100%));
+  transition: transform 520ms cubic-bezier(0.34, 1.45, 0.5, 1);
+}
+.nav-drop__body {
+  display: block;
+  height: 100%;
+  border-radius: 9999px;
+  background: var(--accent);
+  box-shadow: inset 0 1px 1px rgb(255 255 255 / 0.5);
+  animation: nav-drop 520ms cubic-bezier(0.3, 0.7, 0.4, 1);
+}
+@keyframes nav-drop {
+  0% { transform: scale(1, 1); }
+  30% { transform: scale(1.35, 0.78); }
+  55% { transform: scale(0.9, 1.1); }
+  75% { transform: scale(1.05, 0.96); }
+  100% { transform: scale(1, 1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .nav-drop { transition: none; }
+  .nav-drop__body { animation: none; }
+}
+
 /* SwipeRow surfaces: no grey flash on tap. */
 @utility no-highlight {
   -webkit-tap-highlight-color: transparent;

@@ -1,4 +1,5 @@
 import { Drawer as DrawerPrimitive } from 'vaul'
+import { GlassLayer } from '#/components/glass'
 import { cn } from '#/modules/shell/utils/cn'
 import {
   drawerOverlayVariants,
@@ -25,6 +26,7 @@ const DrawerContent = ({ className, children, ...props }: DrawerContentProps) =>
     <DrawerPrimitive.Portal>
       <DrawerPrimitive.Overlay data-slot="drawer-overlay" className={drawerOverlayVariants()} />
       <DrawerPrimitive.Content data-slot="drawer-content" className={cn(drawerContentVariants(), className)} {...props}>
+        <GlassLayer radius={16} thick />
         <div aria-hidden className={drawerHandleVariants()} />
         {children}
       </DrawerPrimitive.Content>

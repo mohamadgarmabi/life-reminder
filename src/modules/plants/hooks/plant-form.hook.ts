@@ -1,7 +1,7 @@
 import { revalidateLogic, useField, useStore } from '@tanstack/react-form'
 import type { ChangeEvent, FormEvent } from 'react'
 import { useId } from 'react'
-import { toast } from 'sonner'
+import { toast } from '#/components/sonner'
 import { useAppForm } from '#/modules/shell/components/form-fields'
 import { todayIso } from '#/modules/shell/utils/dates'
 import { resizeImage } from '#/modules/plants/utils/image'

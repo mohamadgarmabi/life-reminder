@@ -1,7 +1,7 @@
 import { cva } from 'class-variance-authority'
 
 const dropdownMenuContentVariants = cva([
-  'z-50 max-h-(--radix-dropdown-menu-content-available-height) min-w-[8rem] origin-(--radix-dropdown-menu-content-transform-origin) overflow-x-hidden overflow-y-auto rounded-2xl glass-strong p-1.5 text-popover-foreground',
+  'z-50 max-h-(--radix-dropdown-menu-content-available-height) min-w-[8rem] origin-(--radix-dropdown-menu-content-transform-origin) overflow-x-hidden overflow-y-auto relative isolate rounded-2xl p-1.5 text-popover-foreground',
   'data-[side=bottom]:slide-in-from-top-2',
   'data-[side=left]:slide-in-from-right-2',
   'data-[side=right]:slide-in-from-left-2',
@@ -57,7 +57,7 @@ const dropdownMenuSubTriggerVariants = cva([
 const dropdownMenuSubTriggerIconVariants = cva('ms-auto size-4')
 
 const dropdownMenuSubContentVariants = cva([
-  'z-50 min-w-[8rem] origin-(--radix-dropdown-menu-content-transform-origin) overflow-hidden rounded-2xl glass-strong p-1.5 text-popover-foreground',
+  'z-50 min-w-[8rem] origin-(--radix-dropdown-menu-content-transform-origin) overflow-hidden relative isolate rounded-2xl p-1.5 text-popover-foreground',
   'data-[side=bottom]:slide-in-from-top-2',
   'data-[side=left]:slide-in-from-right-2',
   'data-[side=right]:slide-in-from-left-2',

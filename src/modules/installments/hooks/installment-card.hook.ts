@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { toast } from 'sonner'
+import { toast } from '#/components/sonner'
 import { formatDate, formatDateLong, formatMoney, relativeDay, toFaDigits } from '#/modules/shell/utils/format'
 import { installmentRepo } from '#/modules/installments/apis/installments.api'
 import type { InstallmentCardProps, InstallmentStatus } from '#/modules/installments/types'

@@ -1,6 +1,6 @@
 import { useSelector } from '@tanstack/react-store'
 import { useState } from 'react'
-import { toast } from 'sonner'
+import { toast } from '#/components/sonner'
 import { permissionStatus, requestPermission, showNotification } from '#/modules/notifications/apis/notifications.api'
 import type { PermissionStatus } from '#/modules/notifications/types'
 import { runReminderCheck } from '#/modules/notifications/utils/reminder-engine'

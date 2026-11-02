@@ -1,7 +1,7 @@
 import { cva } from 'class-variance-authority'
 
 const popoverContentVariants = cva([
-  'z-50 w-72 origin-(--radix-popover-content-transform-origin) rounded-2xl glass-strong p-4 text-popover-foreground outline-hidden',
+  'z-50 w-72 origin-(--radix-popover-content-transform-origin) relative isolate rounded-2xl p-4 text-popover-foreground outline-hidden',
   'data-[side=bottom]:slide-in-from-top-2',
   'data-[side=left]:slide-in-from-right-2',
   'data-[side=right]:slide-in-from-left-2',

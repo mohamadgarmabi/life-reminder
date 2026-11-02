@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { toast } from 'sonner'
+import { toast } from '#/components/sonner'
 import { formatDate, formatTime, relativeDay } from '#/modules/shell/utils/format'
 import { cn } from '#/modules/shell/utils/cn'
 import { reminderRepo } from '#/modules/reminders/apis/reminders.api'

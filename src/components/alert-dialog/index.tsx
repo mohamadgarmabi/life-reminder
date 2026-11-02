@@ -1,4 +1,5 @@
 'use client'
+import { GlassLayer } from '#/components/glass'
 
 import { cn } from '#/modules/shell/utils/cn'
 import { AlertDialog as AlertDialogPrimitive } from 'radix-ui'
@@ -50,7 +51,7 @@ const AlertDialogOverlay = ({ className, ...props }: AlertDialogOverlayProps) =>
   )
 }
 
-const AlertDialogContent = ({ className, size = 'default', ...props }: AlertDialogContentProps) => {
+const AlertDialogContent = ({ className, size = 'default', children, ...props }: AlertDialogContentProps) => {
   return (
     <AlertDialogPortal>
       <AlertDialogOverlay />
@@ -59,7 +60,10 @@ const AlertDialogContent = ({ className, size = 'default', ...props }: AlertDial
         data-size={size}
         className={cn(alertDialogContentVariants(), className)}
         {...props}
-      />
+      >
+        <GlassLayer radius={16} thick />
+        {children}
+      </AlertDialogPrimitive.Content>
     </AlertDialogPortal>
   )
 }

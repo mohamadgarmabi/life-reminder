@@ -1,3 +1,4 @@
+import { GlassLayer } from '#/components/glass'
 import { AlertTriangle, type LucideIcon } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { Alert, AlertDescription, AlertTitle } from '#/components/alert'
@@ -20,7 +21,9 @@ const PageHeader = ({
   children?: ReactNode
 }) => {
   return (
-    <header className="sticky top-0 z-20 -mx-4 -mt-[max(1.25rem,env(safe-area-inset-top))] bg-[linear-gradient(to_bottom,var(--background)_calc(100%-1.25rem),transparent)] px-4 pt-[calc(max(1.25rem,env(safe-area-inset-top))+0.25rem)] pb-5">
+    <header className="sticky top-0 isolate z-20 -mx-4 mb-4 -mt-[max(1.25rem,env(safe-area-inset-top))] px-4 pt-[calc(max(1.25rem,env(safe-area-inset-top))+0.25rem)] pb-3">
+      {/* Edge-to-edge glass bar in the page colour: content scrolling under it is refracted; thick keeps the title legible. */}
+      <GlassLayer radius={0} thick tone="page" />
       {/* Action shares the title row so a long description can't push it down into the content. */}
       <div className="flex min-h-10 items-center justify-between gap-3">
         {leading && <div className="-me-1 shrink-0">{leading}</div>}
@@ -45,7 +48,8 @@ const EmptyState = ({
   action?: ReactNode
 }) => {
   return (
-    <div className="flex flex-col items-center glass rounded-2xl px-6 py-10 text-center">
+    <div className="relative isolate flex flex-col items-center rounded-2xl px-6 py-10 text-center">
+      <GlassLayer radius={16} />
       <div className="mb-3 rounded-full bg-secondary p-3 text-foreground">
         <Icon className="size-6" aria-hidden />
       </div>

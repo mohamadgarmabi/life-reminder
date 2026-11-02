@@ -5,6 +5,7 @@ import RemindersView from '#/modules/reminders/views/reminders-view'
 const RemindersRoute = () => <RemindersView />
 
 export const Route = createFileRoute('/reminders')({
-  validateSearch: z.object({ new: z.boolean().optional() }),
+  // A malformed ?new (hand-typed links like ?new=1) is dropped: a failed validation sends the router into an endless error loop.
+  validateSearch: z.object({ new: z.boolean().optional().catch(undefined) }),
   component: RemindersRoute,
 })

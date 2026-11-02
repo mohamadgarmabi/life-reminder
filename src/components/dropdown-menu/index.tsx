@@ -1,4 +1,5 @@
 'use client'
+import { GlassLayer } from '#/components/glass'
 
 import { cn } from '#/modules/shell/utils/cn'
 import { CheckIcon, ChevronRightIcon, CircleIcon } from 'lucide-react'
@@ -47,7 +48,7 @@ const DropdownMenuTrigger = ({ ...props }: DropdownMenuTriggerProps) => {
   return <DropdownMenuPrimitive.Trigger data-slot="dropdown-menu-trigger" {...props} />
 }
 
-const DropdownMenuContent = ({ className, sideOffset = 4, ...props }: DropdownMenuContentProps) => {
+const DropdownMenuContent = ({ className, sideOffset = 4, children, ...props }: DropdownMenuContentProps) => {
   return (
     <DropdownMenuPrimitive.Portal>
       <DropdownMenuPrimitive.Content
@@ -55,7 +56,10 @@ const DropdownMenuContent = ({ className, sideOffset = 4, ...props }: DropdownMe
         sideOffset={sideOffset}
         className={cn(dropdownMenuContentVariants(), className)}
         {...props}
-      />
+      >
+        <GlassLayer radius={16} thick />
+        {children}
+      </DropdownMenuPrimitive.Content>
     </DropdownMenuPrimitive.Portal>
   )
 }
@@ -160,13 +164,16 @@ const DropdownMenuSubTrigger = ({ className, inset, children, ...props }: Dropdo
   )
 }
 
-const DropdownMenuSubContent = ({ className, ...props }: DropdownMenuSubContentProps) => {
+const DropdownMenuSubContent = ({ className, children, ...props }: DropdownMenuSubContentProps) => {
   return (
     <DropdownMenuPrimitive.SubContent
       data-slot="dropdown-menu-sub-content"
       className={cn(dropdownMenuSubContentVariants(), className)}
       {...props}
-    />
+    >
+      <GlassLayer radius={16} thick />
+      {children}
+    </DropdownMenuPrimitive.SubContent>
   )
 }
 

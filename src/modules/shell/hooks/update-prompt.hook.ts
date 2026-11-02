@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { toast } from 'sonner'
+import { toast } from '#/components/sonner'
 import { useRegisterSW } from 'virtual:pwa-register/react'
 import { z } from 'zod'
 import { toFaDigits } from '#/modules/shell/utils/format'
