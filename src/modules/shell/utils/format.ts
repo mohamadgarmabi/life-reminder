@@ -44,6 +44,7 @@ const relativeDay = (d: Date | IsoDate, now: Date = new Date()): string => {
 }
 
 export {
+  jalali,
   toFaDigits,
   toEnDigits,
   formatNumber,

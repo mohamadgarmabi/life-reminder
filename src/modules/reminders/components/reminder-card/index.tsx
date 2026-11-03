@@ -77,7 +77,9 @@ const ReminderCard = (props: ReminderCardProps) => {
                 </Badge>
               )}
             </div>
-            {reminder.description && <p className="mt-1 text-sm text-muted-foreground">{reminder.description}</p>}
+            {reminder.description && (
+              <p className="mt-1 text-sm text-muted-foreground @max-xs:line-clamp-2">{reminder.description}</p>
+            )}
             {hasDue && (
               <p className={dueClassName}>
                 {isSnoozed && <AlarmClock className="me-1 inline size-4" aria-label="به تعویق افتاده" />}

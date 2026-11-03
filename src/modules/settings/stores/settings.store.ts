@@ -21,6 +21,19 @@ const settingsSchema = z.object({
     /** Opacity of the light rim around each surface. */
     rim: z.number(),
   }),
+  /** List or grid layout, remembered per page. */
+  views: z.object({
+    installments: z.enum(['list', 'grid']),
+    reminders: z.enum(['list', 'grid']),
+    plants: z.enum(['list', 'grid']),
+  }),
+  /** Home screen widgets in display order; mini = quarter row, small = half, large = full width. */
+  widgets: z.array(
+    z.object({
+      id: z.enum(['date', 'quick', 'overdue', 'today', 'upcoming', 'games']),
+      size: z.enum(['mini', 'small', 'large']),
+    }),
+  ),
 })
 
 // UI preferences live in localStorage (not IndexedDB) because the theme must be readable
@@ -35,6 +48,15 @@ const DEFAULT_SETTINGS: Settings = {
   defaultReminderTime: '09:00',
   glassEnabled: false,
   glass: DEFAULT_GLASS,
+  views: { installments: 'list', reminders: 'list', plants: 'grid' },
+  widgets: [
+    { id: 'date', size: 'small' },
+    { id: 'overdue', size: 'small' },
+    { id: 'quick', size: 'large' },
+    { id: 'today', size: 'large' },
+    { id: 'upcoming', size: 'large' },
+    { id: 'games', size: 'large' },
+  ],
 }
 
 const load = (): Settings => {

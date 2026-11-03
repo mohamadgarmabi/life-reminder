@@ -2,12 +2,7 @@ import { Droplets, History, MoreVertical, Pencil, Sprout } from 'lucide-react'
 import { SwipeRow } from '#/modules/shell/components/swipe-row'
 import { Button } from '#/components/button'
 import { Card, CardContent } from '#/components/card'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '#/components/dropdown-menu'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '#/components/dropdown-menu'
 import { usePlantCard } from '#/modules/plants/hooks/plant-card.hook'
 import type { PlantCardProps } from '#/modules/plants/types'
 
@@ -44,8 +39,9 @@ const PlantCard = ({ plant, today, onEdit, onHistory, onDelete }: PlantCardProps
             ]),
       ]}
     >
-      <Card className="gap-0 overflow-hidden py-0">
-        <div className="relative aspect-[4/3] bg-accent">
+      {/* Wide (list view): photo beside the details instead of above. */}
+      <Card className="gap-0 overflow-hidden py-0 @xs:flex-row">
+        <div className="relative aspect-[4/3] bg-accent @xs:aspect-auto @xs:w-36 @xs:shrink-0">
           {image && <img src={image} alt={plant.name} className="size-full object-cover" loading="lazy" />}
           {!image && (
             <div className="flex size-full items-center justify-center text-primary/60">
@@ -73,7 +69,7 @@ const PlantCard = ({ plant, today, onEdit, onHistory, onDelete }: PlantCardProps
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-        <CardContent className="space-y-3 p-4">
+        <CardContent className="space-y-3 p-4 @xs:flex-1">
           <div>
             <h3 className="truncate font-semibold">{plant.name}</h3>
             <p className="text-xs text-muted-foreground">هر {intervalLabel} روز</p>

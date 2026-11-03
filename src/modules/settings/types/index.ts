@@ -27,4 +27,13 @@ interface GlassControl {
   step: number
 }
 
-export type { Backup, GlassControl, GlassControlKey, GlassMaterial, GlassSettings, ParseResult, Settings, SettingsSectionProps }
+export type {
+  Backup,
+  GlassControl,
+  GlassControlKey,
+  GlassMaterial,
+  GlassSettings,
+  ParseResult,
+  Settings,
+  SettingsSectionProps,
+}

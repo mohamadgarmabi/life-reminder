@@ -3,6 +3,9 @@ import { FormDialog } from '#/modules/shell/components/dialogs'
 import { EmptyState, ErrorState, ListSkeleton, PageHeader } from '#/modules/shell/components/states'
 import { GlassFilter } from '#/modules/shell/components/glass-filter'
 import { Button } from '#/components/button'
+import { AnimatedList } from '#/modules/shell/components/animated-list'
+import { ViewToggle } from '#/modules/shell/components/view-toggle'
+import { useViewMode } from '#/modules/shell/hooks/view-toggle.hook'
 import { Select } from '#/components/select'
 import { Tabs, TabsList, TabsTrigger } from '#/components/tabs'
 import { InstallmentCard } from '#/modules/installments/components/installment-card'
@@ -49,6 +52,7 @@ const InstallmentsView = () => {
     handleCreate,
     handleUpdate,
   } = useInstallments()
+  const { view } = useViewMode('installments')
 
   return (
     <>
@@ -56,9 +60,12 @@ const InstallmentsView = () => {
         title="اقساط"
         description={headerDescription}
         action={
-          <Button onClick={handleOpenCreate}>
-            <Plus /> قسط جدید
-          </Button>
+          <div className="flex items-center gap-2">
+            <ViewToggle page="installments" />
+            <Button onClick={handleOpenCreate}>
+              <Plus /> قسط جدید
+            </Button>
+          </div>
         }
       >
         {hasItems && (
@@ -115,7 +122,7 @@ const InstallmentsView = () => {
       )}
       {periodSummary && <p className="mb-3 text-sm font-medium">{periodSummary}</p>}
       {isFilterEmpty && <p className="py-10 text-center text-sm text-muted-foreground">قسطی در این دسته نیست.</p>}
-      <div className="grid gap-2 sm:grid-cols-2">
+      <AnimatedList view={view}>
         {cards.map((card) => (
           <InstallmentCard
             key={card.inst.id}
@@ -126,7 +133,7 @@ const InstallmentsView = () => {
             onDelete={card.onDelete}
           />
         ))}
-      </div>
+      </AnimatedList>
 
       <FormDialog open={isFormOpen} onOpenChange={handleOpenChange} title={formTitle}>
         {isCreate && <InstallmentForm onSubmit={handleCreate} />}

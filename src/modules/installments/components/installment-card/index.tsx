@@ -3,12 +3,7 @@ import { SwipeRow } from '#/modules/shell/components/swipe-row'
 import { Badge } from '#/components/badge'
 import { Button } from '#/components/button'
 import { Card, CardContent } from '#/components/card'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '#/components/dropdown-menu'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '#/components/dropdown-menu'
 import { Progress } from '#/components/progress'
 import { useInstallmentCard } from '#/modules/installments/hooks/installment-card.hook'
 import type { InstallmentCardProps } from '#/modules/installments/types'
@@ -88,8 +83,9 @@ const InstallmentCard = ({ inst, today, onEdit, onHistory, onDelete }: Installme
             )}
           </div>
 
+          {/* Narrow grid cell: the pay button drops under the due date. */}
           {hasNext && (
-            <div className="flex items-center justify-between gap-3">
+            <div className="flex flex-col items-stretch gap-2 @xs:flex-row @xs:items-center @xs:justify-between @xs:gap-3">
               <p className="text-xs">
                 <span className="text-muted-foreground">قسط بعدی: </span>
                 {nextDueLabel}

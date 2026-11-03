@@ -1,4 +1,4 @@
-import { useSyncExternalStore } from 'react'
+import { createContext, useSyncExternalStore } from 'react'
 
 const REDUCED = '(prefers-reduced-transparency: reduce)'
 
@@ -20,4 +20,25 @@ const snapshot = () =>
 /** 'light' | 'dark' glass, or 'solid' when the user asked the OS to reduce transparency. */
 const useGlassMode = () => useSyncExternalStore(subscribe, snapshot, () => 'light' as const)
 
-export { useGlassMode }
+const COARSE = '(pointer: coarse)'
+const subscribeCoarse = (onChange: () => void) => {
+  const media = matchMedia(COARSE)
+  media.addEventListener('change', onChange)
+  return () => media.removeEventListener('change', onChange)
+}
+
+/** Touch devices: full-page HTML capture + WebGL refraction is too slow there, so glass uses CSS blur. */
+const useIsTouch = () =>
+  useSyncExternalStore(
+    subscribeCoarse,
+    () => matchMedia(COARSE).matches,
+    () => false,
+  )
+
+/**
+ * What in-page glass (cards, buttons, pills) refracts on the snapshot renderer (iOS/Safari/Firefox): a plain element
+ * that is really behind them. The page capture would include each card's own text, refracted as a ghost copy.
+ */
+const GlassBackdropContext = createContext('#glass-backdrop')
+
+export { useGlassMode, useIsTouch, GlassBackdropContext }

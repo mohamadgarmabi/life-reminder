@@ -1,14 +1,22 @@
+import { useSelector } from '@tanstack/react-store'
+import { useState } from 'react'
 import { useLiveQuery } from '#/modules/database/hooks/database.hook'
+import type { WidgetId } from '#/modules/dashboard/types'
 import { buildAgenda } from '#/modules/dashboard/utils/agenda'
-import { QUICK_ACTIONS } from '#/modules/dashboard/utils/dashboard.constants'
+import { moveWidget, toggleWidgetSize, withAllWidgets } from '#/modules/dashboard/utils/widgets'
 import { installmentRepo } from '#/modules/installments/apis/installments.api'
 import { plantRepo } from '#/modules/plants/apis/plants.api'
 import { reminderRepo } from '#/modules/reminders/apis/reminders.api'
-import { formatDateLong } from '#/modules/shell/utils/format'
+import { settingsStore, updateSettings } from '#/modules/settings/stores/settings.store'
+import { formatDateLong, toFaDigits } from '#/modules/shell/utils/format'
 import { useNow } from '#/modules/shell/hooks/now.hook'
+
+const currentWidgets = () => withAllWidgets(settingsStore.state.widgets)
 
 const useDashboard = () => {
   const now = useNow()
+  const widgets = withAllWidgets(useSelector(settingsStore, (s) => s.widgets))
+  const [editing, setEditing] = useState(false)
   const q = useLiveQuery(async () => {
     const [installments, plants, reminders] = await Promise.all([
       installmentRepo.list(),
@@ -22,12 +30,17 @@ const useDashboard = () => {
   return {
     now,
     dateLabel: formatDateLong(now),
-    quickActions: QUICK_ACTIONS,
-    isLoading: q.status === 'loading',
     error: q.status === 'error' ? q.error : null,
     agenda,
-    hasOverdue: !!agenda && agenda.overdue.length > 0,
-    overdueTone: agenda?.overdue.length ? ('danger' as const) : undefined,
+    summary: agenda
+      ? `${toFaDigits(agenda.today.length)} کار امروز · ${toFaDigits(agenda.overdue.length)} معوق`
+      : undefined,
+    widgets,
+    editing,
+    toggleEditing: () => setEditing((e) => !e),
+    startEditing: () => setEditing(true),
+    handleMove: (from: WidgetId, to: WidgetId) => updateSettings({ widgets: moveWidget(currentWidgets(), from, to) }),
+    handleToggleSize: (id: WidgetId) => updateSettings({ widgets: toggleWidgetSize(currentWidgets(), id) }),
   }
 }
 

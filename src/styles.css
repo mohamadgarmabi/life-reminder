@@ -116,6 +116,14 @@
   75% { transform: scale(1.05, 0.96); }
   100% { transform: scale(1, 1); }
 }
+/* Dragged along the glass bar: the drop follows the finger 1:1 and swells into a lens. */
+.nav-drop--drag {
+  transition: none;
+}
+.nav-drop--drag .nav-drop__body {
+  transform: scale(1.18, 1.12);
+  transition: transform 200ms ease-out;
+}
 @media (prefers-reduced-motion: reduce) {
   .nav-drop { transition: none; }
   .nav-drop__body { animation: none; }
@@ -191,3 +199,70 @@
     mix-blend-mode: normal;
   }
 }
+
+/* Home widgets in edit mode jiggle like an iOS home screen; neighbours are out of phase. */
+.widget-wiggle {
+  animation: widget-wiggle 260ms ease-in-out infinite alternate;
+}
+[data-widget]:nth-child(even) .widget-wiggle {
+  animation-delay: -130ms;
+}
+@keyframes widget-wiggle {
+  from { rotate: -0.7deg; }
+  to { rotate: 0.7deg; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .widget-wiggle { animation: none; }
+}
+
+/* Page transitions (router defaultViewTransition). The tab bar and its fade keep their own names so they stay put. */
+.vt-tab-bar {
+  view-transition-name: tab-bar;
+}
+.vt-tab-fade {
+  view-transition-name: tab-fade;
+}
+/* Shown live, no crossfade: otherwise a ghost of the old drop lingers while the new one slides. */
+::view-transition-old(tab-bar),
+::view-transition-old(tab-fade) {
+  display: none;
+}
+::view-transition-new(tab-bar),
+::view-transition-new(tab-fade),
+::view-transition-group(tab-bar),
+::view-transition-group(tab-fade) {
+  animation: none;
+}
+@media (prefers-reduced-motion: no-preference) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 420ms;
+    animation-timing-function: cubic-bezier(0.32, 0.72, 0, 1);
+  }
+  html:active-view-transition-type(tab)::view-transition-old(root) {
+    animation: vt-fade-out 160ms ease-out both;
+  }
+  html:active-view-transition-type(tab)::view-transition-new(root) {
+    animation: vt-fade-in 240ms ease-out 60ms both;
+  }
+  /* RTL push: the new page slides in from the left edge, the old one drifts right and dims (iOS). */
+  html:active-view-transition-type(push)::view-transition-new(root) {
+    animation-name: vt-from-left;
+  }
+  html:active-view-transition-type(push)::view-transition-old(root) {
+    animation-name: vt-to-right-dim;
+  }
+  html:active-view-transition-type(pop)::view-transition-old(root) {
+    animation-name: vt-to-left;
+    z-index: 1;
+  }
+  html:active-view-transition-type(pop)::view-transition-new(root) {
+    animation-name: vt-from-right-dim;
+  }
+}
+@keyframes vt-fade-out { to { opacity: 0; } }
+@keyframes vt-fade-in { from { opacity: 0; transform: scale(0.98); } }
+@keyframes vt-from-left { from { transform: translateX(-100%); } }
+@keyframes vt-to-left { to { transform: translateX(-100%); } }
+@keyframes vt-to-right-dim { to { transform: translateX(30%); filter: brightness(0.85); } }
+@keyframes vt-from-right-dim { from { transform: translateX(30%); filter: brightness(0.85); } }

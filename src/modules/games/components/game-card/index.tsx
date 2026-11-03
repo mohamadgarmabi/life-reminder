@@ -28,4 +28,4 @@ const GameCard = ({ game }: { game: GameEntry }) => {
   )
 }
 
-export { GameCard }
+export { GameCard, enterFullscreen }

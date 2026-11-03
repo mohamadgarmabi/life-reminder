@@ -1,6 +1,8 @@
 import type { LucideIcon } from 'lucide-react'
+import type { ReactNode } from 'react'
 import type { Installment } from '#/modules/installments/types'
 import type { IsoDate } from '#/modules/shell/types'
+import type { Settings } from '#/modules/settings/types'
 
 interface AgendaItem {
   key: string
@@ -32,12 +34,6 @@ interface QuickActionProps {
   label: string
 }
 
-interface StatProps {
-  label: string
-  value: number
-  tone?: 'danger'
-}
-
 interface AgendaSectionProps {
   title: string
   items: AgendaItem[]
@@ -46,4 +42,34 @@ interface AgendaSectionProps {
   danger?: boolean
 }
 
-export type { AgendaItem, Agenda, AgendaRoute, AgendaKindMeta, QuickActionProps, StatProps, AgendaSectionProps }
+type WidgetConfig = Settings['widgets'][number]
+type WidgetId = WidgetConfig['id']
+type WidgetSize = WidgetConfig['size']
+
+interface WidgetProps {
+  config: WidgetConfig
+  editing: boolean
+  onMove: (from: WidgetId, to: WidgetId) => void
+  onToggleSize: (id: WidgetId) => void
+  onLongPress: () => void
+  children: ReactNode
+}
+
+interface AgendaWidgetProps extends AgendaSectionProps {
+  size: WidgetSize
+  icon: LucideIcon
+}
+
+export type {
+  AgendaItem,
+  Agenda,
+  AgendaRoute,
+  AgendaKindMeta,
+  QuickActionProps,
+  AgendaSectionProps,
+  WidgetConfig,
+  WidgetId,
+  WidgetSize,
+  WidgetProps,
+  AgendaWidgetProps,
+}

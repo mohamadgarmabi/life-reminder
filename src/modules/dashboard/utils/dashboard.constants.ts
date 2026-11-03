@@ -1,5 +1,12 @@
-import { Bell, Flower2, Wallet } from 'lucide-react'
-import type { AgendaKindMeta, AgendaItem, QuickActionProps } from '#/modules/dashboard/types'
+import { AlertTriangle, Bell, CalendarDays, CalendarCheck, Flower2, Wallet } from 'lucide-react'
+import type {
+  Agenda,
+  AgendaKindMeta,
+  AgendaItem,
+  AgendaWidgetProps,
+  QuickActionProps,
+  WidgetId,
+} from '#/modules/dashboard/types'
 
 const KIND: Record<AgendaItem['kind'], AgendaKindMeta> = {
   installment: { icon: Wallet, to: '/installments', label: 'قسط' },
@@ -13,4 +20,20 @@ const QUICK_ACTIONS: QuickActionProps[] = [
   { to: '/reminders', icon: Bell, label: 'یادآور' },
 ]
 
-export { KIND, QUICK_ACTIONS }
+const AGENDA_WIDGETS: Record<keyof Agenda, Pick<AgendaWidgetProps, 'title' | 'icon' | 'empty' | 'danger'>> = {
+  overdue: { title: 'معوق', icon: AlertTriangle, empty: 'چیزی عقب نمانده.', danger: true },
+  today: { title: 'امروز', icon: CalendarCheck, empty: 'برای امروز کاری ثبت نشده. روز آرامی داشته باشید!' },
+  upcoming: { title: 'روزهای آینده', icon: CalendarDays, empty: 'در هفتهٔ پیش رو موردی نیست.' },
+}
+
+/** Names used in edit-mode button labels. */
+const WIDGET_LABEL: Record<WidgetId, string> = {
+  date: 'ویجت تاریخ',
+  quick: 'ویجت افزودن سریع',
+  overdue: 'ویجت معوق',
+  today: 'ویجت امروز',
+  upcoming: 'ویجت روزهای آینده',
+  games: 'ویجت بازی‌ها',
+}
+
+export { KIND, QUICK_ACTIONS, AGENDA_WIDGETS, WIDGET_LABEL }

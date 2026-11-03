@@ -2,6 +2,9 @@ import { Flower2, Plus } from 'lucide-react'
 import { FormDialog } from '#/modules/shell/components/dialogs'
 import { EmptyState, ErrorState, ListSkeleton, PageHeader } from '#/modules/shell/components/states'
 import { Button } from '#/components/button'
+import { AnimatedList } from '#/modules/shell/components/animated-list'
+import { ViewToggle } from '#/modules/shell/components/view-toggle'
+import { useViewMode } from '#/modules/shell/hooks/view-toggle.hook'
 import { PlantCard } from '#/modules/plants/components/plant-card'
 import { PlantForm } from '#/modules/plants/components/plant-form'
 import { WateringHistory } from '#/modules/plants/components/watering-history'
@@ -27,6 +30,7 @@ const PlantsView = () => {
     isHistoryOpen,
     historyDescription,
   } = usePlants()
+  const { view } = useViewMode('plants')
 
   return (
     <>
@@ -34,9 +38,12 @@ const PlantsView = () => {
         title="گل‌ها"
         description={headerDescription}
         action={
-          <Button onClick={openCreate}>
-            <Plus /> گیاه جدید
-          </Button>
+          <div className="flex items-center gap-2">
+            <ViewToggle page="plants" />
+            <Button onClick={openCreate}>
+              <Plus /> گیاه جدید
+            </Button>
+          </div>
         }
       />
 
@@ -54,7 +61,7 @@ const PlantsView = () => {
           }
         />
       )}
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
+      <AnimatedList view={view}>
         {plants.map((row) => (
           <PlantCard
             key={row.plant.id}
@@ -65,7 +72,7 @@ const PlantsView = () => {
             onDelete={row.onDelete}
           />
         ))}
-      </div>
+      </AnimatedList>
 
       <FormDialog open={isFormOpen} onOpenChange={handleOpenChange} title={formTitle}>
         {isCreating && <PlantForm onSubmit={handleCreate} />}

@@ -3,6 +3,9 @@ import { FormDialog } from '#/modules/shell/components/dialogs'
 import { EmptyState, ErrorState, ListSkeleton, PageHeader } from '#/modules/shell/components/states'
 import { GlassFilter } from '#/modules/shell/components/glass-filter'
 import { Button } from '#/components/button'
+import { AnimatedList } from '#/modules/shell/components/animated-list'
+import { ViewToggle } from '#/modules/shell/components/view-toggle'
+import { useViewMode } from '#/modules/shell/hooks/view-toggle.hook'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '#/components/tabs'
 import { ReminderCard } from '#/modules/reminders/components/reminder-card'
 import { ReminderForm } from '#/modules/reminders/components/reminder-form'
@@ -30,15 +33,19 @@ const RemindersView = () => {
     handleCreate,
     handleEdit,
   } = useReminders()
+  const { view } = useViewMode('reminders')
 
   return (
     <Tabs defaultValue="active" dir="rtl" className="block">
       <PageHeader
         title="یادآورها"
         action={
-          <Button onClick={handleOpenCreate}>
-            <Plus /> یادآور جدید
-          </Button>
+          <div className="flex items-center gap-2">
+            <ViewToggle page="reminders" />
+            <Button onClick={handleOpenCreate}>
+              <Plus /> یادآور جدید
+            </Button>
+          </div>
         }
       >
         {hasItems && (
@@ -73,7 +80,7 @@ const RemindersView = () => {
           {tabs.map((tab) => (
             <TabsContent key={tab.value} value={tab.value}>
               {tab.hasRows && (
-                <div className="space-y-3">
+                <AnimatedList view={view}>
                   {tab.rows.map((row) => (
                     <ReminderCard
                       key={row.reminder.id}
@@ -84,7 +91,7 @@ const RemindersView = () => {
                       onDelete={row.onDelete}
                     />
                   ))}
-                </div>
+                </AnimatedList>
               )}
               {!tab.hasRows && <p className="py-10 text-center text-sm text-muted-foreground">{tab.emptyText}</p>}
             </TabsContent>
