@@ -6,6 +6,8 @@ const settingsSchema = z.object({
   theme: z.enum(['system', 'light', 'dark']),
   notificationsEnabled: z.boolean(),
   defaultReminderTime: z.string().regex(/^\d{2}:\d{2}$/),
+  /** Animated page changes (View Transitions); read by the router on every navigation. */
+  pageTransitions: z.boolean(),
   /** Off: every surface is a plain solid colour and the glass renderer stays idle. */
   glassEnabled: z.boolean(),
   /** Liquid glass on every surface (simple-liquid-glass). Unset numbers inherit the material preset. */
@@ -46,6 +48,7 @@ const DEFAULT_SETTINGS: Settings = {
   theme: 'system',
   notificationsEnabled: true,
   defaultReminderTime: '09:00',
+  pageTransitions: true,
   glassEnabled: false,
   glass: DEFAULT_GLASS,
   views: { installments: 'list', reminders: 'list', plants: 'grid' },

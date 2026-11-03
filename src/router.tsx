@@ -1,4 +1,5 @@
 import { createRouter as createTanStackRouter } from '@tanstack/react-router'
+import { settingsStore } from '#/modules/settings/stores/settings.store'
 import { routeTree } from './routeTree.gen'
 
 const getRouter = () => {
@@ -11,7 +12,7 @@ const getRouter = () => {
     // Search-only changes (e.g. ?new=1 opening a sheet) don't animate the page.
     defaultViewTransition: {
       types: ({ fromLocation, toLocation, pathChanged }) => {
-        if (!pathChanged || !fromLocation) return false
+        if (!settingsStore.state.pageTransitions || !pathChanged || !fromLocation) return false
         const from = fromLocation.pathname.replace(/\/$/, '')
         const to = toLocation.pathname.replace(/\/$/, '')
         if (to.startsWith(`${from}/`)) return ['push']

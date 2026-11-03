@@ -25,7 +25,7 @@ const DataCard = () => {
         <Button variant="outline" onClick={handleExport}>
           <Download /> خروجی JSON
         </Button>
-        <Button variant="outline" onClick={handlePickFile}>
+        <Button variant="default" onClick={handlePickFile}>
           <Upload /> بازیابی از فایل
         </Button>
       </div>

@@ -42,7 +42,13 @@ const GlassLayer = ({ radius, thick = false, soft = false, tone = 'surface', cla
     return (
       <div
         aria-hidden
-        className={cn(tone === 'page' ? 'bg-background' : 'bg-card', className)}
+        className={cn(
+          // Solid header: like the solid tab bar, content fades out below it instead of meeting a hard edge.
+          tone === 'page'
+            ? 'bg-background after:absolute after:inset-x-0 after:top-full after:h-8 after:bg-linear-to-b after:from-background after:to-transparent'
+            : 'bg-card',
+          className,
+        )}
         style={{ ...LAYER_STYLE, borderRadius: radius }}
       />
     )

@@ -5,6 +5,7 @@ import { GlassCard } from '#/modules/settings/components/glass-card'
 import { NotificationsCard } from '#/modules/settings/components/notifications-card'
 import { StorageCard } from '#/modules/settings/components/storage-card'
 import { ThemeCard } from '#/modules/settings/components/theme-card'
+import { TransitionsCard } from '#/modules/settings/components/transitions-card'
 import { useSettings } from '#/modules/settings/hooks/settings.hook'
 
 const SettingsView = () => {
@@ -16,6 +17,7 @@ const SettingsView = () => {
       <div className="space-y-4">
         <NotificationsCard />
         <ThemeCard />
+        <TransitionsCard />
         <GlassCard />
         <GamesCard />
         <DataCard />
