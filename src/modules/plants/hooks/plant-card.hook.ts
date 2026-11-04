@@ -30,14 +30,18 @@ const usePlantCard = ({ plant, today }: Pick<PlantCardProps, 'plant' | 'today'>)
     menuLabel: `گزینه‌های ${plant.name}`,
     intervalLabel: toFaDigits(plant.wateringIntervalDays),
     statusClassName: cn(
-      'text-sm truncate',
+      'line-clamp-2 text-xs leading-5 @xs:line-clamp-1 @xs:text-sm',
       days < 0 ? 'font-medium text-destructive' : days === 0 ? 'font-medium text-primary' : 'text-muted-foreground',
     ),
     statusLabel:
       days < 0
         ? `آبیاری عقب افتاده (${relativeDay(next)})`
         : `آبیاری بعدی: ${relativeDay(next)} · ${formatDayMonth(next)}`,
-    waterVariant: days <= 0 && !wateredToday ? ('default' as const) : ('outline' as const),
+    waterClassName: cn(
+      'w-full min-w-0 text-xs @xs:h-9 @xs:text-sm',
+      (days > 0 || wateredToday) && 'bg-primary/10 text-primary hover:bg-primary/15',
+    ),
+    wateredToday,
     waterDisabled: busy || wateredToday,
     waterLabel: wateredToday ? 'امروز آبیاری شد' : 'آب دادم',
     water,

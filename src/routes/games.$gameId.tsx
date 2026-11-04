@@ -17,6 +17,9 @@ const VIEWS = {
   memory: lazy(() => import('#/modules/games/views/memory-view')),
   water: lazy(() => import('#/modules/games/views/water-view')),
   connect4: lazy(() => import('#/modules/games/views/connect4-view')),
+  island: lazy(() => import('#/modules/games/adventure/worlds/forgotten-island')),
+  // Dev-only proof that the adventure engine is reusable (never shipped).
+  ...(import.meta.env.DEV ? { 'test-room': lazy(() => import('#/modules/games/adventure/worlds/test-room')) } : {}),
 }
 
 const GameRoute = () => {

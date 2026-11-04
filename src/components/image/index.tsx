@@ -2,19 +2,16 @@ import { LazyLoadImage } from 'react-lazy-load-image-component'
 import type { ImageProps } from './image.type'
 import { cn } from '#/modules/shell/utils/cn'
 
-const Image = (props: ImageProps) => {
-  const { ...rest } = props
+// Fills its box by default; the caller's className (e.g. object-cover, size-20) wins.
+const Image = ({ className, ...rest }: ImageProps) => {
   return (
-    <div className='relative size-full overflow-hidden [&_img]:h-full'>
+    <div className="relative size-full overflow-hidden">
       <LazyLoadImage
-        alt={rest.alt}
         effect="blur"
-        wrapperProps={{
-          style: { transitionDelay: '1s',  height:"100%"},
-        }}
-        src={rest.src}
+        // The library wraps the img in an inline span; make it fill the box too.
+        wrapperProps={{ style: { transitionDelay: '1s', display: 'block', width: '100%', height: '100%' } }}
         {...rest}
-        className={cn(rest.className, "inset-0 size-fit")}
+        className={cn('size-full', className)}
       />
     </div>
   )

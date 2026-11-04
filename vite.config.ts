@@ -7,7 +7,6 @@ import babel from '@rolldown/plugin-babel'
 import tailwindcss from '@tailwindcss/vite'
 import { VitePWA, type VitePluginPWAAPI } from 'vite-plugin-pwa'
 import { viteSplashScreen } from 'vite-plugin-react-splash'
-import { redact } from '@tanstack/redact/vite'
 
 // GitHub Pages project sites live under /<repo>/; CI sets BASE_PATH, local dev uses "/".
 const base = process.env.BASE_PATH ?? '/'
@@ -68,7 +67,21 @@ const pwa = VitePWA({
   },
   workbox: {
     globPatterns: ['**/*.{js,css,html,svg,png,ico,woff2,webmanifest}'],
-    globIgnores: ['404.html', '_shell.html'],
+    // The 3D adventure (≈1 MB gzipped) is not precached: users who never open it never download it.
+    // It is cached on first open instead, so it then plays offline.
+    globIgnores: ['404.html', '_shell.html', 'assets/forgotten-island-*.js'],
+    runtimeCaching: [
+      {
+        urlPattern: /\/assets\/forgotten-island-[\w-]+\.js$/,
+        handler: 'CacheFirst',
+        options: {
+          cacheName: 'adventure-code',
+          cacheableResponse: { statuses: [200] },
+          // Old builds' chunks have other hashes; keep only the latest couple.
+          expiration: { maxEntries: 2 },
+        },
+      },
+    ],
     navigateFallback: `${base}index.html`,
     importScripts: ['sw-notifications.js'],
     cleanupOutdatedCaches: true,
@@ -132,19 +145,38 @@ const staticSpaOutput: Plugin = {
   },
 }
 
+/**
+ * `vite preview` like GitHub Pages: files from dist/client, app routes get the built index.html.
+ * Without this, TanStack Start's preview middleware tries to load a server bundle this static SPA
+ * doesn't use, and every page answers 500.
+ */
+const staticSpaPreview: Plugin = {
+  name: 'static-spa-preview',
+  // Only for the `vite preview` command. The build's prerender also starts a preview server (isPreview is
+  // true there too) and must reach TanStack's handler to render the shell, so check the CLI command itself.
+  apply: () => process.argv.includes('preview'),
+  configurePreviewServer: (server) => {
+    server.middlewares.use((req, _res, next) => {
+      const path = req.url?.split('?')[0] ?? '/'
+      // Routes have no file extension; real files (js, css, sw.js, icons) pass through untouched.
+      if (req.method === 'GET' && !/\.[a-z0-9]+$/i.test(path)) req.url = `${base}index.html`
+      next()
+    })
+  },
+}
+
 const config = defineConfig({
   base,
   define: { __APP_VERSION__: JSON.stringify(version), __APP_COMMIT__: JSON.stringify(commit) },
   resolve: { tsconfigPaths: true },
-  ssr: { noExternal: true },
   plugins: [
     tailwindcss(),
     tanstackStart({ spa: { enabled: true } }),
     viteReact(),
     babel({ presets: [reactCompilerPreset()] }), // React Compiler: no manual useMemo/useCallback
-    redact(),
     pwa,
     staticSpaOutput,
+    staticSpaPreview,
   ],
 })
 

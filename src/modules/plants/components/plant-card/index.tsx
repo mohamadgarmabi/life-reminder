@@ -1,4 +1,4 @@
-import { Droplets, History, MoreVertical, Pencil, Sprout } from 'lucide-react'
+import { Check, Droplets, History, MoreVertical, Pencil, Sprout } from 'lucide-react'
 import { SwipeRow } from '#/modules/shell/components/swipe-row'
 import { Button } from '#/components/button'
 import { Card, CardContent } from '#/components/card'
@@ -14,7 +14,8 @@ const PlantCard = ({ plant, today, onEdit, onHistory, onDelete }: PlantCardProps
     intervalLabel,
     statusClassName,
     statusLabel,
-    waterVariant,
+    waterClassName,
+    wateredToday,
     waterDisabled,
     waterLabel,
     water,
@@ -70,17 +71,19 @@ const PlantCard = ({ plant, today, onEdit, onHistory, onDelete }: PlantCardProps
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-        <CardContent className="space-y-3 p-4 @xs:flex-1">
-          <div>
-            <h3 className="text-ellipsis font-semibold">{plant.name}</h3>
-            <p className="text-xs text-muted-foreground">هر {intervalLabel} روز</p>
+        {/* Narrow (mobile grid) cell: smaller type and padding; long labels wrap to two lines. */}
+        <CardContent className="min-w-0 space-y-2 p-3 @xs:flex-1 @xs:space-y-3 @xs:p-4">
+          <div className="min-w-0">
+            <h3 className="truncate text-sm font-semibold @xs:text-base">{plant.name}</h3>
+            <p className="truncate text-[11px] text-muted-foreground @xs:text-xs">هر {intervalLabel} روز</p>
           </div>
           <p className={statusClassName}>
-            <Droplets className="me-1 inline size-4" aria-hidden />
+            <Droplets className="me-1 inline size-3.5 align-[-2px] @xs:size-4" aria-hidden />
             {statusLabel}
           </p>
-          <Button className="w-full" variant={waterVariant} onClick={water} disabled={waterDisabled}>
-            <Droplets /> {waterLabel}
+          <Button size="sm" variant={'default'} className={waterClassName} onClick={water} disabled={waterDisabled}>
+            {wateredToday ? <Check /> : <Droplets />}
+            <span className="truncate">{waterLabel}</span>
           </Button>
         </CardContent>
       </Card>

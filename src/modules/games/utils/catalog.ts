@@ -10,6 +10,26 @@ const GAME_CATEGORIES: { value: GameCategory | 'all'; label: string }[] = [
 
 const GAMES: GameEntry[] = [
   {
+    id: 'island',
+    title: 'جزیرهٔ فراموش‌شده',
+    description: 'جزیره‌ای متروک را بگرد، سه یادگار گم‌شده را پیدا کن و فانوس را دوباره روشن کن',
+    category: '3d',
+    emoji: '🏝️',
+    tint: 'bg-teal-500/15',
+  },
+  ...(import.meta.env.DEV
+    ? [
+        {
+          id: 'test-room',
+          title: 'اتاق آزمایش',
+          description: 'فقط در حالت توسعه: آزمون موتور ماجراجویی',
+          category: '3d' as const,
+          emoji: '🧪',
+          tint: 'bg-zinc-500/15',
+        },
+      ]
+    : []),
+  {
     id: 'runner',
     title: 'دوندهٔ سه‌بعدی',
     description: 'در سه مسیر بدو، بپر و از موانع جاخالی بده',

@@ -44,7 +44,6 @@ type SceneProps = { game: RefObject<Runner>; dark: boolean; playing: boolean; on
 
 const mesh = (geometry: THREE.BufferGeometry, material: THREE.Material) => new THREE.Mesh(geometry, material)
 
-// Plain three.js, not React Three Fiber: the app runs on @tanstack/redact, which has no react-reconciler.
 const Scene = ({ game, dark, playing, onStep }: SceneProps) => {
   const host = useRef<HTMLDivElement>(null)
   const loop = useRef<{ play: (on: boolean) => void } | null>(null)

@@ -23,7 +23,7 @@ IndexedDB on your device; an optional push relay only receives the texts of upco
 - **گیاهان** — عکس گیاه، فاصلهٔ آبیاری بر حسب روز، ثبت آبیاری با یک لمس و تاریخچهٔ آبیاری.
 - **یادآورها** — یک‌بار، روزانه، هفتگی یا ماهانه؛ تعویق ۱۵ دقیقه، ۱ ساعت یا تا فردا؛ تاریخچهٔ انجام و تعویق.
 - **اعلان‌ها** — هنگام باز بودن برنامه، و با سرویس push اختیاری حتی وقتی برنامه بسته است.
-- **بازی‌ها** — سیزده بازی آفلاین در حالت تمام‌صفحه: دوندهٔ سه‌بعدی، مار، بلوک‌ریز، آجرشکن، کرم شب‌تاب،
+- **بازی‌ها** — چهارده بازی آفلاین در حالت تمام‌صفحه: ماجراجویی سه‌بعدی «جزیرهٔ فراموش‌شده»، دوندهٔ سه‌بعدی، مار، بلوک‌ریز، آجرشکن، کرم شب‌تاب،
   باران شهاب، سه‌تایی (صد مرحله)، ادغام اعداد، سودوکو (سه سطح، هر کدام هزار مرحله)، مین‌یاب، کارت حافظه،
   رنگ‌چین و چهار در یک ردیف. امتیازها روی دستگاه ذخیره می‌شوند.
 - **ظاهر** — تم روشن، تیره یا هماهنگ با سیستم؛ نمای فهرستی یا شبکه‌ای؛ جلوهٔ شیشه‌ای (Liquid Glass) با
@@ -48,7 +48,7 @@ IndexedDB on your device; an optional push relay only receives the texts of upco
 | Plants | Photo (downscaled JPEG stored as a data URL), watering interval, one-tap watering, watering history. |
 | Reminders | One-off, daily, weekly or monthly; snooze (15 min, 1 h, tomorrow); completion and snooze history. |
 | Notifications | In-app checks while open; optional Web Push relay for on-time delivery while closed. |
-| Games | 13 offline games (3D runner, snake, blocks, breakout, firefly, meteor, match-3 with 100 levels, merge, sudoku with 3 × 1000 levels, minesweeper, memory, water sort, connect four), full-screen, local high scores. |
+| Games | 14 offline games (The Forgotten Island 3D adventure, 3D runner, snake, blocks, breakout, firefly, meteor, match-3 with 100 levels, merge, sudoku with 3 × 1000 levels, minesweeper, memory, water sort, connect four), full-screen, local high scores. |
 | Appearance | System / light / dark theme, list or grid views, adjustable Liquid Glass effect, optional page transitions. |
 | Data | JSON export / import, persistent-storage request, storage usage card. |
 | Updates | Prompt-based service worker update with release notes generated from recent commits. |
