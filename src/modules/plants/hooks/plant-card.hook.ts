@@ -30,7 +30,7 @@ const usePlantCard = ({ plant, today }: Pick<PlantCardProps, 'plant' | 'today'>)
     menuLabel: `گزینه‌های ${plant.name}`,
     intervalLabel: toFaDigits(plant.wateringIntervalDays),
     statusClassName: cn(
-      'text-sm',
+      'text-sm truncate',
       days < 0 ? 'font-medium text-destructive' : days === 0 ? 'font-medium text-primary' : 'text-muted-foreground',
     ),
     statusLabel:

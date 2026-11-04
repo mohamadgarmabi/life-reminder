@@ -1,6 +1,7 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
 @import '@fontsource-variable/vazirmatn';
+@import 'react-lazy-load-image-component/src/effects/blur.css';
 
 @custom-variant dark (&:is(.dark *));
 

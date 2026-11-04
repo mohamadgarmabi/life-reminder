@@ -3,6 +3,7 @@ import { Button } from '#/components/button'
 import { Field, FieldLabel } from '#/components/field'
 import { usePlantForm } from '#/modules/plants/hooks/plant-form.hook'
 import type { PlantFormProps } from '#/modules/plants/types'
+import Image from '#/components/image'
 
 const PlantForm = ({ initial, onSubmit }: PlantFormProps) => {
   const { form, fileId, image, submitLabel, handleSubmit, removeImage, handleImageChange } = usePlantForm({
@@ -17,12 +18,12 @@ const PlantForm = ({ initial, onSubmit }: PlantFormProps) => {
         <div className="flex items-center gap-3">
           {image && (
             <div className="relative">
-              <img src={image} alt="پیش‌نمایش عکس گیاه" className="size-20 rounded-xl object-cover" />
+              <Image src={image} alt="پیش‌نمایش عکس گیاه" className="size-20 rounded-xl object-cover" />
               <Button
                 type="button"
                 size="icon-sm"
                 variant="secondary"
-                className="absolute -end-2 -top-2 rounded-full"
+                className="absolute -inset-e-2 -top-2 rounded-full"
                 aria-label="حذف عکس"
                 onClick={removeImage}
               >

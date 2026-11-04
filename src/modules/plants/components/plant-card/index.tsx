@@ -5,6 +5,7 @@ import { Card, CardContent } from '#/components/card'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '#/components/dropdown-menu'
 import { usePlantCard } from '#/modules/plants/hooks/plant-card.hook'
 import type { PlantCardProps } from '#/modules/plants/types'
+import Image from '#/components/image'
 
 const PlantCard = ({ plant, today, onEdit, onHistory, onDelete }: PlantCardProps) => {
   const {
@@ -41,8 +42,8 @@ const PlantCard = ({ plant, today, onEdit, onHistory, onDelete }: PlantCardProps
     >
       {/* Wide (list view): photo beside the details instead of above. */}
       <Card className="gap-0 overflow-hidden py-0 @xs:flex-row">
-        <div className="relative aspect-[4/3] bg-accent @xs:aspect-auto @xs:w-36 @xs:shrink-0">
-          {image && <img src={image} alt={plant.name} className="size-full object-cover" loading="lazy" />}
+        <div className="relative aspect-4/3 bg-accent @xs:aspect-auto @xs:w-36 @xs:shrink-0">
+          {image && <Image src={image} alt={plant.name} className="size-full object-cover" loading="lazy" />}
           {!image && (
             <div className="flex size-full items-center justify-center text-primary/60">
               <Sprout className="size-12" aria-hidden />
@@ -53,7 +54,7 @@ const PlantCard = ({ plant, today, onEdit, onHistory, onDelete }: PlantCardProps
               <Button
                 variant="secondary"
                 size="icon"
-                className="absolute end-2 top-2 rounded-full bg-background/80 backdrop-blur"
+                className="absolute inset-e-2 top-2 rounded-full bg-background/80 backdrop-blur"
                 aria-label={menuLabel}
               >
                 <MoreVertical />
@@ -71,7 +72,7 @@ const PlantCard = ({ plant, today, onEdit, onHistory, onDelete }: PlantCardProps
         </div>
         <CardContent className="space-y-3 p-4 @xs:flex-1">
           <div>
-            <h3 className="truncate font-semibold">{plant.name}</h3>
+            <h3 className="text-ellipsis font-semibold">{plant.name}</h3>
             <p className="text-xs text-muted-foreground">هر {intervalLabel} روز</p>
           </div>
           <p className={statusClassName}>
