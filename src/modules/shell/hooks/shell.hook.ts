@@ -29,14 +29,17 @@ const useClientBootstrap = () => {
 
 const useApplyTheme = () => {
   const theme = useSelector(settingsStore, (s) => s.theme)
+  const { setSplashTheme } = useSplashScreen()
   useEffect(() => {
+    // The splash runs before the app; it reads this saved choice on the next launch.
+    setSplashTheme(theme === 'system' ? 'auto' : theme)
     const media = matchMedia('(prefers-color-scheme: dark)')
     const apply = () =>
       document.documentElement.classList.toggle('dark', theme === 'dark' || (theme === 'system' && media.matches))
     apply()
     media.addEventListener('change', apply)
     return () => media.removeEventListener('change', apply)
-  }, [theme])
+  }, [theme, setSplashTheme])
 }
 
 const useRootApp = () => {

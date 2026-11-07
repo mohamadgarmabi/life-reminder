@@ -111,8 +111,6 @@ const splash = viteSplashScreen({
   minDuration: 700,
   respectReducedMotion: true,
 })
-// The plugin hooks transformIndexHtml, which TanStack Start never runs (no index.html), so its
-// transform is applied to the prerendered shell below.
 const injectSplash = (html: string) => {
   const hook = splash.transformIndexHtml
   const fn = typeof hook === 'function' ? hook : hook && 'handler' in hook ? hook.handler : undefined
@@ -120,12 +118,6 @@ const injectSplash = (html: string) => {
   return fn.call(undefined as never, html, undefined as never) as string
 }
 
-/**
- * TanStack Start writes the SPA shell (_shell.html) only after all environment builds, so the
- * PWA plugin's own hook runs too early. After prerendering: inject the splash screen, expose the shell as index.html
- * (site root) and 404.html (GitHub Pages fallback for deep links/refreshes), then generate the
- * service worker so its precache includes the final HTML.
- */
 const staticSpaOutput: Plugin = {
   name: 'static-spa-output',
   enforce: 'post', // after tanstack-start-core:post-build (also enforce/order post, earlier in the list)
