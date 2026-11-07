@@ -2,6 +2,7 @@ import { useSelector } from '@tanstack/react-store'
 import { useContext } from 'react'
 import { LiquidGlass } from 'simple-liquid-glass'
 import { settingsStore } from '#/modules/settings/stores/settings.store'
+import { GLASS_MATERIAL_DEFAULTS } from '#/modules/settings/utils/settings.constants'
 import { cn } from '#/modules/shell/utils/cn'
 import { GlassBackdropContext, useGlassMode, useIsTouch } from './glass.hook'
 import type { GlassLayerProps } from './glass.types'
@@ -35,7 +36,8 @@ const GlassLayer = ({ radius, thick = false, soft = false, tone = 'surface', cla
   // Floating bars and overlays refract the live page content under them; in-page surfaces the plain backdrop.
   const floating = thick || soft || tone === 'page'
   const enabled = useSelector(settingsStore, (s) => s.glassEnabled)
-  const { material, tint, rim, ...optics } = useSelector(settingsStore, (s) => s.glass)
+  const { material, tint, rim, ...custom } = useSelector(settingsStore, (s) => s.glass)
+  const optics = { ...GLASS_MATERIAL_DEFAULTS[material], ...custom }
   const fill = thick ? Math.max(tint, THICK_TINT) : tint
 
   if (!enabled || mode === 'solid') {

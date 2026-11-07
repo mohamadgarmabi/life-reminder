@@ -217,7 +217,9 @@
 }
 
 /* Page transitions (router defaultViewTransition). The tab bar and its fade keep their own names so they stay put. */
-.vt-tab-bar {
+/* Named only during a transition: a view-transition-name makes the bar a backdrop root, so its glass would
+   blur and refract nothing (the page behind it is cut off). */
+:root:active-view-transition .vt-tab-bar {
   view-transition-name: tab-bar;
 }
 .vt-tab-fade {

@@ -3,7 +3,7 @@ import { useState, type ChangeEvent } from 'react'
 import { MATERIAL_PRESETS } from 'simple-liquid-glass'
 import { DEFAULT_GLASS, settingsStore, updateSettings } from '#/modules/settings/stores/settings.store'
 import type { GlassControlKey, GlassMaterial } from '#/modules/settings/types'
-import { GLASS_MATERIAL_OPTIONS } from '#/modules/settings/utils/settings.constants'
+import { GLASS_MATERIAL_DEFAULTS, GLASS_MATERIAL_OPTIONS } from '#/modules/settings/utils/settings.constants'
 
 /** simple-liquid-glass defaults for props a material preset leaves unset. */
 const LIBRARY_DEFAULTS: Partial<Record<GlassControlKey, number>> = {
@@ -18,7 +18,10 @@ const useGlassCard = () => {
   const [open, setOpen] = useState(false)
   const glass = useSelector(settingsStore, (s) => s.glass)
   const enabled = useSelector(settingsStore, (s) => s.glassEnabled)
-  const preset: Partial<Record<string, unknown>> = MATERIAL_PRESETS[glass.material]
+  const preset: Partial<Record<string, unknown>> = {
+    ...MATERIAL_PRESETS[glass.material],
+    ...GLASS_MATERIAL_DEFAULTS[glass.material],
+  }
 
   /** What the slider shows: your value, else the material's, else the library's. */
   const valueOf = (key: GlassControlKey) =>
