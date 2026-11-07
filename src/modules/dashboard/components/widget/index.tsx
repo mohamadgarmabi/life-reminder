@@ -6,8 +6,9 @@ import type { WidgetProps } from '#/modules/dashboard/types'
 import { cn } from '#/modules/shell/utils/cn'
 
 const SPAN = {
-  mini: 'col-span-1 aspect-square',
-  small: 'col-span-2 aspect-square',
+  // Square grid cells (home view): mini 1×1, small 2×2, so tiles can be mixed in any order.
+  mini: 'col-span-1',
+  small: 'col-span-2 row-span-2',
   large: 'col-span-4 min-h-40',
 } as const
 

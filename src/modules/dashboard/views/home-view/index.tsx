@@ -33,6 +33,19 @@ const HomeView = () => {
     return <AgendaWidget size={size} items={agenda[id]} now={now} {...AGENDA_WIDGETS[id]} />
   }
 
+  const widget = (config: WidgetConfig) => (
+    <Widget
+      key={config.id}
+      config={config}
+      editing={editing}
+      onMove={handleMove}
+      onToggleSize={handleToggleSize}
+      onLongPress={startEditing}
+    >
+      {content(config)}
+    </Widget>
+  )
+
   return (
     <>
       <PageHeader
@@ -51,20 +64,12 @@ const HomeView = () => {
           ویجت‌ها را بکشید تا جابه‌جا شوند؛ دکمهٔ گوشه اندازه را عوض می‌کند.
         </p>
       )}
-      {/* 4 columns: mini 1, small 2, large 4. dense: smaller tiles fill gaps a bigger one would leave. */}
-      <div className="grid grid-flow-row-dense grid-cols-4 gap-3">
-        {widgets.map((config) => (
-          <Widget
-            key={config.id}
-            config={config}
-            editing={editing}
-            onMove={handleMove}
-            onToggleSize={handleToggleSize}
-            onLongPress={startEditing}
-          >
-            {content(config)}
-          </Widget>
-        ))}
+      {/* 4 columns of square cells (row height = column width; 2.25rem = 3 gaps): mini 1×1, small 2×2, large 4 wide.
+          Rows grow only for taller content. dense: a later mini fills a free cell beside or under earlier tiles. */}
+      <div className="@container">
+        <div className="grid grid-flow-row-dense auto-rows-[minmax(calc((100cqw-2.25rem)/4),auto)] grid-cols-4 gap-3">
+          {widgets.map(widget)}
+        </div>
       </div>
     </>
   )

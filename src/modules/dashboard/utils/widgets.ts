@@ -6,7 +6,6 @@ const withAllWidgets = (saved: WidgetConfig[]): WidgetConfig[] => [
   ...saved,
   ...DEFAULT_SETTINGS.widgets.filter((d) => !saved.some((w) => w.id === d.id)),
 ]
-
 /** Moves `from` to the slot `to` currently holds (the drop target), shifting the rest. */
 const moveWidget = (list: WidgetConfig[], from: WidgetId, to: WidgetId): WidgetConfig[] => {
   const fromIndex = list.findIndex((w) => w.id === from)
