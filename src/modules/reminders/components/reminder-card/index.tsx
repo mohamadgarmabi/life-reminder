@@ -3,14 +3,7 @@ import { SwipeRow } from '#/modules/shell/components/swipe-row'
 import { Badge } from '#/components/badge'
 import { Button } from '#/components/button'
 import { Card, CardContent } from '#/components/card'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '#/components/dropdown-menu'
+import { ActionSheet } from '#/modules/shell/components/action-sheet'
 import { useReminderCard } from '#/modules/reminders/hooks/reminder-card.hook'
 import type { ReminderCardProps } from '#/modules/reminders/types'
 
@@ -88,32 +81,30 @@ const ReminderCard = (props: ReminderCardProps) => {
               </p>
             )}
           </div>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
+          <ActionSheet
+            title={reminder.title}
+            trigger={
               <Button variant="ghost" size="icon" aria-label={menuAriaLabel}>
                 <MoreVertical />
               </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              {isPending && (
-                <>
-                  <DropdownMenuLabel>تعویق</DropdownMenuLabel>
-                  {snoozeOptions.map((s) => (
-                    <DropdownMenuItem key={s.label} onSelect={s.onSelect}>
-                      <AlarmClock /> {s.label}
-                    </DropdownMenuItem>
-                  ))}
-                  <DropdownMenuSeparator />
-                </>
-              )}
-              <DropdownMenuItem onSelect={onEdit}>
-                <Pencil /> ویرایش
-              </DropdownMenuItem>
-              <DropdownMenuItem onSelect={onHistory}>
-                <History /> سابقه
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+            }
+            groups={[
+              ...(isPending
+                ? [
+                    {
+                      label: 'تعویق',
+                      items: snoozeOptions.map((s) => ({ label: s.label, icon: <AlarmClock />, onSelect: s.onSelect })),
+                    },
+                  ]
+                : []),
+              {
+                items: [
+                  { label: 'ویرایش', icon: <Pencil />, onSelect: onEdit },
+                  { label: 'سابقه', icon: <History />, onSelect: onHistory },
+                ],
+              },
+            ]}
+          />
         </CardContent>
       </Card>
     </SwipeRow>

@@ -21,6 +21,8 @@ const Drawer = (props: DrawerProps) => {
   return <DrawerPrimitive.Root data-slot="drawer" {...props} />
 }
 
+const DrawerTrigger = DrawerPrimitive.Trigger
+
 const DrawerContent = ({ className, children, ...props }: DrawerContentProps) => {
   return (
     <DrawerPrimitive.Portal>
@@ -52,4 +54,4 @@ const DrawerDescription = ({ className, ...props }: DrawerDescriptionProps) => {
   )
 }
 
-export { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription }
+export { Drawer, DrawerTrigger, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription }

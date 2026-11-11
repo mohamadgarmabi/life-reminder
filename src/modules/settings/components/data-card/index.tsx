@@ -1,6 +1,6 @@
 import { Download, Upload } from 'lucide-react'
 import { ConfirmDialog } from '#/modules/shell/components/dialogs'
-import { Button } from '#/components/button'
+import { SettingsRow } from '#/modules/settings/components/settings-row'
 import { SettingsSection } from '#/modules/settings/components/settings-section'
 import { useDataCard } from '#/modules/settings/hooks/data-card.hook'
 
@@ -21,14 +21,8 @@ const DataCard = () => {
       title="پشتیبان‌گیری"
       description="از اطلاعاتتان فایل JSON بگیرید و روی همین یا دستگاه دیگری بازیابی کنید."
     >
-      <div className="grid grid-cols-2 gap-2">
-        <Button variant="outline" onClick={handleExport}>
-          <Download /> خروجی JSON
-        </Button>
-        <Button variant="default" onClick={handlePickFile}>
-          <Upload /> بازیابی از فایل
-        </Button>
-      </div>
+      <SettingsRow icon={Download} tone="bg-emerald-500" title="خروجی JSON" onClick={handleExport} />
+      <SettingsRow icon={Upload} tone="bg-blue-500" title="بازیابی از فایل" onClick={handlePickFile} />
       <input
         ref={fileRef}
         type="file"

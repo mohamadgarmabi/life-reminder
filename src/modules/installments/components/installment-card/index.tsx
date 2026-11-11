@@ -3,7 +3,7 @@ import { SwipeRow } from '#/modules/shell/components/swipe-row'
 import { Badge } from '#/components/badge'
 import { Button } from '#/components/button'
 import { Card, CardContent } from '#/components/card'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '#/components/dropdown-menu'
+import { ActionSheet } from '#/modules/shell/components/action-sheet'
 import { Progress } from '#/components/progress'
 import { useInstallmentCard } from '#/modules/installments/hooks/installment-card.hook'
 import type { InstallmentCardProps } from '#/modules/installments/types'
@@ -48,21 +48,22 @@ const InstallmentCard = ({ inst, today, onEdit, onHistory, onDelete }: Installme
               </div>
               <p className="mt-0.5 font-bold text-primary">{amountLabel}</p>
             </div>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
+            <ActionSheet
+              title={inst.title}
+              trigger={
                 <Button variant="ghost" size="icon-sm" aria-label={menuAriaLabel}>
                   <MoreVertical />
                 </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem onSelect={onEdit}>
-                  <Pencil /> ویرایش
-                </DropdownMenuItem>
-                <DropdownMenuItem onSelect={onHistory}>
-                  <History /> سابقهٔ پرداخت
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+              }
+              groups={[
+                {
+                  items: [
+                    { label: 'ویرایش', icon: <Pencil />, onSelect: onEdit },
+                    { label: 'سابقهٔ پرداخت', icon: <History />, onSelect: onHistory },
+                  ],
+                },
+              ]}
+            />
           </div>
 
           <div className="space-y-1">

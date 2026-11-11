@@ -1,18 +1,19 @@
-import { Card } from '#/components/card'
-import { Label } from '#/components/label'
+import { Layers } from 'lucide-react'
 import { Switch } from '#/components/switch'
+import { SettingsRow } from '#/modules/settings/components/settings-row'
 import { useTransitionsCard } from '#/modules/settings/hooks/transitions-card.hook'
 
 const TransitionsCard = () => {
   const { enabled, handleChange } = useTransitionsCard()
 
   return (
-    <Card className="flex-row items-center justify-between px-4">
-      <Label htmlFor="page-transitions" className="font-semibold">
-        انیمیشن جابه‌جایی صفحه‌ها
-      </Label>
-      <Switch id="page-transitions" checked={enabled} onCheckedChange={handleChange} />
-    </Card>
+    <SettingsRow
+      icon={Layers}
+      tone="bg-sky-500"
+      title="انیمیشن جابه‌جایی صفحه‌ها"
+      htmlFor="page-transitions"
+      trailing={<Switch id="page-transitions" checked={enabled} onCheckedChange={handleChange} />}
+    />
   )
 }
 

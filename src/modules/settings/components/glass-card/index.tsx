@@ -1,10 +1,10 @@
-import { ChevronLeft, RotateCcw, Sparkles } from 'lucide-react'
+import { RotateCcw, Sparkles } from 'lucide-react'
 import { Button } from '#/components/button'
-import { Card, CardTitle } from '#/components/card'
 import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle } from '#/components/drawer'
 import { Label } from '#/components/label'
 import { Select } from '#/components/select'
 import { Switch } from '#/components/switch'
+import { SettingsRow } from '#/modules/settings/components/settings-row'
 import { GlassPreview } from '#/modules/settings/components/glass-preview'
 import { useGlassCard } from '#/modules/settings/hooks/glass-card.hook'
 import { GLASS_CONTROLS, GLASS_MATERIAL_OPTIONS } from '#/modules/settings/utils/settings.constants'
@@ -25,18 +25,13 @@ const GlassCard = () => {
 
   return (
     <Drawer open={open} onOpenChange={setOpen}>
-      <button
-        type="button"
+      <SettingsRow
+        icon={Sparkles}
+        tone="bg-violet-500"
+        title="شیشهٔ مایع"
+        trailing={<span className="text-sm text-muted-foreground">{materialLabel}</span>}
         onClick={() => setOpen(true)}
-        className="block w-full rounded-2xl text-start outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
-      >
-        <Card className="flex-row items-center gap-3 px-4 transition-transform active:scale-[0.98]">
-          <Sparkles className="size-5" aria-hidden />
-          <CardTitle className="flex-1">شیشهٔ مایع</CardTitle>
-          <span className="text-sm text-muted-foreground">{materialLabel}</span>
-          <ChevronLeft className="size-5 text-muted-foreground" aria-hidden />
-        </Card>
-      </button>
+      />
 
       <DrawerContent>
         <DrawerHeader>

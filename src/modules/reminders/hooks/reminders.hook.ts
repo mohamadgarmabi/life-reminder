@@ -2,7 +2,6 @@ import { useNavigate, useSearch } from '@tanstack/react-router'
 import { useState } from 'react'
 import { toast } from '#/components/sonner'
 import { useLiveQuery } from '#/modules/database/hooks/database.hook'
-import { toFaDigits } from '#/modules/shell/utils/format'
 import { useNow } from '#/modules/shell/hooks/now.hook'
 import { reminderRepo } from '#/modules/reminders/apis/reminders.api'
 import type { Reminder, ReminderFormValues, RemindersDialog } from '#/modules/reminders/types'
@@ -44,14 +43,14 @@ const useReminders = () => {
   const tabs = [
     {
       value: 'active',
-      label: `فعال (${toFaDigits(active.length)})`,
+      label: 'فعال',
       rows: toRows(active),
       hasRows: active.length > 0,
       emptyText: 'یادآور فعالی ندارید.',
     },
     {
       value: 'done',
-      label: `انجام‌شده (${toFaDigits(done.length)})`,
+      label: 'انجام‌شده',
       rows: toRows(done),
       hasRows: done.length > 0,
       emptyText: 'هنوز یادآوری انجام نشده است.',

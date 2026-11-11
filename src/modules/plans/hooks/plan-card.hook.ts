@@ -34,18 +34,20 @@ const usePlanCard = (plan: Plan) => {
 
   const isOpen = plan.status === 'planned' || plan.status === 'in-progress'
   // First action = full swipe. Finished plans get "reset" instead of done/skip.
-  const swipeActions = [
-    { id: 'delete', label: 'حذف', onSelect: handleDelete },
-    ...(isOpen
-      ? [
-          { id: 'done', label: 'انجام شد', color: '#30a46c', onSelect: () => setStatus('done') },
-          { id: 'skip', label: 'رد کردن', color: '#f5a524', onSelect: () => setStatus('skipped') },
-        ]
-      : [{ id: 'reset', label: 'بی‌وضعیت', color: '#8b8d98', onSelect: () => setStatus('planned') }]),
-  ]
+  const deleteAction = { id: 'delete' as const, label: 'حذف', onSelect: handleDelete }
+  const statusActions = isOpen
+    ? [
+        { id: 'done' as const, label: 'انجام شد', color: '#30a46c', onSelect: () => setStatus('done') },
+        { id: 'skip' as const, label: 'رد کردن', color: '#f5a524', onSelect: () => setStatus('skipped') },
+      ]
+    : [{ id: 'reset' as const, label: 'بی‌وضعیت', color: '#8b8d98', onSelect: () => setStatus('planned') }]
+  // Same actions back the swipe row and the ⋮ menu.
+  const swipeActions = [deleteAction, ...statusActions]
 
   return {
     swipeActions,
+    statusActions,
+    deleteAction,
     statusLabel: STATUS[plan.status].label,
     statusVariant: STATUS[plan.status].variant,
     yearLabel: toFaDigits(plan.year),

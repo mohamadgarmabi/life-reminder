@@ -1,19 +1,24 @@
-import { Moon, Sun } from 'lucide-react'
+import { Moon, Palette, Sun } from 'lucide-react'
 import { Button } from '#/components/button'
-import { Card, CardTitle } from '#/components/card'
+import { SettingsRow } from '#/modules/settings/components/settings-row'
 import { useThemeCard } from '#/modules/settings/hooks/theme-card.hook'
 
 const ThemeCard = () => {
   const { ariaLabel, sunClassName, moonClassName, handleToggle } = useThemeCard()
 
   return (
-    <Card className="flex-row items-center justify-between px-4">
-      <CardTitle>ظاهر</CardTitle>
-      <Button variant="secondary" size="icon" onClick={handleToggle} aria-label={ariaLabel}>
-        <Sun className={sunClassName} aria-hidden />
-        <Moon className={moonClassName} aria-hidden />
-      </Button>
-    </Card>
+    <SettingsRow
+      icon={Palette}
+      tone="bg-indigo-500"
+      title="پوسته"
+      description="روشن یا تیره"
+      trailing={
+        <Button variant="secondary" size="icon" onClick={handleToggle} aria-label={ariaLabel}>
+          <Sun className={sunClassName} aria-hidden />
+          <Moon className={moonClassName} aria-hidden />
+        </Button>
+      }
+    />
   )
 }
 

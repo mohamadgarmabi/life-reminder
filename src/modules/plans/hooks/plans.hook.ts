@@ -70,8 +70,9 @@ const usePlans = () => {
     isFilterEmpty: items.length > 0 && !visible.length,
     filter,
     filters: [
-      { value: 'all', label: `همه (${toFaDigits(report.total)})` },
-      ...STATUS_ORDER.map((s) => ({ value: s, label: `${STATUS[s].label} (${toFaDigits(report.counts[s])})` })),
+      // Counts live in the report card's stats; repeating them here overflows the pill on phones.
+      { value: 'all', label: 'همه' },
+      ...STATUS_ORDER.map((s) => ({ value: s, label: STATUS[s].label })),
     ],
     handleFilterChange: setFilter,
     report: {

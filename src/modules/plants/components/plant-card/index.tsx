@@ -2,7 +2,7 @@ import { Check, Droplets, History, MoreVertical, Pencil, Sprout } from 'lucide-r
 import { SwipeRow } from '#/modules/shell/components/swipe-row'
 import { Button } from '#/components/button'
 import { Card, CardContent } from '#/components/card'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '#/components/dropdown-menu'
+import { ActionSheet } from '#/modules/shell/components/action-sheet'
 import { usePlantCard } from '#/modules/plants/hooks/plant-card.hook'
 import type { PlantCardProps } from '#/modules/plants/types'
 import Image from '#/components/image'
@@ -50,8 +50,9 @@ const PlantCard = ({ plant, today, onEdit, onHistory, onDelete }: PlantCardProps
               <Sprout className="size-12" aria-hidden />
             </div>
           )}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
+          <ActionSheet
+            title={plant.name}
+            trigger={
               <Button
                 variant="secondary"
                 size="icon"
@@ -60,16 +61,16 @@ const PlantCard = ({ plant, today, onEdit, onHistory, onDelete }: PlantCardProps
               >
                 <MoreVertical />
               </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onSelect={onEdit}>
-                <Pencil /> ویرایش
-              </DropdownMenuItem>
-              <DropdownMenuItem onSelect={onHistory}>
-                <History /> سابقهٔ آبیاری
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+            }
+            groups={[
+              {
+                items: [
+                  { label: 'ویرایش', icon: <Pencil />, onSelect: onEdit },
+                  { label: 'سابقهٔ آبیاری', icon: <History />, onSelect: onHistory },
+                ],
+              },
+            ]}
+          />
         </div>
         {/* Narrow (mobile grid) cell: smaller type and padding; long labels wrap to two lines. */}
         <CardContent className="min-w-0 space-y-2 p-3 @xs:flex-1 @xs:space-y-3 @xs:p-4">

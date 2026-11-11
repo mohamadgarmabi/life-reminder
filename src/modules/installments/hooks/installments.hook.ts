@@ -80,10 +80,7 @@ const useInstallments = () => {
   const remainingTotal = active.reduce((sum, i) => sum + remainingPayments(i) * i.amount, 0)
   const monthlyTotal = active.reduce((sum, i) => sum + (remainingPayments(i) ? i.amount : 0), 0)
   const statusOf = (i: Installment) => installmentStatus(i, today)
-  const filters = FILTERS.map((f) => ({
-    value: f.value,
-    label: `${f.label} (${toFaDigits(items.filter((i) => f.match(statusOf(i))).length)})`,
-  }))
+  const filters = FILTERS.map((f) => ({ value: f.value, label: f.label }))
   const match = FILTERS.find((f) => f.value === filter)?.match ?? (() => true)
 
   const yearOf = (i: Installment, n: number) => getYear(parseIsoDate(paymentDueDate(i, n)))

@@ -1,16 +1,27 @@
-import { Check, Pencil, Play, Redo2, Undo2 } from 'lucide-react'
+import { Check, MoreVertical, Pencil, Play, Redo2, Trash2, Undo2 } from 'lucide-react'
 import { SwipeRow } from '#/modules/shell/components/swipe-row'
 import { Badge } from '#/components/badge'
 import { Button } from '#/components/button'
 import { Card, CardContent } from '#/components/card'
+import { ActionSheet } from '#/modules/shell/components/action-sheet'
 import { cn } from '#/modules/shell/utils/cn'
 import { usePlanCard } from '#/modules/plans/hooks/plan-card.hook'
 import type { PlanCardProps } from '#/modules/plans/types'
 
-const ICONS = { done: Check, skip: Redo2, reset: Undo2 } as const
+const ICONS = { done: Check, skip: Redo2, reset: Undo2, delete: Trash2 } as const
 
 const PlanCard = ({ plan, onEdit }: PlanCardProps) => {
-  const { swipeActions, statusLabel, statusVariant, yearLabel, isFinished, menuAriaLabel, nextStep } = usePlanCard(plan)
+  const {
+    swipeActions,
+    statusActions,
+    deleteAction,
+    statusLabel,
+    statusVariant,
+    yearLabel,
+    isFinished,
+    menuAriaLabel,
+    nextStep,
+  } = usePlanCard(plan)
 
   return (
     <SwipeRow
@@ -35,9 +46,30 @@ const PlanCard = ({ plan, onEdit }: PlanCardProps) => {
               </div>
               <p className="mt-0.5 text-xs text-muted-foreground">سال {yearLabel}</p>
             </div>
-            <Button variant="ghost" size="icon-sm" aria-label={menuAriaLabel} onClick={onEdit}>
-              <Pencil />
-            </Button>
+            <ActionSheet
+              title={plan.title}
+              trigger={
+                <Button variant="ghost" size="icon-sm" aria-label={menuAriaLabel}>
+                  <MoreVertical />
+                </Button>
+              }
+              groups={[
+                {
+                  items: [
+                    { label: 'ویرایش', icon: <Pencil />, onSelect: onEdit },
+                    ...statusActions.map((a) => {
+                      const Icon = ICONS[a.id]
+                      return { label: a.label, icon: <Icon />, onSelect: a.onSelect }
+                    }),
+                  ],
+                },
+                {
+                  items: [
+                    { label: deleteAction.label, icon: <Trash2 />, onSelect: deleteAction.onSelect, destructive: true },
+                  ],
+                },
+              ]}
+            />
           </div>
 
           {plan.description && (

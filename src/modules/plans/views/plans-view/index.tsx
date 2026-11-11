@@ -57,7 +57,8 @@ const PlansView = () => {
         {hasItems && (
           <Tabs value={filter} onValueChange={handleFilterChange} dir="rtl">
             <GlassFilter>
-              <TabsList className="w-full overflow-x-auto">
+              {/* justify-start: centered overflow clips the leading tabs out of scroll reach */}
+              <TabsList className="w-full justify-start overflow-x-auto [scrollbar-width:none]">
                 {filters.map((f) => (
                   <TabsTrigger key={f.value} value={f.value}>
                     {f.label}
@@ -129,7 +130,6 @@ const PlansView = () => {
               />
             )}
           </div>
-          <p className="mb-2 text-xs text-muted-foreground">برای انجام، رد کردن یا حذف، کارت را به راست بکشید.</p>
         </>
       )}
       {isFilterEmpty && <p className="py-10 text-center text-sm text-muted-foreground">برنامه‌ای در این دسته نیست.</p>}
