@@ -6,8 +6,11 @@ const useActionSheet = () => {
 
   // Run the action after the sheet finishes closing, so an action that opens another drawer doesn't fight this one.
   const handleSelect = (action: () => void) => {
-    pending.current = action
-    setOpen(false)
+    if (pending.current) {
+      pending.current = action
+    } else {
+      action?.()
+    }
   }
 
   const handleAnimationEnd = (isOpen: boolean) => {
