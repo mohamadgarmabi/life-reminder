@@ -2,6 +2,7 @@ import { Flower2, Plus } from 'lucide-react'
 import { FormDialog } from '#/modules/shell/components/dialogs'
 import { EmptyState, ErrorState, ListSkeleton, PageHeader } from '#/modules/shell/components/states'
 import { Button } from '#/components/button'
+import { SwipeHint } from '#/modules/shell/components/swipe-hint'
 import { AnimatedList } from '#/modules/shell/components/animated-list'
 import { ViewToggle } from '#/modules/shell/components/view-toggle'
 import { useViewMode } from '#/modules/shell/hooks/view-toggle.hook'
@@ -61,6 +62,7 @@ const PlantsView = () => {
           }
         />
       )}
+      {plants.length > 0 && <SwipeHint />}
       <AnimatedList view={view}>
         {plants.map((row) => (
           <PlantCard

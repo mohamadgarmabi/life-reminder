@@ -7,6 +7,8 @@ import { AnimatedList } from '#/modules/shell/components/animated-list'
 import { ViewToggle } from '#/modules/shell/components/view-toggle'
 import { useViewMode } from '#/modules/shell/hooks/view-toggle.hook'
 import { Select } from '#/components/select'
+import { FilterSheet } from '#/modules/shell/components/filter-sheet'
+import { SwipeHint } from '#/modules/shell/components/swipe-hint'
 import { Tabs, TabsList, TabsTrigger } from '#/components/tabs'
 import { InstallmentCard } from '#/modules/installments/components/installment-card'
 import { InstallmentForm } from '#/modules/installments/components/installment-form'
@@ -25,6 +27,9 @@ const InstallmentsView = () => {
     filters,
     filter,
     handleFilterChange,
+    activeFilterCount,
+    handleResetFilters,
+    listLabel,
     year,
     month,
     yearOptions,
@@ -98,29 +103,26 @@ const InstallmentsView = () => {
         />
       )}
       {hasItems && (
-        <div className="mb-3 grid grid-cols-2 gap-2">
-          <Select
-            label="مرتب‌سازی"
-            value={sort}
-            onValueChange={handleSortChange}
-            options={sortOptions}
-            className={hasTags ? 'w-full' : 'col-span-2 w-full'}
-          />
-          {hasTags && (
-            <Select label="تگ" value={tag} onValueChange={handleTagChange} options={tagOptions} className="w-full" />
-          )}
-          <Select
-            label="ماه"
-            value={month}
-            onValueChange={handleMonthChange}
-            options={monthOptions}
-            disabled={isMonthDisabled}
-            className="w-full"
-          />
-          <Select label="سال" value={year} onValueChange={handleYearChange} options={yearOptions} className="w-full" />
-        </div>
+        <>
+          <div className="mb-3 flex items-center justify-between gap-2">
+            <p className="text-sm font-medium">{periodSummary ?? listLabel}</p>
+            <FilterSheet activeCount={activeFilterCount} onReset={handleResetFilters}>
+              <Select nested label="سال" value={year} onValueChange={handleYearChange} options={yearOptions} />
+              <Select
+                nested
+                label="ماه"
+                value={month}
+                onValueChange={handleMonthChange}
+                options={monthOptions}
+                disabled={isMonthDisabled}
+              />
+              <Select nested label="مرتب‌سازی" value={sort} onValueChange={handleSortChange} options={sortOptions} />
+              {hasTags && <Select nested label="تگ" value={tag} onValueChange={handleTagChange} options={tagOptions} />}
+            </FilterSheet>
+          </div>
+          <SwipeHint />
+        </>
       )}
-      {periodSummary && <p className="mb-3 text-sm font-medium">{periodSummary}</p>}
       {isFilterEmpty && <p className="py-10 text-center text-sm text-muted-foreground">قسطی در این دسته نیست.</p>}
       <AnimatedList view={view}>
         {cards.map((card) => (

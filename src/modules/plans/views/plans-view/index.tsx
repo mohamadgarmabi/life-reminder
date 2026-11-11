@@ -2,6 +2,8 @@ import { Plus, Target } from 'lucide-react'
 import { FormDialog } from '#/modules/shell/components/dialogs'
 import { EmptyState, ErrorState, ListSkeleton, PageHeader } from '#/modules/shell/components/states'
 import { GlassFilter } from '#/modules/shell/components/glass-filter'
+import { FilterSheet } from '#/modules/shell/components/filter-sheet'
+import { SwipeHint } from '#/modules/shell/components/swipe-hint'
 import { AnimatedList } from '#/modules/shell/components/animated-list'
 import { Button } from '#/components/button'
 import { Card, CardContent } from '#/components/card'
@@ -34,6 +36,9 @@ const PlansView = () => {
     hasTags,
     tagOptions,
     handleTagChange,
+    activeFilterCount,
+    handleResetFilters,
+    listLabel,
     defaultYear,
     isFormOpen,
     formTitle,
@@ -105,31 +110,15 @@ const PlansView = () => {
             </CardContent>
           </Card>
 
-          <div className="mb-3 grid grid-cols-2 gap-2">
-            <Select
-              label="سال"
-              value={year}
-              onValueChange={handleYearChange}
-              options={yearOptions}
-              className="w-full"
-            />
-            <Select
-              label="مرتب‌سازی"
-              value={sort}
-              onValueChange={handleSortChange}
-              options={sortOptions}
-              className="w-full"
-            />
-            {hasTags && (
-              <Select
-                label="تگ"
-                value={tag}
-                onValueChange={handleTagChange}
-                options={tagOptions}
-                className="col-span-2 w-full"
-              />
-            )}
+          <div className="mb-3 flex items-center justify-between gap-2">
+            <p className="text-sm text-muted-foreground">{listLabel}</p>
+            <FilterSheet activeCount={activeFilterCount} onReset={handleResetFilters}>
+              <Select nested label="سال" value={year} onValueChange={handleYearChange} options={yearOptions} />
+              <Select nested label="مرتب‌سازی" value={sort} onValueChange={handleSortChange} options={sortOptions} />
+              {hasTags && <Select nested label="تگ" value={tag} onValueChange={handleTagChange} options={tagOptions} />}
+            </FilterSheet>
           </div>
+          <SwipeHint />
         </>
       )}
       {isFilterEmpty && <p className="py-10 text-center text-sm text-muted-foreground">برنامه‌ای در این دسته نیست.</p>}

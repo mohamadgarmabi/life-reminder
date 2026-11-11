@@ -29,6 +29,8 @@ const settingsSchema = z.object({
     reminders: z.enum(['list', 'grid']),
     plants: z.enum(['list', 'grid']),
   }),
+  /** The one-time "swipe cards" tip was dismissed. */
+  swipeHintSeen: z.boolean(),
   /** Home screen widgets in display order; mini = quarter row, small = half, large = full width. */
   widgets: z.array(
     z.object({
@@ -51,6 +53,7 @@ const DEFAULT_SETTINGS: Settings = {
   pageTransitions: true,
   glassEnabled: false,
   glass: DEFAULT_GLASS,
+  swipeHintSeen: false,
   views: { installments: 'list', reminders: 'list', plants: 'grid' },
   widgets: [
     { id: 'date', size: 'small' },

@@ -122,9 +122,17 @@ const useInstallments = () => {
     isEmpty: q.status === 'success' && !items.length,
     hasItems: items.length > 0,
     isFilterEmpty: items.length > 0 && !cards.length,
+    listLabel: `${toFaDigits(cards.length)} قسط`,
     filters,
     filter,
     handleFilterChange: setFilter,
+    activeFilterCount: [year !== 'all', month !== 'all', sort !== 'status', tag !== 'all'].filter(Boolean).length,
+    handleResetFilters: () => {
+      setYear('all')
+      setMonth('all')
+      setSort('status')
+      setTag('all')
+    },
     year,
     month,
     yearOptions: [

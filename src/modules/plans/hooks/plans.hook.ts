@@ -68,6 +68,7 @@ const usePlans = () => {
     isEmpty: q.status === 'success' && !items.length,
     hasItems: items.length > 0,
     isFilterEmpty: items.length > 0 && !visible.length,
+    listLabel: `${toFaDigits(visible.length)} برنامه`,
     filter,
     filters: [
       // Counts live in the report card's stats; repeating them here overflows the pill on phones.
@@ -75,6 +76,12 @@ const usePlans = () => {
       ...STATUS_ORDER.map((s) => ({ value: s, label: STATUS[s].label })),
     ],
     handleFilterChange: setFilter,
+    activeFilterCount: [year !== String(currentYear), sort !== 'status', tag !== 'all'].filter(Boolean).length,
+    handleResetFilters: () => {
+      setYear(String(currentYear))
+      setSort('status')
+      setTag('all')
+    },
     report: {
       percent: report.percent,
       percentLabel: `${toFaDigits(report.percent)}٪`,
