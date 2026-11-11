@@ -12,7 +12,7 @@ type DbStatus =
 type IsoDate = string
 
 interface NavItem {
-  to: '/' | '/installments' | '/plants' | '/reminders' | '/settings'
+  to: '/' | '/installments' | '/plans' | '/plants' | '/reminders' | '/settings'
   label: string
   icon: LucideIcon
 }

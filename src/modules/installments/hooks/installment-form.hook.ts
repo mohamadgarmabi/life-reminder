@@ -1,5 +1,5 @@
 import { revalidateLogic } from '@tanstack/react-form'
-import { useState, type FormEvent, type KeyboardEvent } from 'react'
+import type { FormEvent } from 'react'
 import { useLiveQuery } from '#/modules/database/hooks/database.hook'
 import { installmentRepo } from '#/modules/installments/apis/installments.api'
 import { useAppForm } from '#/modules/shell/components/form-fields'
@@ -65,32 +65,6 @@ const useInstallmentForm = ({ initial, onSubmit }: InstallmentFormProps) => {
   // tags from every installment, offered as suggestions
   const all = useLiveQuery(() => installmentRepo.list())
   const knownTags = [...new Set((all.data ?? []).flatMap((i) => i.tags))].sort((a, b) => a.localeCompare(b, 'fa'))
-  const [tagDraft, setTagDraft] = useState('')
-
-  const getTagInput = (selected: string[], onChange: (value: string[]) => void) => {
-    const add = (tag: string) => {
-      const t = tag.trim()
-      if (t && !selected.includes(t)) onChange([...selected, t])
-      setTagDraft('')
-    }
-    const q = tagDraft.trim()
-    return {
-      draft: tagDraft,
-      handleDraftChange: (v: string) => setTagDraft(v),
-      handleKeyDown: (e: KeyboardEvent<HTMLInputElement>) => {
-        if (e.key !== 'Enter' && e.key !== ',' && e.key !== '،') return
-        e.preventDefault()
-        add(tagDraft)
-      },
-      handleAdd: () => add(tagDraft),
-      canAdd: q.length > 0 && !selected.includes(q),
-      selected: selected.map((t) => ({ tag: t, onRemove: () => onChange(selected.filter((x) => x !== t)) })),
-      suggestions: knownTags
-        .filter((t) => !selected.includes(t) && t.includes(q))
-        .map((t) => ({ tag: t, onAdd: () => add(t) })),
-    }
-  }
-
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     void form.handleSubmit()
@@ -100,7 +74,7 @@ const useInstallmentForm = ({ initial, onSubmit }: InstallmentFormProps) => {
     form,
     dayOptions: DAY_OPTIONS,
     getLeadOptions,
-    getTagInput,
+    knownTags,
     isCreate: !initial,
     submitLabel: initial ? 'ذخیرهٔ تغییرات' : 'افزودن قسط',
     handleSubmit,

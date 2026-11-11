@@ -29,7 +29,7 @@ interface AgendaKindMeta {
 }
 
 interface QuickActionProps {
-  to: AgendaRoute
+  to: AgendaRoute | '/plans'
   icon: LucideIcon
   label: string
 }

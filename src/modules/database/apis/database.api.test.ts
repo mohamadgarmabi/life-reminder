@@ -4,6 +4,7 @@ import { exportData, importData, parseBackup } from '#/modules/settings/apis/bac
 import { installmentRepo, PaymentConflictError } from '#/modules/installments/apis/installments.api'
 import type { InstallmentFormValues } from '#/modules/installments/types'
 import { plantRepo } from '#/modules/plants/apis/plants.api'
+import { planRepo } from '#/modules/plans/apis/plans.api'
 import { reminderRepo } from '#/modules/reminders/apis/reminders.api'
 import { pendingOccurrence } from '#/modules/reminders/utils/schedule'
 import { appStore } from '#/modules/shell/stores/shell.store'
@@ -158,5 +159,35 @@ describe('backup', () => {
     parsed.backup.data.payments = [dupe, { ...dupe, id: 'q' }]
     await expect(importData(parsed.backup)).rejects.toBeDefined()
     expect(await installmentRepo.list()).toEqual([existing])
+  })
+})
+
+describe('plans', () => {
+  it('creates, changes status, deletes and restores; survives export/import', async () => {
+    const created = await planRepo.create({
+      title: 'دویدن',
+      description: '  ',
+      year: 1405,
+      status: 'planned',
+      tags: ['سلامتی'],
+    })
+    expect(created.description).toBeNull()
+    const done = await planRepo.setStatus(created.id, 'done')
+    expect(done).toMatchObject({ status: 'done', title: 'دویدن', tags: ['سلامتی'] })
+    const backup = parseBackup(await exportData())
+    await planRepo.remove(created.id)
+    expect(await planRepo.list()).toEqual([])
+    await planRepo.restore(done)
+    expect(await planRepo.list()).toEqual([done])
+    if (!backup.ok) throw new Error(backup.error)
+    await importData(backup.backup)
+    expect(await planRepo.list()).toEqual([done])
+  })
+
+  it('imports old backups that have no plans', async () => {
+    const backup = JSON.parse(await exportData())
+    delete backup.data.plans
+    const parsed = parseBackup(JSON.stringify(backup))
+    expect(parsed.ok && parsed.backup.data.plans).toEqual([])
   })
 })

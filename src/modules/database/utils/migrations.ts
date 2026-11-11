@@ -29,6 +29,10 @@ const migrations: Migration[] = [
     const ledger = db.createObjectStore('notificationLedger', { keyPath: 'key' })
     ledger.createIndex('byFiredAt', 'firedAt')
   },
+  // v1 → v2: yearly plans
+  (db) => {
+    db.createObjectStore('plans', { keyPath: 'id' })
+  },
 ]
 
 const DB_VERSION = migrations.length

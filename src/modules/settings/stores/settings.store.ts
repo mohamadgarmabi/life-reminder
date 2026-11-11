@@ -32,7 +32,7 @@ const settingsSchema = z.object({
   /** Home screen widgets in display order; mini = quarter row, small = half, large = full width. */
   widgets: z.array(
     z.object({
-      id: z.enum(['date', 'quick', 'overdue', 'today', 'upcoming', 'games']),
+      id: z.enum(['date', 'quick', 'overdue', 'today', 'upcoming', 'games', 'plants', 'plans']),
       size: z.enum(['mini', 'small', 'large']),
     }),
   ),
@@ -59,6 +59,8 @@ const DEFAULT_SETTINGS: Settings = {
     { id: 'today', size: 'large' },
     { id: 'upcoming', size: 'large' },
     { id: 'games', size: 'large' },
+    { id: 'plants', size: 'large' },
+    { id: 'plans', size: 'small' },
   ],
 }
 

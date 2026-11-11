@@ -96,7 +96,8 @@
   position: absolute;
   inset-block: 0.25rem;
   inset-inline-start: 0.25rem;
-  width: calc((100% - 0.5rem) / 5);
+  /* --n: tab count, set from NAV in app-shell.hook.ts */
+  width: calc((100% - 0.5rem) / var(--n));
   pointer-events: none;
   /* RTL: tab 0 is on the right, later tabs move left. */
   transform: translateX(calc(var(--i) * -100%));

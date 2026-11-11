@@ -5,6 +5,7 @@ import type { WidgetId } from '#/modules/dashboard/types'
 import { buildAgenda } from '#/modules/dashboard/utils/agenda'
 import { moveWidget, toggleWidgetSize, withAllWidgets } from '#/modules/dashboard/utils/widgets'
 import { installmentRepo } from '#/modules/installments/apis/installments.api'
+import { planRepo } from '#/modules/plans/apis/plans.api'
 import { plantRepo } from '#/modules/plants/apis/plants.api'
 import { reminderRepo } from '#/modules/reminders/apis/reminders.api'
 import { settingsStore, updateSettings } from '#/modules/settings/stores/settings.store'
@@ -18,12 +19,13 @@ const useDashboard = () => {
   const widgets = withAllWidgets(useSelector(settingsStore, (s) => s.widgets))
   const [editing, setEditing] = useState(false)
   const q = useLiveQuery(async () => {
-    const [installments, plants, reminders] = await Promise.all([
+    const [installments, plants, reminders, plans] = await Promise.all([
       installmentRepo.list(),
       plantRepo.list(),
       reminderRepo.list(),
+      planRepo.list(),
     ])
-    return { installments, plants, reminders }
+    return { installments, plants, reminders, plans }
   })
   const agenda = q.data ? buildAgenda(q.data, now) : null
 
@@ -32,6 +34,8 @@ const useDashboard = () => {
     dateLabel: formatDateLong(now),
     error: q.status === 'error' ? q.error : null,
     agenda,
+    plants: q.data?.plants,
+    plans: q.data?.plans,
     summary: agenda
       ? `${toFaDigits(agenda.today.length)} کار امروز · ${toFaDigits(agenda.overdue.length)} معوق`
       : undefined,

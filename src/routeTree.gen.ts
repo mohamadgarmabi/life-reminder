@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as InstallmentsRouteImport } from './routes/installments'
+import { Route as PlansRouteImport } from './routes/plans'
 import { Route as PlantsRouteImport } from './routes/plants'
 import { Route as RemindersRouteImport } from './routes/reminders'
 import { Route as SettingsRouteImport } from './routes/settings'
@@ -27,6 +28,11 @@ const IndexRoute = IndexRouteImport.update({
 const InstallmentsRoute = InstallmentsRouteImport.update({
   id: '/installments',
   path: '/installments',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PlansRoute = PlansRouteImport.update({
+  id: '/plans',
+  path: '/plans',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PlantsRoute = PlantsRouteImport.update({
@@ -68,6 +74,7 @@ const GamesSudokuRoute = GamesSudokuRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/installments': typeof InstallmentsRoute
+  '/plans': typeof PlansRoute
   '/plants': typeof PlantsRoute
   '/reminders': typeof RemindersRoute
   '/settings': typeof SettingsRoute
@@ -79,6 +86,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/installments': typeof InstallmentsRoute
+  '/plans': typeof PlansRoute
   '/plants': typeof PlantsRoute
   '/reminders': typeof RemindersRoute
   '/settings': typeof SettingsRoute
@@ -91,6 +99,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/installments': typeof InstallmentsRoute
+  '/plans': typeof PlansRoute
   '/plants': typeof PlantsRoute
   '/reminders': typeof RemindersRoute
   '/settings': typeof SettingsRoute
@@ -104,6 +113,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/installments'
+    | '/plans'
     | '/plants'
     | '/reminders'
     | '/settings'
@@ -115,6 +125,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/installments'
+    | '/plans'
     | '/plants'
     | '/reminders'
     | '/settings'
@@ -126,6 +137,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/installments'
+    | '/plans'
     | '/plants'
     | '/reminders'
     | '/settings'
@@ -138,6 +150,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   InstallmentsRoute: typeof InstallmentsRoute
+  PlansRoute: typeof PlansRoute
   PlantsRoute: typeof PlantsRoute
   RemindersRoute: typeof RemindersRoute
   SettingsRoute: typeof SettingsRoute
@@ -161,6 +174,13 @@ declare module '@tanstack/react-router' {
       path: '/installments'
       fullPath: '/installments'
       preLoaderRoute: typeof InstallmentsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/plans': {
+      id: '/plans'
+      path: '/plans'
+      fullPath: '/plans'
+      preLoaderRoute: typeof PlansRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/plants': {
@@ -218,6 +238,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   InstallmentsRoute: InstallmentsRoute,
+  PlansRoute: PlansRoute,
   PlantsRoute: PlantsRoute,
   RemindersRoute: RemindersRoute,
   SettingsRoute: SettingsRoute,

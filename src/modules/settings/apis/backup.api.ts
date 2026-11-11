@@ -5,6 +5,7 @@ import { DB_VERSION } from '#/modules/database/utils/migrations'
 import { DATA_STORES } from '#/modules/database/utils/database.schema'
 import { installmentSchema, paymentSchema } from '#/modules/installments/utils/installments.schema'
 import { plantSchema, wateringSchema } from '#/modules/plants/utils/plants.schema'
+import { planSchema } from '#/modules/plans/utils/plans.schema'
 import { reminderEventSchema, reminderSchema } from '#/modules/reminders/utils/reminders.schema'
 import { settingsSchema, settingsStore, updateSettings } from '#/modules/settings/stores/settings.store'
 import type { Backup, ParseResult } from '#/modules/settings/types'
@@ -21,6 +22,8 @@ const backupSchema = z.object({
     waterings: z.array(wateringSchema),
     reminders: z.array(reminderSchema),
     reminderEvents: z.array(reminderEventSchema),
+    // default: backups made before plans existed
+    plans: z.array(planSchema).default([]),
   }),
 })
 
@@ -71,6 +74,7 @@ const importData = async (backup: Backup) => {
     ...d.waterings.map((r) => tx.objectStore('waterings').put(r)),
     ...d.reminders.map((r) => tx.objectStore('reminders').put(r)),
     ...d.reminderEvents.map((r) => tx.objectStore('reminderEvents').put(r)),
+    ...d.plans.map((r) => tx.objectStore('plans').put(r)),
   ]
   try {
     await Promise.all(writes)

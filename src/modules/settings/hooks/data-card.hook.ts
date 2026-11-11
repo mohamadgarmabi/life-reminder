@@ -27,7 +27,7 @@ const useDataCard = () => {
   }
 
   const counts = pending
-    ? `${toFaDigits(pending.data.installments.length)} قسط، ${toFaDigits(pending.data.plants.length)} گیاه و ${toFaDigits(pending.data.reminders.length)} یادآور`
+    ? `${toFaDigits(pending.data.installments.length)} قسط، ${toFaDigits(pending.data.plants.length)} گیاه، ${toFaDigits(pending.data.reminders.length)} یادآور و ${toFaDigits(pending.data.plans.length)} برنامه`
     : ''
 
   const handleExport = () => void exportBackup().catch(() => toast.error('خروجی گرفتن ناموفق بود.'))

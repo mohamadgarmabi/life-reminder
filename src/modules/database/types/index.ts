@@ -2,6 +2,7 @@ import type { DBSchema, IDBPDatabase } from 'idb'
 import type { DATA_STORES } from '#/modules/database/utils/database.schema'
 import type { Installment, Payment } from '#/modules/installments/types'
 import type { Plant, Watering } from '#/modules/plants/types'
+import type { Plan } from '#/modules/plans/types'
 import type { Reminder, ReminderEvent } from '#/modules/reminders/types'
 
 interface LedgerEntry {
@@ -25,6 +26,7 @@ interface LifeDB extends DBSchema {
   }
   reminders: { key: string; value: Reminder }
   reminderEvents: { key: string; value: ReminderEvent; indexes: { byReminder: string } }
+  plans: { key: string; value: Plan }
   notificationLedger: { key: string; value: LedgerEntry; indexes: { byFiredAt: string } }
 }
 

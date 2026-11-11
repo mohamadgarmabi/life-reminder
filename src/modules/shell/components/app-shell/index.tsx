@@ -36,7 +36,7 @@ const AppShell = ({ children }: { children: ReactNode }) => {
             aria-label="منوی اصلی"
             {...dragHandlers}
             className={cn(
-              'vt-tab-bar fixed inset-x-4 bottom-[max(1rem,env(safe-area-inset-bottom))] isolate z-10 mx-auto grid max-w-sm grid-cols-5 rounded-full p-1',
+              'vt-tab-bar fixed inset-x-4 bottom-[max(1rem,env(safe-area-inset-bottom))] isolate z-10 mx-auto grid max-w-sm grid-cols-6 rounded-full p-1',
               // Solid bar needs a shadow to lift off the page; glass has its own rim and soft shadow.
               glass ? 'touch-none select-none' : 'shadow-[var(--material-shadow)]',
             )}

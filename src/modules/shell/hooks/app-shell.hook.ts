@@ -1,4 +1,4 @@
-import { Bell, Flower2, House, Settings, Wallet } from 'lucide-react'
+import { Bell, Flower2, House, Settings, Target, Wallet } from 'lucide-react'
 import { useNavigate, useRouterState } from '@tanstack/react-router'
 import { useSelector } from '@tanstack/react-store'
 import { useRef, useState } from 'react'
@@ -10,6 +10,7 @@ import type { NavItem } from '#/modules/shell/types'
 const NAV: NavItem[] = [
   { to: '/', label: 'خانه', icon: House },
   { to: '/installments', label: 'اقساط', icon: Wallet },
+  { to: '/plans', label: 'برنامه‌ها', icon: Target },
   { to: '/plants', label: 'گل‌ها', icon: Flower2 },
   { to: '/reminders', label: 'یادآورها', icon: Bell },
   { to: '/settings', label: 'تنظیمات', icon: Settings },
@@ -78,7 +79,7 @@ const useAppShell = () => {
     key: active,
     hidden: active < 0 && !dragging,
     dragging,
-    style: { '--i': dragging ? dragAt : Math.max(active, 0) } as CSSProperties,
+    style: { '--i': dragging ? dragAt : Math.max(active, 0), '--n': NAV.length } as CSSProperties,
   }
   return { navItems, contentStyle, immersive, drop, glass, dragHandlers }
 }

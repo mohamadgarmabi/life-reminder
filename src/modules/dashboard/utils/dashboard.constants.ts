@@ -1,4 +1,4 @@
-import { AlertTriangle, Bell, CalendarDays, CalendarCheck, Flower2, Wallet } from 'lucide-react'
+import { AlertTriangle, Bell, CalendarDays, CalendarCheck, Flower2, Target, Wallet } from 'lucide-react'
 import type {
   Agenda,
   AgendaKindMeta,
@@ -18,6 +18,7 @@ const QUICK_ACTIONS: QuickActionProps[] = [
   { to: '/installments', icon: Wallet, label: 'قسط' },
   { to: '/plants', icon: Flower2, label: 'گیاه' },
   { to: '/reminders', icon: Bell, label: 'یادآور' },
+  { to: '/plans', icon: Target, label: 'برنامه' },
 ]
 
 const AGENDA_WIDGETS: Record<keyof Agenda, Pick<AgendaWidgetProps, 'title' | 'icon' | 'empty' | 'danger'>> = {
@@ -34,6 +35,8 @@ const WIDGET_LABEL: Record<WidgetId, string> = {
   today: 'ویجت امروز',
   upcoming: 'ویجت روزهای آینده',
   games: 'ویجت بازی‌ها',
+  plants: 'ویجت گیاهان',
+  plans: 'ویجت پیشرفت برنامه‌ها',
 }
 
 export { KIND, QUICK_ACTIONS, AGENDA_WIDGETS, WIDGET_LABEL }

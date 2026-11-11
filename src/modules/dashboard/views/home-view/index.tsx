@@ -3,6 +3,8 @@ import { Skeleton } from '#/components/skeleton'
 import { AgendaWidget } from '#/modules/dashboard/components/agenda-widget'
 import { DateWidget } from '#/modules/dashboard/components/date-widget'
 import { GamesWidget } from '#/modules/dashboard/components/games-widget'
+import { PlansWidget } from '#/modules/dashboard/components/plans-widget'
+import { PlantsWidget } from '#/modules/dashboard/components/plants-widget'
 import { QuickWidget } from '#/modules/dashboard/components/quick-widget'
 import { Widget } from '#/modules/dashboard/components/widget'
 import { useDashboard } from '#/modules/dashboard/hooks/dashboard.hook'
@@ -16,6 +18,8 @@ const HomeView = () => {
     dateLabel,
     error,
     agenda,
+    plants,
+    plans,
     summary,
     widgets,
     editing,
@@ -29,6 +33,10 @@ const HomeView = () => {
     if (id === 'date') return <DateWidget size={size} now={now} summary={summary} />
     if (id === 'quick') return <QuickWidget size={size} />
     if (id === 'games') return <GamesWidget size={size} />
+    if (id === 'plans')
+      return plans ? <PlansWidget size={size} plans={plans} /> : <Skeleton className="h-full w-full rounded-2xl" />
+    if (id === 'plants')
+      return plants ? <PlantsWidget size={size} plants={plants} /> : <Skeleton className="h-full w-full rounded-2xl" />
     if (!agenda) return <Skeleton className="h-full w-full rounded-2xl" />
     return <AgendaWidget size={size} items={agenda[id]} now={now} {...AGENDA_WIDGETS[id]} />
   }

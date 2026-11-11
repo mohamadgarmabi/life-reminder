@@ -25,7 +25,7 @@ const QuickWidget = ({ size }: { size: WidgetSize }) => {
   return (
     <>
       <p className="mb-2 text-sm font-semibold">افزودن سریع</p>
-      <div className={cn('flex-1 gap-2', small ? 'flex flex-col' : 'grid grid-cols-3')}>
+      <div className={cn('flex-1 gap-2', 'grid', small ? 'grid-cols-2' : 'grid-cols-4')}>
         {QUICK_ACTIONS.map(({ to, icon: Icon, label }) => (
           <Link
             key={to}
@@ -33,7 +33,8 @@ const QuickWidget = ({ size }: { size: WidgetSize }) => {
             search={{ new: true }}
             className={cn(
               'flex flex-1 items-center gap-2 rounded-2xl bg-secondary text-sm font-medium transition-transform outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 active:scale-95',
-              small ? 'px-3' : 'flex-col justify-center py-3',
+              'flex-col justify-center',
+              small ? 'py-1 text-xs' : 'py-3',
             )}
           >
             <span className="relative">
