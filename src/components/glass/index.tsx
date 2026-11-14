@@ -59,22 +59,28 @@ const GlassLayer = ({ radius, thick = false, soft = false, tone = 'surface', cla
   const borderColor = `rgba(255,255,255,${tone === 'page' ? 0 : rim * RIM_SCALE[mode]})`
 
   return (
-    <LiquidGlass
-      aria-hidden
-      material={material}
-      {...optics}
-      {...(thick && { blur: Math.max(optics.blur ?? 0, THICK_BLUR) })}
-      // Page-toned bars (headers) must match the background exactly: no frost, colour boost, fringing or sheen.
-      {...(tone === 'page' && PAGE_OPTICS)}
-      radius={radius}
-      // Touch: show at once instead of staying transparent up to 400ms while the renderer warms up.
-      {...(touch && { reveal: 'immediate' as const })}
-      {...(!floating && { backdropSelector: backdrop, backdropVersion: mode })}
-      glassColor={glassColor}
-      borderColor={borderColor}
-      className={cn(soft && 'glass-soft', tone === 'page' && 'glass-bare', className)}
-      style={LAYER_STYLE}
-    />
+    <>
+      <LiquidGlass
+        aria-hidden
+        material={material}
+        {...optics}
+        {...(thick && { blur: Math.max(optics.blur ?? 0, THICK_BLUR) })}
+        // Page-toned bars (headers) must match the background exactly: no frost, colour boost, fringing or sheen.
+        {...(tone === 'page' && PAGE_OPTICS)}
+        radius={radius}
+        // The default "lens" refraction map has a hard step at the panel's horizontal centre: a visible vertical seam on wide cards.
+        refraction="classic"
+        // Touch: show at once instead of staying transparent up to 400ms while the renderer warms up.
+        {...(touch && { reveal: 'immediate' as const })}
+        {...(!floating && { backdropSelector: backdrop, backdropVersion: mode })}
+        glassColor={glassColor}
+        // The library's rim is a corner-to-corner gradient that vanishes mid-edge; the div below draws an even one.
+        borderColor="transparent"
+        className={cn(soft && 'glass-soft', tone === 'page' && 'glass-bare', className)}
+        style={LAYER_STYLE}
+      />
+      <div aria-hidden style={{ ...LAYER_STYLE, borderRadius: radius, boxShadow: `inset 0 0 0 1px ${borderColor}` }} />
+    </>
   )
 }
 

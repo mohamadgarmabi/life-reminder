@@ -59,7 +59,7 @@ const QualityMonitor = () => {
   const mode = useGame((g) => g.settings.quality)
   const phase = useGame((g) => g.phase)
   const sample = useRef({ frames: 0, time: 0 })
-  const state = useRef<TierState>({ tier: 'high', slowFor: 0, fastFor: 0 })
+  const state = useRef<TierState>({ tier: store.state.tier, slowFor: 0, fastFor: 0 })
   useEffect(() => {
     state.current = nextTier(state.current, 60, mode)
     if (mode !== 'auto') patchGame(store, { tier: mode })

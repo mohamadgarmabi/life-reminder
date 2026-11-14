@@ -8,6 +8,7 @@ import { loadGameData, saveGameData } from '#/modules/games/utils/game-db'
 import { setMuted } from '#/modules/games/utils/sfx'
 import { toFaDigits } from '#/modules/shell/utils/format'
 import { Button } from '#/components/button'
+import { cn } from '#/modules/shell/utils/cn'
 
 type GameShellProps = {
   title: string
@@ -24,6 +25,8 @@ type GameShellProps = {
   actions?: ReactNode
   before?: ReactNode
   after?: ReactNode
+  /** Full-bleed play area (3D games): children fill the screen edge to edge; the HUD buttons float on top. */
+  immersive?: boolean
   children: ReactNode
 }
 
@@ -99,6 +102,7 @@ const GameShell = ({
   actions,
   before,
   after,
+  immersive = false,
   children,
 }: GameShellProps) => {
   // Leaving the game leaves browser fullscreen too.
@@ -113,17 +117,34 @@ const GameShell = ({
 
   return createPortal(
     <section
-      className="fixed inset-0 z-50 flex flex-col overflow-hidden overscroll-none bg-background pt-[env(safe-area-inset-top)] pr-[env(safe-area-inset-right)] pb-[env(safe-area-inset-bottom)] pl-[env(safe-area-inset-left)] text-foreground select-none"
+      className={cn(
+        'fixed inset-0 z-50 flex flex-col overflow-hidden overscroll-none bg-background text-foreground select-none',
+        !immersive &&
+          'pt-[env(safe-area-inset-top)] pr-[env(safe-area-inset-right)] pb-[env(safe-area-inset-bottom)] pl-[env(safe-area-inset-left)]',
+      )}
       aria-label={title}
     >
-      <header className="flex items-center gap-2 px-3 pt-2 pb-1">
+      <header
+        className={cn(
+          'flex items-center gap-2 px-3 pt-2 pb-1',
+          immersive &&
+            'pointer-events-none absolute inset-x-0 top-0 z-20 pt-[calc(env(safe-area-inset-top)+0.5rem)] pr-[calc(env(safe-area-inset-right)+0.75rem)] pl-[calc(env(safe-area-inset-left)+0.75rem)] [&>*]:pointer-events-auto',
+        )}
+      >
         <Button variant="secondary" size="icon" className={HUD_BUTTON} asChild>
           <Link to="/games" aria-label="بازگشت به بازی‌ها">
             <ChevronRight />
           </Link>
         </Button>
         {/* Title sits beside the back button, like a native navigation bar; controls stay on the far side. */}
-        <h1 className="min-w-0 flex-1 truncate text-lg font-bold tracking-tight">{title}</h1>
+        <h1
+          className={cn(
+            'min-w-0 flex-1 truncate text-lg font-bold tracking-tight',
+            immersive && 'text-white drop-shadow-[0_1px_2px_rgb(0_0_0/0.6)]',
+          )}
+        >
+          {title}
+        </h1>
         {actions}
         {onPause && (
           <Button variant="secondary" size="icon" className={HUD_BUTTON} onClick={onPause} aria-label="مکث">
@@ -150,10 +171,14 @@ const GameShell = ({
       {before && <div className="mx-auto w-full max-w-md px-3 pt-2">{before}</div>}
 
       <div className="relative min-h-0 flex-1">
-        <div className="flex size-full flex-col overflow-y-auto px-3 py-3 [container-type:size]">
-          {/* my-auto centres without clipping the top when content is taller than the screen. */}
-          <div className="my-auto flex w-full shrink-0 flex-col items-center">{children}</div>
-        </div>
+        {immersive ? (
+          <div className="absolute inset-0">{children}</div>
+        ) : (
+          <div className="flex size-full flex-col overflow-y-auto px-3 py-3 [container-type:size]">
+            {/* my-auto centres without clipping the top when content is taller than the screen. */}
+            <div className="my-auto flex w-full shrink-0 flex-col items-center">{children}</div>
+          </div>
+        )}
         {overlay && (
           <div className="absolute inset-0 z-10 flex items-center justify-center bg-background/55 p-6 animate-in fade-in duration-200">
             <div
@@ -165,6 +190,11 @@ const GameShell = ({
               {primary && (
                 <Button size="lg" className="h-12 w-full text-base" autoFocus onClick={primary}>
                   {overlay.action}
+                </Button>
+              )}
+              {overlay.secondary && (
+                <Button variant="secondary" size="lg" className="w-full" onClick={overlay.secondary.onAction}>
+                  {overlay.secondary.label}
                 </Button>
               )}
               {overlay.onAction && overlay.restart && onRestart && (

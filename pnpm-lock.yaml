@@ -32,6 +32,9 @@ importers:
       '@tanstack/react-form':
         specifier: 1.33.5
         version: 1.33.5(@tanstack/react-start@1.169.4(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.16)(rollup@4.67.4)(vite@8.3.5(@types/node@22.20.5)(jiti@2.7.0)(terser@5.51.2)))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
+      '@tanstack/react-query':
+        specifier: ^5.107.1
+        version: 5.107.1(@types/react@19.3.0)(react@19.3.1)
       '@tanstack/react-router':
         specifier: 1.170.46
         version: 1.170.46(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
@@ -90,8 +93,8 @@ importers:
         specifier: ^4.1.18
         version: 4.3.4
       tanstack-fetch:
-        specifier: ^1.7.1
-        version: 1.7.1(react@19.3.1)
+        specifier: ^2.2.0
+        version: 2.2.0(react@19.3.1)
       three:
         specifier: 0.187.0
         version: 0.187.0
@@ -2325,6 +2328,9 @@ packages:
     resolution: {integrity: sha512-y/xtNPNt/YeyoVxE/JCx+T7yjEzpezmbb+toK8DDD1P4m7Kzs5YR956+7OKexG3f8aXgC3rLZl7b1V+yNUSy5w==}
     engines: {node: '>=18'}
 
+  '@tanstack/query-core@5.107.1':
+    resolution: {integrity: sha512-PSyAik11oQBEVOiVy5hjZWHmoUqOXqK1WYy4v55mcxozEfKaQgpUMsgnXhWjuESzSht8JfzqMS1m6M/9CpNgvg==}
+
   '@tanstack/react-form@1.33.5':
     resolution: {integrity: sha512-LlRB28qJwO/QCGaHvWnbdh4haBgTFiZVmzA2uzxSBS3YA7/IqrQ6HOBK70CkFQ+DbflZ7NawsmSln13h5iIdTA==}
     peerDependencies:
@@ -2332,6 +2338,15 @@ packages:
       react: ^17.0.0 || ^18.0.0 || ^19.0.0
     peerDependenciesMeta:
       '@tanstack/react-start':
+        optional: true
+
+  '@tanstack/react-query@5.107.1':
+    resolution: {integrity: sha512-udCOOLp3ZAheUrIHLCe+ZZge6nr2ZUrGMSWcCuXsjY1Bf2JeeE09oxst97PILiCY6N8xo/7bIo3Hvz13zh06FA==}
+    peerDependencies:
+      '@types/react': ^18 || ^19
+      react: ^18 || ^19
+    peerDependenciesMeta:
+      '@types/react':
         optional: true
 
   '@tanstack/react-router@1.170.46':
@@ -4180,8 +4195,8 @@ packages:
   tailwindcss@4.3.4:
     resolution: {integrity: sha512-PCJZTFFdG+sL3gvnP1Do9o6GbkvH2q0p04xSs3f7cSvmAeK+sttG+/7ncK1fdRwKFfC7n+wDDJaOMBSefkI9ow==}
 
-  tanstack-fetch@1.7.1:
-    resolution: {integrity: sha512-pbbcr5JEvdXvdsEj/f2+MrXgtO6Rsd6Fkkmn71qUYBn1aFyMc0RLy9crJF565luwgrjdBs0EURtyXHwq7t3jhQ==}
+  tanstack-fetch@2.2.0:
+    resolution: {integrity: sha512-BBojMtoXEqxOzdjNUw+VDrNiSkCsveda8fTljWwkYkDB2nSJ4Oq9Ep5U7q7MH3o5S9SkTsafMywJ5syouuWrvQ==}
     engines: {node: '>=18'}
     hasBin: true
     peerDependencies:
@@ -6905,6 +6920,8 @@ snapshots:
 
   '@tanstack/pacer-lite@0.1.1': {}
 
+  '@tanstack/query-core@5.107.1': {}
+
   '@tanstack/react-form@1.33.5(@tanstack/react-start@1.169.4(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.16)(rollup@4.67.4)(vite@8.3.5(@types/node@22.20.5)(jiti@2.7.0)(terser@5.51.2)))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)':
     dependencies:
       '@tanstack/form-core': 1.33.5
@@ -6914,6 +6931,13 @@ snapshots:
       '@tanstack/react-start': 1.169.4(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(rolldown@1.2.16)(rollup@4.67.4)(vite@8.3.5(@types/node@22.20.5)(jiti@2.7.0)(terser@5.51.2))
     transitivePeerDependencies:
       - react-dom
+
+  '@tanstack/react-query@5.107.1(@types/react@19.3.0)(react@19.3.1)':
+    dependencies:
+      '@tanstack/query-core': 5.107.1
+      react: 19.3.1
+    optionalDependencies:
+      '@types/react': 19.3.0
 
   '@tanstack/react-router@1.170.46(react-dom@19.3.1(react@19.3.1))(react@19.3.1)':
     dependencies:
@@ -8998,7 +9022,7 @@ snapshots:
 
   tailwindcss@4.3.4: {}
 
-  tanstack-fetch@1.7.1(react@19.3.1):
+  tanstack-fetch@2.2.0(react@19.3.1):
     optionalDependencies:
       react: 19.3.1
 

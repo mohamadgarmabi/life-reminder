@@ -11,6 +11,7 @@ import { reminderRepo } from '#/modules/reminders/apis/reminders.api'
 import { settingsStore, updateSettings } from '#/modules/settings/stores/settings.store'
 import { formatDateLong, toFaDigits } from '#/modules/shell/utils/format'
 import { useNow } from '#/modules/shell/hooks/now.hook'
+import { usePrices } from '#/modules/dashboard/hooks/prices.hook'
 
 const currentWidgets = () => withAllWidgets(settingsStore.state.widgets)
 
@@ -18,6 +19,7 @@ const useDashboard = () => {
   const now = useNow()
   const widgets = withAllWidgets(useSelector(settingsStore, (s) => s.widgets))
   const [editing, setEditing] = useState(false)
+  const market = usePrices()
   const q = useLiveQuery(async () => {
     const [installments, plants, reminders, plans] = await Promise.all([
       installmentRepo.list(),
@@ -39,6 +41,7 @@ const useDashboard = () => {
     summary: agenda
       ? `${toFaDigits(agenda.today.length)} کار امروز · ${toFaDigits(agenda.overdue.length)} معوق`
       : undefined,
+    market,
     widgets,
     editing,
     toggleEditing: () => setEditing((e) => !e),

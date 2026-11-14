@@ -73,7 +73,8 @@ const createEngine = (world: AdventureWorld): Engine => ({
     saveStatus: 'none',
     loadedSave: null,
     area: 'start',
-    tier: 'high',
+    // Phones start low: high (shadows, 2× DPR) can exhaust GPU memory on the first frames and lose the WebGL context. Auto quality upgrades after 10 smooth seconds.
+    tier: typeof matchMedia !== 'undefined' && matchMedia('(pointer: coarse)').matches ? 'low' : 'high',
   }),
   runtime: {
     input: { move: { x: 0, y: 0 }, look: { x: 0, y: 0 } },

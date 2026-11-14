@@ -69,8 +69,14 @@ const pwa = VitePWA({
     globPatterns: ['**/*.{js,css,html,svg,png,ico,woff2,webmanifest}'],
     // The 3D adventure (≈1 MB gzipped) is not precached: users who never open it never download it.
     // It is cached on first open instead, so it then plays offline.
-    globIgnores: ['404.html', '_shell.html', 'assets/forgotten-island-*.js'],
+    // The traffic game's 3D assets (~17 MB: sky, textures, cars) are likewise cached on first play only.
+    globIgnores: ['404.html', '_shell.html', 'assets/forgotten-island-*.js', 'game-assets/**'],
     runtimeCaching: [
+      {
+        urlPattern: /\/game-assets\//,
+        handler: 'CacheFirst',
+        options: { cacheName: 'game-assets', cacheableResponse: { statuses: [200] } },
+      },
       {
         urlPattern: /\/assets\/forgotten-island-[\w-]+\.js$/,
         handler: 'CacheFirst',

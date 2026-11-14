@@ -42,4 +42,45 @@ const sfx = {
   },
 }
 
-export { sfx, setMuted }
+/** Continuous engine note for driving games: `set(rev 0..1, on)` every frame or so; `stop()` when leaving. */
+const createEngine = () => {
+  const idle = { set: (_rev: number, _on: boolean) => {}, stop: () => {} }
+  try {
+    audio ??= new AudioContext()
+  } catch {
+    return idle
+  }
+  const ctx = audio
+  const base = ctx.createOscillator()
+  const sub = ctx.createOscillator()
+  const filter = ctx.createBiquadFilter()
+  const gain = ctx.createGain()
+  base.type = 'sawtooth'
+  sub.type = 'square'
+  filter.type = 'lowpass'
+  filter.Q.value = 3
+  gain.gain.value = 0
+  base.connect(filter)
+  sub.connect(filter)
+  filter.connect(gain).connect(ctx.destination)
+  base.start()
+  sub.start()
+  return {
+    set: (rev: number, on: boolean) => {
+      // Browsers start audio suspended until a tap; the game's start button is one.
+      if (ctx.state === 'suspended') void ctx.resume()
+      const t = ctx.currentTime
+      base.frequency.setTargetAtTime(38 + rev * 110, t, 0.08)
+      sub.frequency.setTargetAtTime(19 + rev * 55, t, 0.08)
+      filter.frequency.setTargetAtTime(250 + rev * 1600, t, 0.1)
+      gain.gain.setTargetAtTime(on && !muted ? 0.03 + rev * 0.025 : 0, t, 0.1)
+    },
+    stop: () => {
+      gain.gain.setTargetAtTime(0, ctx.currentTime, 0.05)
+      base.stop(ctx.currentTime + 0.3)
+      sub.stop(ctx.currentTime + 0.3)
+    },
+  }
+}
+
+export { sfx, setMuted, createEngine }

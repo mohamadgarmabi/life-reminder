@@ -29,6 +29,8 @@ const AGENDA_WIDGETS: Record<keyof Agenda, Pick<AgendaWidgetProps, 'title' | 'ic
 
 /** Names used in edit-mode button labels. */
 const WIDGET_LABEL: Record<WidgetId, string> = {
+  dollar: 'ویجت قیمت دلار',
+  gold: 'ویجت قیمت طلا',
   date: 'ویجت تاریخ',
   quick: 'ویجت افزودن سریع',
   overdue: 'ویجت معوق',

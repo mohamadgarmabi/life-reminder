@@ -38,6 +38,14 @@ const GAMES: GameEntry[] = [
     tint: 'bg-indigo-500/15',
   },
   {
+    id: 'traffic',
+    title: 'ترافیک',
+    description: 'در بزرگراه لاین عوض کن، سبقت بگیر و به ماشین‌ها نزن',
+    category: '3d',
+    emoji: '🚗',
+    tint: 'bg-red-500/15',
+  },
+  {
     id: 'snake',
     title: 'مار',
     description: 'میوه بخور، بلندتر شو، به خودت نخور',

@@ -7,6 +7,7 @@ import { Gamepad2 } from 'lucide-react'
 // One chunk per game; the service worker precaches them all, so every game works offline.
 const VIEWS = {
   runner: lazy(() => import('#/modules/games/views/runner-view')),
+  traffic: lazy(() => import('#/modules/games/views/traffic-view')),
   snake: lazy(() => import('#/modules/games/views/snake-view')),
   blocks: lazy(() => import('#/modules/games/views/blocks-view')),
   breakout: lazy(() => import('#/modules/games/views/breakout-view')),

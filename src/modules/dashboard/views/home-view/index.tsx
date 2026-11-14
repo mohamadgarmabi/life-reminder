@@ -4,6 +4,7 @@ import { AgendaWidget } from '#/modules/dashboard/components/agenda-widget'
 import { DateWidget } from '#/modules/dashboard/components/date-widget'
 import { GamesWidget } from '#/modules/dashboard/components/games-widget'
 import { PlansWidget } from '#/modules/dashboard/components/plans-widget'
+import { PriceWidget } from '#/modules/dashboard/components/price-widget'
 import { PlantsWidget } from '#/modules/dashboard/components/plants-widget'
 import { QuickWidget } from '#/modules/dashboard/components/quick-widget'
 import { Widget } from '#/modules/dashboard/components/widget'
@@ -21,6 +22,7 @@ const HomeView = () => {
     plants,
     plans,
     summary,
+    market,
     widgets,
     editing,
     toggleEditing,
@@ -30,6 +32,8 @@ const HomeView = () => {
   } = useDashboard()
 
   const content = ({ id, size }: WidgetConfig) => {
+    if (id === 'dollar' || id === 'gold')
+      return <PriceWidget id={id} size={size} price={market.prices?.[id]} failed={market.failed} />
     if (id === 'date') return <DateWidget size={size} now={now} summary={summary} />
     if (id === 'quick') return <QuickWidget size={size} />
     if (id === 'games') return <GamesWidget size={size} />

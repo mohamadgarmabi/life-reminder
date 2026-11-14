@@ -77,6 +77,8 @@ type GameOverlay = {
   onAction?: () => void
   /** Also offer "restart" next to a custom action (e.g. resume). */
   restart?: boolean
+  /** A further button under the main one (e.g. back to a game's setup screen). */
+  secondary?: { label: string; onAction: () => void }
 }
 
 export type {

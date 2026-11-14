@@ -1,10 +1,10 @@
 import type { WidgetConfig, WidgetId, WidgetSize } from '#/modules/dashboard/types'
 import { DEFAULT_SETTINGS } from '#/modules/settings/stores/settings.store'
 
-/** Saved layout plus any widget added in a later version (appended with its default size). */
+/** Saved layout plus any widget added in a later version, placed first (with its default size) so it gets noticed. */
 const withAllWidgets = (saved: WidgetConfig[]): WidgetConfig[] => [
-  ...saved,
   ...DEFAULT_SETTINGS.widgets.filter((d) => !saved.some((w) => w.id === d.id)),
+  ...saved,
 ]
 /** Moves `from` to the slot `to` currently holds (the drop target), shifting the rest. */
 const moveWidget = (list: WidgetConfig[], from: WidgetId, to: WidgetId): WidgetConfig[] => {

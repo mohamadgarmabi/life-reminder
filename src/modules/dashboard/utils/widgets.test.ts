@@ -22,9 +22,10 @@ describe('widgets', () => {
     expect(toggleWidgetSize(toggleWidgetSize(list, 'quick'), 'quick')[1].size).toBe('small')
   })
 
-  it('appends widgets missing from an older saved layout', () => {
+  it('puts widgets missing from an older saved layout first, keeping the saved order after them', () => {
     const all = withAllWidgets(list)
-    expect(ids(all).slice(0, 3)).toEqual(['date', 'quick', 'today'])
+    expect(ids(all).slice(0, 2)).toEqual(['dollar', 'gold'])
+    expect(ids(all).slice(-3)).toEqual(['date', 'quick', 'today'])
     expect(ids(all)).toEqual(expect.arrayContaining(['overdue', 'upcoming']))
     expect(new Set(ids(all)).size).toBe(all.length)
   })

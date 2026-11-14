@@ -34,7 +34,7 @@ const settingsSchema = z.object({
   /** Home screen widgets in display order; mini = quarter row, small = half, large = full width. */
   widgets: z.array(
     z.object({
-      id: z.enum(['date', 'quick', 'overdue', 'today', 'upcoming', 'games', 'plants', 'plans']),
+      id: z.enum(['dollar', 'gold', 'date', 'quick', 'overdue', 'today', 'upcoming', 'games', 'plants', 'plans']),
       size: z.enum(['mini', 'small', 'large']),
     }),
   ),
@@ -56,6 +56,8 @@ const DEFAULT_SETTINGS: Settings = {
   swipeHintSeen: false,
   views: { installments: 'list', reminders: 'list', plants: 'grid' },
   widgets: [
+    { id: 'dollar', size: 'small' },
+    { id: 'gold', size: 'small' },
     { id: 'date', size: 'small' },
     { id: 'overdue', size: 'small' },
     { id: 'quick', size: 'large' },
