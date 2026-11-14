@@ -18,10 +18,10 @@ const ActionSheet = ({
   title: string
   groups: ActionSheetGroup[]
 }) => {
-  const { open, setOpen, handleSelect, handleAnimationEnd } = useActionSheet()
+  const { open, setOpen, handleSelect } = useActionSheet()
 
   return (
-    <Drawer open={open} onOpenChange={setOpen} onAnimationEnd={handleAnimationEnd}>
+    <Drawer open={open} onOpenChange={setOpen}>
       <DrawerTrigger asChild>{trigger}</DrawerTrigger>
       <DrawerContent>
         <DrawerHeader>
