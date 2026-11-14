@@ -18,7 +18,12 @@ import type {
 } from './drawer.types'
 
 const Drawer = (props: DrawerProps) => {
-  return <DrawerPrimitive.Root data-slot="drawer" {...props} />
+  // disablePreventScroll={false} turns vaul's iOS scroll-prevention OFF (the prop reads backwards).
+  // That code does `window.scrollTo(0, 0)` on open and scrolls back on close; react-aria compensates with a
+  // negative body margin, but vaul dropped it and leans on its own `position: fixed` body instead — which it
+  // skips in an installed PWA. So on a long list the page snapped to the top for as long as a sheet was open.
+  // The sheet still locks the page: `position: fixed` in Safari, Radix's `overflow: hidden` elsewhere.
+  return <DrawerPrimitive.Root data-slot="drawer" disablePreventScroll={false} {...props} />
 }
 
 const DrawerTrigger = DrawerPrimitive.Trigger
