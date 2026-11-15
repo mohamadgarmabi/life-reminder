@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { toast } from '#/components/sonner'
+import { notify } from '#/modules/shell/utils/notify'
 import { useRegisterSW } from 'virtual:pwa-register/react'
 import { z } from 'zod'
 import { toFaDigits } from '#/modules/shell/utils/format'
@@ -21,7 +21,7 @@ const useUpdatePrompt = () => {
 
   useEffect(() => {
     if (!offlineReady) return
-    toast.success('برنامه برای استفادهٔ آفلاین آماده است.')
+    notify.success('برنامه برای استفادهٔ آفلاین آماده است.')
     setOfflineReady(false)
   }, [offlineReady, setOfflineReady])
 

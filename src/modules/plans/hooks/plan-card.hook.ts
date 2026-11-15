@@ -1,11 +1,11 @@
-import { toast } from '#/components/sonner'
+import { notify } from '#/modules/shell/utils/notify'
 import { toFaDigits } from '#/modules/shell/utils/format'
 import { planRepo } from '#/modules/plans/apis/plans.api'
 import { STATUS } from '#/modules/plans/utils/plans.constants'
 import type { Plan, PlanStatus } from '#/modules/plans/types'
 
 const showError = (e: unknown) => {
-  toast.error(e instanceof Error ? e.message : 'خطا در ذخیره‌سازی')
+  notify.error(e instanceof Error ? e.message : 'خطا در ذخیره‌سازی')
 }
 
 const usePlanCard = (plan: Plan) => {
@@ -14,7 +14,7 @@ const usePlanCard = (plan: Plan) => {
     planRepo
       .setStatus(plan.id, status)
       .then(() =>
-        toast.success(`«${plan.title}»: ${STATUS[status].label}`, {
+        notify.success(`«${plan.title}»: ${STATUS[status].label}`, {
           action: { label: 'بازگردانی', onClick: () => void planRepo.setStatus(plan.id, previous).catch(showError) },
         }),
       )
@@ -25,7 +25,7 @@ const usePlanCard = (plan: Plan) => {
     planRepo
       .remove(plan.id)
       .then(() =>
-        toast.success('برنامه حذف شد.', {
+        notify.success('برنامه حذف شد.', {
           action: { label: 'بازگردانی', onClick: () => void planRepo.restore(plan).catch(showError) },
         }),
       )

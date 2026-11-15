@@ -1,6 +1,6 @@
 import { useNavigate, useSearch } from '@tanstack/react-router'
 import { useState } from 'react'
-import { toast } from '#/components/sonner'
+import { notify } from '#/modules/shell/utils/notify'
 import { useLiveQuery } from '#/modules/database/hooks/database.hook'
 import { useNow } from '#/modules/shell/hooks/now.hook'
 import { reminderRepo } from '#/modules/reminders/apis/reminders.api'
@@ -21,10 +21,10 @@ const useReminders = () => {
   const save = async (task: Promise<unknown>, message: string) => {
     try {
       await task
-      toast.success(message)
+      notify.success(message)
       close()
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : 'خطا در ذخیره‌سازی')
+      notify.error(e instanceof Error ? e.message : 'خطا در ذخیره‌سازی')
     }
   }
 

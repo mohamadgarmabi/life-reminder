@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate, useSearch } from '@tanstack/react-router'
 import { getYear } from 'date-fns-jalali'
-import { toast } from '#/components/sonner'
+import { notify } from '#/modules/shell/utils/notify'
 import { useLiveQuery } from '#/modules/database/hooks/database.hook'
 import { toFaDigits } from '#/modules/shell/utils/format'
 import { planRepo } from '#/modules/plans/apis/plans.api'
@@ -42,10 +42,10 @@ const usePlans = () => {
   const save = async (task: Promise<unknown>, message: string) => {
     try {
       await task
-      toast.success(message)
+      notify.success(message)
       close()
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : 'خطا در ذخیره‌سازی')
+      notify.error(e instanceof Error ? e.message : 'خطا در ذخیره‌سازی')
     }
   }
 

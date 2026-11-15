@@ -1,6 +1,6 @@
 import { useSelector } from '@tanstack/react-store'
 import { useState } from 'react'
-import { toast } from '#/components/sonner'
+import { notify } from '#/modules/shell/utils/notify'
 import { permissionStatus, requestPermission, showNotification } from '#/modules/notifications/apis/notifications.api'
 import type { PermissionStatus } from '#/modules/notifications/types'
 import { runReminderCheck } from '#/modules/notifications/utils/reminder-engine'
@@ -17,7 +17,7 @@ const useNotificationsCard = () => {
     const result = permission === 'granted' ? permission : await requestPermission()
     setPermission(result)
     if (result !== 'granted') {
-      toast.error(result === 'denied' ? 'اجازهٔ اعلان در تنظیمات مرورگر مسدود شده است.' : 'اجازهٔ اعلان داده نشد.')
+      notify.error(result === 'denied' ? 'اجازهٔ اعلان در تنظیمات مرورگر مسدود شده است.' : 'اجازهٔ اعلان داده نشد.')
       return
     }
     updateSettings({ notificationsEnabled: true })

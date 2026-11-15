@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, type PointerEvent } from 'react'
 import { Armchair, Car, ChevronLeft, ChevronRight } from 'lucide-react'
 import { Button } from '#/components/button'
 import { Progress } from '#/components/progress'
-import { toast } from '#/components/sonner'
+import { notify } from '#/modules/shell/utils/notify'
 import { GameShell } from '#/modules/games/components/game-shell'
 import { useArcade } from '#/modules/games/hooks/arcade.hook'
 import { useKeys } from '#/modules/games/hooks/canvas-game.hook'
@@ -210,7 +210,7 @@ const TrafficView = () => {
     window.addEventListener('deviceorientation', onTilt)
     const silent = window.setTimeout(() => {
       if (tilt.current.seen) return
-      toast.info('حسگر حرکت پاسخ نداد؛ فرمان به دکمه‌های چپ و راست تغییر کرد.')
+      notify.info('حسگر حرکت پاسخ نداد؛ فرمان به دکمه‌های چپ و راست تغییر کرد.')
       const next = { ...run, control: 'touch' as const }
       setSetup(next)
       setRun(next)
@@ -242,7 +242,7 @@ const TrafficView = () => {
     engine.current ??= createEngine()
     let next = setup
     if (next.control === 'tilt' && !(await requestTilt())) {
-      toast.info('اجازهٔ حسگر حرکت داده نشد؛ با دکمه‌های چپ و راست بازی کن.')
+      notify.info('اجازهٔ حسگر حرکت داده نشد؛ با دکمه‌های چپ و راست بازی کن.')
       next = { ...next, control: 'touch' }
     }
     setSetup(next)

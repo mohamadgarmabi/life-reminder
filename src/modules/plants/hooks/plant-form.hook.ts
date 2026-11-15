@@ -1,7 +1,7 @@
 import { revalidateLogic, useField, useStore } from '@tanstack/react-form'
 import type { ChangeEvent, FormEvent } from 'react'
 import { useId } from 'react'
-import { toast } from '#/components/sonner'
+import { notify } from '#/modules/shell/utils/notify'
 import { useAppForm } from '#/modules/shell/components/form-fields'
 import { todayIso } from '#/modules/shell/utils/dates'
 import { resizeImage } from '#/modules/plants/utils/image'
@@ -37,7 +37,7 @@ const usePlantForm = ({ initial, onSubmit }: PlantFormProps) => {
     try {
       imageField.handleChange(await resizeImage(file))
     } catch {
-      toast.error('خواندن این تصویر ممکن نشد.')
+      notify.error('خواندن این تصویر ممکن نشد.')
     }
   }
 

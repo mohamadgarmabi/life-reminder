@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { toast } from '#/components/sonner'
+import { notify } from '#/modules/shell/utils/notify'
 import { formatDayMonth, relativeDay, toFaDigits } from '#/modules/shell/utils/format'
 import { cn } from '#/modules/shell/utils/cn'
 import { plantRepo } from '#/modules/plants/apis/plants.api'
@@ -16,10 +16,10 @@ const usePlantCard = ({ plant, today }: Pick<PlantCardProps, 'plant' | 'today'>)
     setBusy(true)
     try {
       const added = await plantRepo.markWatered(plant.id)
-      if (added) toast.success(`${plant.name} آبیاری شد.`)
-      else toast.info('آبیاری امروز قبلاً ثبت شده است.')
+      if (added) notify.success(`${plant.name} آبیاری شد.`)
+      else notify.info('آبیاری امروز قبلاً ثبت شده است.')
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : 'خطا در ذخیره‌سازی')
+      notify.error(e instanceof Error ? e.message : 'خطا در ذخیره‌سازی')
     } finally {
       setBusy(false)
     }

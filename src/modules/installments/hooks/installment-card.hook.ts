@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { toast } from '#/components/sonner'
+import { notify } from '#/modules/shell/utils/notify'
 import { formatDate, formatDateLong, formatMoney, relativeDay, toFaDigits } from '#/modules/shell/utils/format'
 import { installmentRepo } from '#/modules/installments/apis/installments.api'
 import type { InstallmentCardProps, InstallmentStatus } from '#/modules/installments/types'
@@ -23,7 +23,7 @@ const STATUS: Record<
 }
 
 const showError = (e: unknown) => {
-  toast.error(e instanceof Error ? e.message : 'خطا در ذخیره‌سازی')
+  notify.error(e instanceof Error ? e.message : 'خطا در ذخیره‌سازی')
 }
 
 const useInstallmentCard = ({ inst, today }: Pick<InstallmentCardProps, 'inst' | 'today'>) => {
@@ -37,7 +37,7 @@ const useInstallmentCard = ({ inst, today }: Pick<InstallmentCardProps, 'inst' |
     setPaying(true)
     try {
       const payment = await installmentRepo.markPaid(inst.id, next.index)
-      toast.success(`قسط ${toFaDigits(next.index + 1)} «${inst.title}» ثبت شد.`, {
+      notify.success(`قسط ${toFaDigits(next.index + 1)} «${inst.title}» ثبت شد.`, {
         action: { label: 'بازگردانی', onClick: () => void installmentRepo.undoPayment(payment.id).catch(showError) },
       })
     } catch (e) {
