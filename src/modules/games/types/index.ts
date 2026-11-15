@@ -1,3 +1,5 @@
+import type { ReactNode } from 'react'
+
 type SudokuDifficulty = 'easy' | 'medium' | 'hard'
 
 type SudokuPuzzle = {
@@ -81,7 +83,19 @@ type GameOverlay = {
   secondary?: { label: string; onAction: () => void }
 }
 
+/** One HUD figure a game reports (score, best, lives…), already formatted for display. */
+type GameStat = { label: string; value: ReactNode }
+
+type GameIslandProps = {
+  title: string
+  stats: GameStat[]
+  /** The shell's overlay (ready, paused, game over); while it is up the island greys out and shows pause. */
+  overlay?: GameOverlay | null
+}
+
 export type {
+  GameStat,
+  GameIslandProps,
   ScoreEntry,
   GameStatus,
   CanvasPalette,

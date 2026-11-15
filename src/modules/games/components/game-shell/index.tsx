@@ -3,7 +3,8 @@ import { createPortal } from 'react-dom'
 import { Link } from '@tanstack/react-router'
 import { ChevronRight, Maximize, Minimize, Pause, RotateCcw, Volume2, VolumeX } from 'lucide-react'
 import { z } from 'zod'
-import type { GameOverlay, ScoreEntry } from '#/modules/games/types'
+import { GameIsland } from '#/modules/games/components/game-island'
+import type { GameOverlay, GameStat, ScoreEntry } from '#/modules/games/types'
 import { loadGameData, saveGameData } from '#/modules/games/utils/game-db'
 import { setMuted } from '#/modules/games/utils/sfx'
 import { toFaDigits } from '#/modules/shell/utils/format'
@@ -12,7 +13,7 @@ import { cn } from '#/modules/shell/utils/cn'
 
 type GameShellProps = {
   title: string
-  stats?: { label: string; value: ReactNode }[]
+  stats?: GameStat[]
   overlay?: GameOverlay | null
   /** Starts a new run; used by the overlay when it has no onAction of its own, and by "restart". */
   onRestart?: () => void
@@ -155,15 +156,13 @@ const GameShell = ({
         <SoundToggle />
       </header>
 
+      {/* The stats row the island replaced, kept for screen readers: the pill only voices the first one. */}
       {stats && (
-        <dl className="mx-auto flex w-full max-w-md justify-center gap-2 px-3 py-1">
+        <dl className="sr-only">
           {stats.map((stat) => (
-            <div
-              key={stat.label}
-              className="flex min-w-0 flex-1 flex-col items-center rounded-2xl bg-secondary/70 px-2 py-1"
-            >
-              <dt className="text-[11px] text-muted-foreground">{stat.label}</dt>
-              <dd className="text-lg leading-tight font-bold tabular-nums">{stat.value}</dd>
+            <div key={stat.label}>
+              <dt>{stat.label}</dt>
+              <dd>{stat.value}</dd>
             </div>
           ))}
         </dl>
@@ -179,6 +178,8 @@ const GameShell = ({
             <div className="my-auto flex w-full shrink-0 flex-col items-center">{children}</div>
           </div>
         )}
+        {/* Draws at the top of this play area, clear of the header; under the overlay, which is z-10. */}
+        {stats && <GameIsland title={title} stats={stats} overlay={overlay} />}
         {overlay && (
           <div className="absolute inset-0 z-10 flex items-center justify-center bg-background/55 p-6 animate-in fade-in duration-200">
             <div
