@@ -29,4 +29,27 @@ const plantFormSchema = z.object({
   notes: z.string().max(2000),
 })
 
-export { plantSchema, wateringSchema, plantFormSchema }
+// AI replies come from a model: coerce and clamp instead of trusting them.
+const plantIdentifySchema = z.object({
+  name: z
+    .string()
+    .catch('')
+    .transform((s) => s.trim().slice(0, 100)),
+  wateringIntervalDays: z.coerce
+    .number()
+    .catch(7)
+    .transform((n) => Math.min(365, Math.max(1, Math.round(n)))),
+  care: z
+    .string()
+    .catch('')
+    .transform((s) => s.trim().slice(0, 2000)),
+})
+
+const plantDiagnosisSchema = z.object({
+  name: z.string().catch(''),
+  healthy: z.boolean().catch(false),
+  summary: z.string().catch(''),
+  problems: z.array(z.object({ title: z.string(), cause: z.string().catch(''), fix: z.string().catch('') })).catch([]),
+})
+
+export { plantSchema, wateringSchema, plantFormSchema, plantIdentifySchema, plantDiagnosisSchema }

@@ -53,6 +53,8 @@ const usePlants = () => {
     error: q.status === 'error' ? q.error : undefined,
     isEmpty: q.status === 'success' && !sorted.length,
     openCreate: () => setDialog({ type: 'create' }),
+    openDoctor: () => setDialog({ type: 'doctor' }),
+    isDoctorOpen: dialog?.type === 'doctor',
     handleOpenChange: (o: boolean) => {
       if (!o) close()
     },

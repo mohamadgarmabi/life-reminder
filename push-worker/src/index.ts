@@ -12,8 +12,13 @@ interface D1Database {
   batch: (statements: D1Statement[]) => Promise<unknown>
 }
 
+interface Ai {
+  run: (model: string, input: unknown) => Promise<{ response?: unknown }>
+}
+
 interface Env {
   DB: D1Database
+  AI: Ai
   VAPID_PUBLIC_KEY: string
   VAPID_PRIVATE_KEY: string
   VAPID_SUBJECT: string
@@ -40,6 +45,67 @@ const syncSchema = z.object({
     )
     .max(500),
 })
+
+// Free tier of Workers AI; vision-capable, accepts the image as a data URL.
+const VISION_MODEL = '@cf/meta/llama-4-scout-17b-16e-instruct'
+
+const plantAiSchema = z.object({
+  mode: z.enum(['identify', 'diagnose']),
+  // The app sends ≤640px JPEGs (~100 KB); the cap only stops abuse.
+  image: z.string().startsWith('data:image/').max(1_500_000),
+})
+
+const PROMPTS = {
+  identify: `You are a houseplant expert. Identify the plant in the photo and reply ONLY with JSON:
+{"name": string, "wateringIntervalDays": integer 1-60, "care": string}
+"name": common Persian name (scientific name in parentheses).
+"wateringIntervalDays": typical indoor watering interval in days.
+"care": concise Persian care guide, one line each for: light, watering, soil, temperature/humidity, fertilizer, one pro tip.
+If no plant is visible, use name "" and wateringIntervalDays 7.`,
+  diagnose: `You are a plant doctor. Examine the plant in the photo for diseases, pests, nutrient deficiencies,
+over/under-watering, light or temperature stress. Reply ONLY with JSON:
+{"name": string, "healthy": boolean, "summary": string, "problems": [{"title": string, "cause": string, "fix": string}]}
+All text in Persian. "name": common Persian name. "problems": empty when healthy, most likely first, at most 4.
+"fix": practical step-by-step treatment for home growers.`,
+}
+
+/** Models sometimes wrap JSON in prose or code fences; take the outermost object. */
+const extractJson = (response: unknown) => {
+  if (typeof response === 'object' && response) return response
+  const text = String(response ?? '')
+  const match = text.match(/\{[\s\S]*\}/)
+  if (!match) return null
+  try {
+    return JSON.parse(match[0]) as unknown
+  } catch {
+    return null
+  }
+}
+
+const handlePlantAi = async (request: Request, env: Env) => {
+  const parsed = plantAiSchema.safeParse(await request.json().catch(() => null))
+  if (!parsed.success) return new Response('invalid body', { status: 400, headers: cors(env) })
+  const { mode, image } = parsed.data
+  const result = await env.AI.run(VISION_MODEL, {
+    messages: [
+      {
+        role: 'user',
+        content: [
+          { type: 'text', text: PROMPTS[mode] },
+          { type: 'image_url', image_url: { url: image } },
+        ],
+      },
+    ],
+    max_tokens: 1024,
+    temperature: 0.2,
+  }).catch((e: unknown) => {
+    console.error('ai failed', e)
+    return null
+  })
+  const json = extractJson(result?.response)
+  if (!json) return new Response('ai failed', { status: 502, headers: cors(env) })
+  return Response.json(json, { headers: cors(env) })
+}
 
 const sha256Hex = async (s: string) =>
   [...new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s)))]
@@ -113,7 +179,9 @@ const sendDue = async (env: Env) => {
 const worker = {
   fetch: async (request: Request, env: Env) => {
     if (request.method === 'OPTIONS') return new Response(null, { headers: cors(env) })
-    if (request.method === 'POST' && new URL(request.url).pathname === '/sync') return handleSync(request, env)
+    const path = new URL(request.url).pathname
+    if (request.method === 'POST' && path === '/sync') return handleSync(request, env)
+    if (request.method === 'POST' && path === '/plant-ai') return handlePlantAi(request, env)
     return new Response('not found', { status: 404, headers: cors(env) })
   },
   scheduled: (_event: unknown, env: Env) => sendDue(env),

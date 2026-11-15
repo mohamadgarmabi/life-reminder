@@ -10,6 +10,9 @@ binding = "DB"
 database_name = "life-reminder-push"
 database_id = "afa672ca-a9a2-4422-8bc1-11767c585c71"
 
+[ai]
+binding = "AI"
+
 [vars]
 VAPID_PUBLIC_KEY = "BCJneO6p1xRBzPDpKwWW_gT4MYQaMcJwiDekNWXkeImpBadbqqr46XjqerVckv-OyCZBKrXz2RwFCkq2JusfIrA"
 VAPID_SUBJECT = "https://mohamadgarmabi.github.io/life-reminder/"

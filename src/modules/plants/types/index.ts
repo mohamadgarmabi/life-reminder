@@ -1,6 +1,12 @@
 import type { z } from 'zod'
 import type { IsoDate } from '#/modules/shell/types'
-import type { plantFormSchema, plantSchema, wateringSchema } from '#/modules/plants/utils/plants.schema'
+import type {
+  plantDiagnosisSchema,
+  plantFormSchema,
+  plantIdentifySchema,
+  plantSchema,
+  wateringSchema,
+} from '#/modules/plants/utils/plants.schema'
 
 type Plant = z.infer<typeof plantSchema>
 
@@ -23,6 +29,20 @@ type PlantFormProps = {
 
 type WateringHistoryProps = { plantId: string }
 
-type PlantsDialog = { type: 'create' } | { type: 'edit' | 'history'; item: Plant } | null
+type PlantIdentify = z.infer<typeof plantIdentifySchema>
 
-export type { Plant, Watering, PlantFormValues, PlantCardProps, PlantFormProps, WateringHistoryProps, PlantsDialog }
+type PlantDiagnosis = z.infer<typeof plantDiagnosisSchema>
+
+type PlantsDialog = { type: 'create' | 'doctor' } | { type: 'edit' | 'history'; item: Plant } | null
+
+export type {
+  Plant,
+  Watering,
+  PlantFormValues,
+  PlantCardProps,
+  PlantFormProps,
+  WateringHistoryProps,
+  PlantsDialog,
+  PlantDiagnosis,
+  PlantIdentify,
+}

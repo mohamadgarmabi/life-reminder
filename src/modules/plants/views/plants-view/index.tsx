@@ -1,4 +1,4 @@
-import { Flower2, Plus } from 'lucide-react'
+import { Flower2, Plus, Stethoscope } from 'lucide-react'
 import { FormDialog } from '#/modules/shell/components/dialogs'
 import { EmptyState, ErrorState, ListSkeleton, PageHeader } from '#/modules/shell/components/states'
 import { Button } from '#/components/button'
@@ -7,6 +7,8 @@ import { AnimatedList } from '#/modules/shell/components/animated-list'
 import { ViewToggle } from '#/modules/shell/components/view-toggle'
 import { useViewMode } from '#/modules/shell/hooks/view-toggle.hook'
 import { PlantCard } from '#/modules/plants/components/plant-card'
+import { isPlantAiAvailable } from '#/modules/plants/apis/plant-ai.api'
+import { PlantDoctor } from '#/modules/plants/components/plant-doctor'
 import { PlantForm } from '#/modules/plants/components/plant-form'
 import { WateringHistory } from '#/modules/plants/components/watering-history'
 import { usePlants } from '#/modules/plants/hooks/plants.hook'
@@ -20,6 +22,8 @@ const PlantsView = () => {
     error,
     isEmpty,
     openCreate,
+    openDoctor,
+    isDoctorOpen,
     handleOpenChange,
     isFormOpen,
     formTitle,
@@ -41,6 +45,11 @@ const PlantsView = () => {
         action={
           <div className="flex items-center gap-2">
             <ViewToggle page="plants" />
+            {isPlantAiAvailable && (
+              <Button variant="secondary" size="icon" aria-label="تشخیص مشکل گیاه" onClick={openDoctor}>
+                <Stethoscope />
+              </Button>
+            )}
             <Button onClick={openCreate}>
               <Plus /> گیاه جدید
             </Button>
@@ -88,6 +97,15 @@ const PlantsView = () => {
         description={historyDescription}
       >
         {historyPlant && <WateringHistory plantId={historyPlant.id} />}
+      </FormDialog>
+
+      <FormDialog
+        open={isDoctorOpen}
+        onOpenChange={handleOpenChange}
+        title="تشخیص مشکل گیاه"
+        description="عکس گلتان را بدهید تا بگوییم چه مشکلی دارد و چه کم دارد."
+      >
+        {isDoctorOpen && <PlantDoctor />}
       </FormDialog>
     </>
   )
