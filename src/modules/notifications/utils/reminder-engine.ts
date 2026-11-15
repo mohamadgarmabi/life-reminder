@@ -12,7 +12,7 @@ import { addDaysIso, atTime } from '#/modules/shell/utils/dates'
 import { formatDate, formatDateTime, formatMoney, relativeDay, toFaDigits } from '#/modules/shell/utils/format'
 import { settingsStore } from '#/modules/settings/stores/settings.store'
 import { claimKeys, pruneLedger } from '#/modules/notifications/utils/notification-ledger'
-import { permissionStatus, showNotification, syncPush } from '#/modules/notifications/apis/notifications.api'
+import { permissionStatus, showNotification, syncBadge, syncPush } from '#/modules/notifications/apis/notifications.api'
 import type { Candidate } from '#/modules/notifications/types'
 
 interface Data {
@@ -151,9 +151,15 @@ const startReminderEngine = (): (() => void) => {
     check()
     sync()
   }
-  const onVisible = () => document.visibilityState === 'visible' && onChange()
+  const onVisible = () => {
+    if (document.visibilityState !== 'visible') return
+    onChange()
+    // Tray dismissals don't always reach the service worker (iOS), so recount on open.
+    void syncBadge().catch(() => {})
+  }
 
   onChange()
+  void syncBadge().catch(() => {})
   void pruneLedger(new Date(Date.now() - 400 * 86_400_000)).catch(() => {})
   const timer = setInterval(check, CHECK_INTERVAL_MS)
   document.addEventListener('visibilitychange', onVisible)

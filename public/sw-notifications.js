@@ -1,7 +1,19 @@
 // Imported into the generated Workbox service worker (see vite.config.ts → workbox.importScripts).
+// App icon badge = notifications still in the tray.
+const syncBadge = () =>
+  'setAppBadge' in navigator && self.registration.getNotifications
+    ? self.registration
+        .getNotifications()
+        .then((list) => (list.length ? navigator.setAppBadge(list.length) : navigator.clearAppBadge()))
+        .catch(() => {})
+    : Promise.resolve()
+
+self.addEventListener('notificationclose', (event) => event.waitUntil(syncBadge()))
+
 // Tapping a notification focuses an open app window, or opens one at the notification's page.
 self.addEventListener('notificationclick', (event) => {
   event.notification.close()
+  event.waitUntil(syncBadge())
   const url = new URL(event.notification.data?.url ?? self.registration.scope, self.location.origin).href
   event.waitUntil(
     self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((windows) => {
@@ -44,7 +56,7 @@ self.addEventListener('push', (event) => {
         lang: 'fa',
         dir: 'rtl',
         data: { url: n.url },
-      }),
+      }).then(syncBadge),
       claimLedger(Array.isArray(n.keys) ? n.keys : []).catch(() => {}),
     ]),
   )

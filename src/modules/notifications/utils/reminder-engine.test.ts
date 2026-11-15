@@ -12,6 +12,7 @@ const shown = vi.hoisted(() => [] as { title: string }[])
 vi.mock('#/modules/notifications/apis/notifications.api', () => ({
   permissionStatus: () => 'granted',
   showNotification: async (n: { title: string }) => void shown.push(n),
+  syncBadge: async () => {},
 }))
 
 const ts = '2026-10-01T00:00:00.000Z'

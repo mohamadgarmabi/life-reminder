@@ -23,8 +23,20 @@ const showNotification = async (n: AppNotification) => {
   }
   // Android Chrome only allows notifications through a service worker registration.
   const registration = await navigator.serviceWorker?.getRegistration()
-  if (registration) return registration.showNotification(n.title, options)
+  if (registration) {
+    await registration.showNotification(n.title, options)
+    // The notification is already shown; a badge failure shouldn't fail the reminder check.
+    return syncBadge().catch(() => {})
+  }
   new Notification(n.title, options)
+}
+
+/** App icon badge = notifications still in the tray. No-op where the Badging API is missing. */
+const syncBadge = async () => {
+  const registration = await navigator.serviceWorker?.getRegistration()
+  if (!registration?.getNotifications || !('setAppBadge' in navigator)) return
+  const count = (await registration.getNotifications()).length
+  await (count ? navigator.setAppBadge(count) : navigator.clearAppBadge())
 }
 
 const PUSH_URL = import.meta.env.VITE_PUSH_URL
@@ -62,4 +74,4 @@ const syncPush = async (items: (AppNotification & { fireAt: Date; keys: string[]
   })
 }
 
-export { permissionStatus, requestPermission, showNotification, syncPush }
+export { permissionStatus, requestPermission, showNotification, syncBadge, syncPush }
