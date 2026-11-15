@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { notify } from '#/modules/shell/utils/notify'
+import { toast } from '#/components/sonner'
 import { formatDate, formatTime, relativeDay } from '#/modules/shell/utils/format'
 import { cn } from '#/modules/shell/utils/cn'
 import { reminderRepo } from '#/modules/reminders/apis/reminders.api'
@@ -17,9 +17,9 @@ const useReminderCard = ({ reminder, now }: ReminderCardProps) => {
     setBusy(true)
     try {
       await task()
-      notify.success(message)
+      toast.success(message)
     } catch (e) {
-      notify.error(e instanceof Error ? e.message : 'خطا در ذخیره‌سازی')
+      toast.error(e instanceof Error ? e.message : 'خطا در ذخیره‌سازی')
     } finally {
       setBusy(false)
     }

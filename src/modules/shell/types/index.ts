@@ -22,11 +22,4 @@ interface SelectOption<T> {
   label: string
 }
 
-type NotifyKind = 'success' | 'error' | 'info'
-
-interface NotifyOptions {
-  /** A button in the expanded island, e.g. undo. The message closes once it runs. */
-  action?: { label: string; onClick: () => void }
-}
-
-export type { DbStatus, IsoDate, NavItem, NotifyKind, NotifyOptions, SelectOption }
+export type { DbStatus, IsoDate, NavItem, SelectOption }

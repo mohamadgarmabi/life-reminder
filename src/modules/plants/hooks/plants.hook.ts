@@ -1,6 +1,6 @@
 import { useNavigate, useSearch } from '@tanstack/react-router'
 import { useState } from 'react'
-import { notify } from '#/modules/shell/utils/notify'
+import { toast } from '#/components/sonner'
 import { useLiveQuery } from '#/modules/database/hooks/database.hook'
 import { plantRepo } from '#/modules/plants/apis/plants.api'
 import type { PlantFormValues, PlantsDialog } from '#/modules/plants/types'
@@ -23,10 +23,10 @@ const usePlants = () => {
   const save = async (task: Promise<unknown>, message: string) => {
     try {
       await task
-      notify.success(message)
+      toast.success(message)
       close()
     } catch (e) {
-      notify.error(e instanceof Error ? e.message : 'خطا در ذخیره‌سازی')
+      toast.error(e instanceof Error ? e.message : 'خطا در ذخیره‌سازی')
     }
   }
 

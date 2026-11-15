@@ -1,5 +1,5 @@
 import { useRef, useState, type ChangeEvent } from 'react'
-import { notify } from '#/modules/shell/utils/notify'
+import { toast } from '#/components/sonner'
 import { downloadText, exportData, importData, parseBackup } from '#/modules/settings/apis/backup.api'
 import type { Backup } from '#/modules/settings/types'
 import { todayIso } from '#/modules/shell/utils/dates'
@@ -18,9 +18,9 @@ const useDataCard = () => {
     try {
       await exportBackup('-before-import') // safety copy of what is about to be replaced
       await importData(pending)
-      notify.success('اطلاعات با موفقیت بازیابی شد.')
+      toast.success('اطلاعات با موفقیت بازیابی شد.')
     } catch (e) {
-      notify.error(`بازیابی ناموفق بود؛ اطلاعات فعلی دست‌نخورده باقی ماند. ${e instanceof Error ? e.message : ''}`)
+      toast.error(`بازیابی ناموفق بود؛ اطلاعات فعلی دست‌نخورده باقی ماند. ${e instanceof Error ? e.message : ''}`)
     } finally {
       setPending(null)
     }
@@ -30,7 +30,7 @@ const useDataCard = () => {
     ? `${toFaDigits(pending.data.installments.length)} قسط، ${toFaDigits(pending.data.plants.length)} گیاه، ${toFaDigits(pending.data.reminders.length)} یادآور و ${toFaDigits(pending.data.plans.length)} برنامه`
     : ''
 
-  const handleExport = () => void exportBackup().catch(() => notify.error('خروجی گرفتن ناموفق بود.'))
+  const handleExport = () => void exportBackup().catch(() => toast.error('خروجی گرفتن ناموفق بود.'))
 
   const handlePickFile = () => fileRef.current?.click()
 
@@ -40,7 +40,7 @@ const useDataCard = () => {
     if (!file) return
     const result = parseBackup(await file.text())
     if (result.ok) setPending(result.backup)
-    else notify.error(result.error)
+    else toast.error(result.error)
   }
 
   const handleOpenChange = (o: boolean) => !o && setPending(null)

@@ -136,7 +136,7 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-/* Floating, frosted surface: menus, dialogs, sheets. */
+/* Floating, frosted surface: menus, dialogs, sheets, toasts. */
 @utility glass-strong {
   background-color: var(--material);
   -webkit-backdrop-filter: blur(var(--material-blur)) saturate(180%);
