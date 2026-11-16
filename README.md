@@ -41,17 +41,17 @@ IndexedDB on your device; an optional push relay only receives the texts of upco
 
 ## Features
 
-| Area | What it does |
-| --- | --- |
-| Dashboard | Widgets for date, quick add, overdue, today, upcoming and games; reorder, hide and resize (mini / small / large). |
-| Installments | Amount, Jalali due day, total and paid counts, reminders N days before, tags, notes, payment history. |
-| Plants | Photo (downscaled JPEG stored as a data URL), watering interval, one-tap watering, watering history. |
-| Reminders | One-off, daily, weekly or monthly; snooze (15 min, 1 h, tomorrow); completion and snooze history. |
-| Notifications | In-app checks while open; optional Web Push relay for on-time delivery while closed. |
-| Games | 14 offline games (The Forgotten Island 3D adventure, 3D runner, snake, blocks, breakout, firefly, meteor, match-3 with 100 levels, merge, sudoku with 3 × 1000 levels, minesweeper, memory, water sort, connect four), full-screen, local high scores. |
-| Appearance | System / light / dark theme, list or grid views, adjustable Liquid Glass effect, optional page transitions. |
-| Data | JSON export / import, persistent-storage request, storage usage card. |
-| Updates | Prompt-based service worker update with release notes generated from recent commits. |
+| Area          | What it does                                                                                                                                                                                                                                           |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Dashboard     | Widgets for date, quick add, overdue, today, upcoming and games; reorder, hide and resize (mini / small / large).                                                                                                                                      |
+| Installments  | Amount, Jalali due day, total and paid counts, reminders N days before, tags, notes, payment history.                                                                                                                                                  |
+| Plants        | Photo (downscaled JPEG stored as a data URL), watering interval, one-tap watering, watering history.                                                                                                                                                   |
+| Reminders     | One-off, daily, weekly or monthly; snooze (15 min, 1 h, tomorrow); completion and snooze history.                                                                                                                                                      |
+| Notifications | In-app checks while open; optional Web Push relay for on-time delivery while closed.                                                                                                                                                                   |
+| Games         | 14 offline games (The Forgotten Island 3D adventure, 3D runner, snake, blocks, breakout, firefly, meteor, match-3 with 100 levels, merge, sudoku with 3 × 1000 levels, minesweeper, memory, water sort, connect four), full-screen, local high scores. |
+| Appearance    | System / light / dark theme, list or grid views, adjustable Liquid Glass effect, optional page transitions.                                                                                                                                            |
+| Data          | JSON export / import, persistent-storage request, storage usage card.                                                                                                                                                                                  |
+| Updates       | Prompt-based service worker update with release notes generated from recent commits.                                                                                                                                                                   |
 
 ## Commands
 
@@ -94,17 +94,17 @@ push-worker/                optional Cloudflare Worker push relay
 
 Modules:
 
-| Module | Responsibility |
-| --- | --- |
-| `shell` | App shell, bottom navigation, theme script, dialogs, swipe rows, update prompt, date/number formatting |
-| `database` | IndexedDB schema, append-only migrations, connection, live-query hook |
-| `dashboard` | Home view, widgets, agenda (overdue / today / upcoming) |
-| `installments` | Installments, payments and their Jalali schedule |
-| `plants` | Plants, watering log and schedule |
-| `reminders` | Reminders, recurrence, snooze and history |
-| `notifications` | Reminder engine, notification ledger, push sync |
-| `settings` | Settings store, backup import/export, theme, glass, transitions, storage cards |
-| `games` | Game catalog, game views, boards, scores and sound effects |
+| Module          | Responsibility                                                                                         |
+| --------------- | ------------------------------------------------------------------------------------------------------ |
+| `shell`         | App shell, bottom navigation, theme script, dialogs, swipe rows, update prompt, date/number formatting |
+| `database`      | IndexedDB schema, append-only migrations, connection, live-query hook                                  |
+| `dashboard`     | Home view, widgets, agenda (overdue / today / upcoming)                                                |
+| `installments`  | Installments, payments and their Jalali schedule                                                       |
+| `plants`        | Plants, watering log and schedule                                                                      |
+| `reminders`     | Reminders, recurrence, snooze and history                                                              |
+| `notifications` | Reminder engine, notification ledger, push sync                                                        |
+| `settings`      | Settings store, backup import/export, theme, glass, transitions, storage cards                         |
+| `games`         | Game catalog, game views, boards, scores and sound effects                                             |
 
 Import alias: `#/…` maps to `src/…` (see `package.json` → `imports`).
 
@@ -154,10 +154,39 @@ VITE_PUSH_URL=https://life-reminder-push.<you>.workers.dev
 VITE_VAPID_PUBLIC_KEY=<public key>
 ```
 
+### Google Calendar sync
+
+On first launch the app offers **Sign in with Google** or **Continue without an account** (also in Settings →
+Account, and the calendar button on Reminders). Signing in shows the user's name and photo and lets the reminders
+calendar show their Google Calendar events (read-only); the worker keeps the sign-in and refreshes it on its own.
+
+Setup (once):
+
+1. Google Cloud Console → new project → **APIs & Services → Library** → enable **Google Calendar API**.
+2. **OAuth consent screen**: External, add the scopes `openid`, `email`, `profile` and
+   `.../auth/calendar.readonly`, then **Publish app**
+   (in "Testing" mode Google expires the sign-in after 7 days). Unverified apps show a warning screen;
+   tap "Advanced → continue".
+3. **Credentials → Create credentials → OAuth client ID → Web application**, authorized redirect URI:
+   `https://life-reminder-push.<you>.workers.dev/google/callback`.
+4. Then:
+
+   The feature is **off by default**. Turn it on with `VITE_GOOGLE_SIGN_IN=true` (`.env.local`, and the
+   GitHub Actions build env) once the steps below are done.
+
+```bash
+cd push-worker
+npx wrangler d1 execute life-reminder-push --remote --file=schema.sql   # adds the google_tokens table
+# wrangler.toml [vars]: GOOGLE_CLIENT_ID = "<client id>"
+npx wrangler secret put GOOGLE_CLIENT_SECRET
+npx wrangler deploy
+```
+
 ### Privacy
 
 Installments, plants, reminders, photos and settings never leave the device. With push enabled, the relay
-stores only the push subscription and the title, body and time of upcoming notifications.
+stores only the push subscription and the title, body and time of upcoming notifications. With Google
+Calendar connected, it also stores that Google sign-in (a refresh token), keyed by a hash of the app's random id.
 
 ## Deployment
 

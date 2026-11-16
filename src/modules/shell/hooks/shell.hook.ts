@@ -1,6 +1,7 @@
 import { useSelector } from '@tanstack/react-store'
 import { useEffect } from 'react'
 import { useSplashScreen } from 'vite-plugin-react-splash'
+import { isGoogleSignInAvailable } from '#/modules/account/apis/google-account.api'
 import { getDb } from '#/modules/database/apis/database.api'
 import { startReminderEngine } from '#/modules/notifications/utils/reminder-engine'
 import { initSettings, settingsStore } from '#/modules/settings/stores/settings.store'
@@ -46,7 +47,14 @@ const useRootApp = () => {
   useClientBootstrap()
   useApplyTheme()
   const db = useSelector(appStore, (s) => s.db)
-  return { isDbError: db.state === 'error', dbErrorMessage: db.state === 'error' ? db.message : '' }
+  const welcomeSeen = useSelector(settingsStore, (s) => s.welcomeSeen)
+  return {
+    isDbError: db.state === 'error',
+    dbErrorMessage: db.state === 'error' ? db.message : '',
+    // Settings are loaded by the time the database is ready, so returning users never see a flash of it.
+    // The welcome screen only offers Google sign-in, so it is skipped while that feature is off.
+    showWelcome: isGoogleSignInAvailable && db.state === 'ready' && !welcomeSeen,
+  }
 }
 
 const useStorageError = (message: string) => {

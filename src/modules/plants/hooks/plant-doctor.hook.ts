@@ -22,7 +22,9 @@ const usePlantDoctor = () => {
     try {
       const resized = await resizeImage(file)
       setImage(resized)
-      setResult(await diagnosePlant(resized))
+      const diagnosis = await diagnosePlant(resized)
+      if (!diagnosis.isPlant) throw new Error('این عکس گل یا گیاه نیست؛ فقط عکس گل و گیاه را می‌توانم بررسی کنم.')
+      setResult(diagnosis)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'تحلیل عکس ممکن نشد.')
     } finally {

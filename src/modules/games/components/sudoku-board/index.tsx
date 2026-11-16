@@ -9,7 +9,7 @@ const SudokuBoard = (props: SudokuBoardProps) => {
       dir="ltr"
       role="grid"
       aria-label="جدول سودوکو"
-      className="@container grid aspect-square w-full grid-cols-9 overflow-hidden rounded-xl border-2 border-foreground/40 glass"
+      className="@container grid aspect-square w-full grid-cols-9 overflow-hidden rounded-xl border-2 border-foreground/40 surface"
     >
       {cells.map((cell) => (
         <button

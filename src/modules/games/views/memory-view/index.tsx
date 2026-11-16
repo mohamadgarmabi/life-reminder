@@ -133,7 +133,7 @@ const MemoryView = () => {
                 <span className="absolute inset-0 rounded-xl bg-primary/85 backface-hidden" />
                 <span
                   className={cn(
-                    'absolute inset-0 flex rotate-y-180 items-center justify-center rounded-xl glass text-[min(10cqw,2.5rem)] backface-hidden',
+                    'absolute inset-0 flex rotate-y-180 items-center justify-center rounded-xl surface text-[min(10cqw,2.5rem)] backface-hidden',
                     card.matched && 'opacity-60',
                   )}
                 >

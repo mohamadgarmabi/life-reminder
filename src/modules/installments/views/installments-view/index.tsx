@@ -1,7 +1,7 @@
 import { Plus, Wallet } from 'lucide-react'
 import { FormDialog } from '#/modules/shell/components/dialogs'
 import { EmptyState, ErrorState, ListSkeleton, PageHeader } from '#/modules/shell/components/states'
-import { GlassFilter } from '#/modules/shell/components/glass-filter'
+import { FilterPill } from '#/modules/shell/components/filter-pill'
 import { Button } from '#/components/button'
 import { AnimatedList } from '#/modules/shell/components/animated-list'
 import { ViewToggle } from '#/modules/shell/components/view-toggle'
@@ -75,7 +75,7 @@ const InstallmentsView = () => {
       >
         {hasItems && (
           <Tabs value={filter} onValueChange={handleFilterChange} dir="rtl">
-            <GlassFilter>
+            <FilterPill>
               <TabsList className="w-full">
                 {filters.map((f) => (
                   <TabsTrigger key={f.value} value={f.value}>
@@ -83,7 +83,7 @@ const InstallmentsView = () => {
                   </TabsTrigger>
                 ))}
               </TabsList>
-            </GlassFilter>
+            </FilterPill>
           </Tabs>
         )}
       </PageHeader>

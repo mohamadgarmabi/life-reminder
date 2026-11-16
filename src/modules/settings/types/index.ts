@@ -33,26 +33,4 @@ interface SettingsRowProps {
   destructive?: boolean
 }
 
-type GlassSettings = Settings['glass']
-type GlassMaterial = GlassSettings['material']
-type GlassControlKey = Exclude<keyof GlassSettings, 'material'>
-
-interface GlassControl {
-  key: GlassControlKey
-  label: string
-  min: number
-  max: number
-  step: number
-}
-
-export type {
-  Backup,
-  GlassControl,
-  GlassControlKey,
-  GlassMaterial,
-  GlassSettings,
-  ParseResult,
-  Settings,
-  SettingsRowProps,
-  SettingsSectionProps,
-}
+export type { Backup, ParseResult, Settings, SettingsRowProps, SettingsSectionProps }

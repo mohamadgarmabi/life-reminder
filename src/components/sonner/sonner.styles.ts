@@ -17,7 +17,7 @@ const toastStyle: CSSProperties = {
 
 const toasterStyle = {
   fontFamily: FONT,
-  // Toasts are glass cards (toast.tsx, thick glass keeps them legible); the wrapper adds no box of its own.
+  // Toasts are cards (toast.tsx); the wrapper adds no box of its own.
   '--normal-bg': 'transparent',
   '--normal-text': 'var(--popover-foreground)',
   '--normal-border': 'transparent',

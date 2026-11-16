@@ -58,4 +58,28 @@ const completion = (r: Reminder, now: Date) => {
   }
 }
 
-export { occurrence, pendingOccurrence, dueAt, completion }
+type Occurrence = {
+  at: Date
+  /** The one occurrence actions (done, snooze) apply to; shown at its snoozed time. */
+  isPending: boolean
+  isDone: boolean
+}
+
+/** Every occurrence in [from, to), with the pending one moved to its snoozed time. */
+const occurrencesBetween = (r: Reminder, from: Date, to: Date): Occurrence[] => {
+  const pending = pendingOccurrence(r)
+  const due = dueAt(r)
+  const out: Occurrence[] = []
+  const first = r.recurrence === 'none' ? 0 : indexAfter(r, new Date(from.getTime() - 1))
+  for (let n = first; r.recurrence !== 'none' || n === 0; n++) {
+    const at = occurrence(r, n)
+    if (at >= to) break
+    if (at < from || (pending && at.getTime() === pending.getTime())) continue
+    out.push({ at, isPending: false, isDone: !pending || at < pending })
+  }
+  if (due && due >= from && due < to) out.push({ at: due, isPending: true, isDone: false })
+  return out
+}
+
+export { occurrence, pendingOccurrence, dueAt, completion, occurrencesBetween }
+export type { Occurrence }

@@ -1,4 +1,3 @@
-import { GlassLayer } from '#/components/glass'
 import { Link } from '@tanstack/react-router'
 import type { GameEntry } from '#/modules/games/types'
 import { cn } from '#/modules/shell/utils/cn'
@@ -16,9 +15,8 @@ const GameCard = ({ game }: { game: GameEntry }) => {
       to="/games/$gameId"
       params={{ gameId: game.id }}
       onClick={enterFullscreen}
-      className="relative isolate flex flex-col gap-2 rounded-2xl p-3 transition-transform outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 active:scale-[0.97]"
+      className="flex flex-col gap-2 rounded-2xl bg-card p-3 transition-transform outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 active:scale-[0.97]"
     >
-      <GlassLayer radius={16} />
       <span className={cn('flex size-11 items-center justify-center rounded-xl text-2xl', game.tint)} aria-hidden>
         {game.emoji}
       </span>

@@ -1,4 +1,4 @@
-import { Check, MoreVertical, Pencil, Play, Redo2, Trash2, Undo2 } from 'lucide-react'
+import { Check, GraduationCap, MoreVertical, Pencil, Play, Redo2, Trash2, Undo2 } from 'lucide-react'
 import { SwipeRow } from '#/modules/shell/components/swipe-row'
 import { Badge } from '#/components/badge'
 import { Button } from '#/components/button'
@@ -10,7 +10,7 @@ import type { PlanCardProps } from '#/modules/plans/types'
 
 const ICONS = { done: Check, skip: Redo2, reset: Undo2, delete: Trash2 } as const
 
-const PlanCard = ({ plan, onEdit }: PlanCardProps) => {
+const PlanCard = ({ plan, onEdit, onTutor }: PlanCardProps) => {
   const {
     swipeActions,
     statusActions,
@@ -57,6 +57,9 @@ const PlanCard = ({ plan, onEdit }: PlanCardProps) => {
                 {
                   items: [
                     { label: 'ویرایش', icon: <Pencil />, onSelect: onEdit },
+                    ...(onTutor
+                      ? [{ label: 'یادگیری با هوش مصنوعی', icon: <GraduationCap />, onSelect: onTutor }]
+                      : []),
                     ...statusActions.map((a) => {
                       const Icon = ICONS[a.id]
                       return { label: a.label, icon: <Icon />, onSelect: a.onSelect }

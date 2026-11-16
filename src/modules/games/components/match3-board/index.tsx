@@ -10,7 +10,7 @@ const Match3Board = (props: Match3BoardProps) => {
       role="grid"
       aria-label="صفحهٔ بازی"
       aria-busy={props.busy}
-      className="@container relative aspect-square w-full touch-none overflow-hidden rounded-2xl glass select-none contain-layout contain-paint"
+      className="@container relative aspect-square w-full touch-none overflow-hidden rounded-2xl surface select-none contain-layout contain-paint"
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerEnd}

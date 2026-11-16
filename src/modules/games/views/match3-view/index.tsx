@@ -78,14 +78,14 @@ const Match3View = () => {
             {bestLabel && <span className="text-muted-foreground">بهترین: {bestLabel}</span>}
           </div>
           <dl className="grid grid-cols-2 gap-2 text-center">
-            <div className="rounded-2xl glass p-2">
+            <div className="rounded-2xl surface p-2">
               <dt className="text-xs text-muted-foreground">امتیاز</dt>
               <dd className="text-lg font-bold">
                 {scoreLabel}
                 {comboLabel && <span className="ms-1 text-sm text-primary">{comboLabel}</span>}
               </dd>
             </div>
-            <div className="rounded-2xl glass p-2">
+            <div className="rounded-2xl surface p-2">
               <dt className="text-xs text-muted-foreground">حرکت باقی‌مانده</dt>
               <dd className="text-lg font-bold">{movesLabel}</dd>
             </div>
@@ -96,13 +96,13 @@ const Match3View = () => {
           </div>
 
           {status === 'won' && (
-            <div className="flex flex-col items-center gap-3 rounded-2xl glass p-4 text-center" role="status">
+            <div className="flex flex-col items-center gap-3 rounded-2xl surface p-4 text-center" role="status">
               <p className="font-semibold">آفرین! به هدف رسیدی.</p>
               {canGoNext && <Button onClick={handleNext}>مرحله بعد</Button>}
             </div>
           )}
           {status === 'lost' && (
-            <div className="flex flex-col items-center gap-3 rounded-2xl glass p-4 text-center" role="status">
+            <div className="flex flex-col items-center gap-3 rounded-2xl surface p-4 text-center" role="status">
               <p className="font-semibold">حرکت‌ها تمام شد.</p>
               <Button onClick={handleRetry}>
                 <RotateCcw /> دوباره

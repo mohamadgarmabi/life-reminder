@@ -13,10 +13,15 @@ describe('plant AI schemas', () => {
 
   it('falls back on missing diagnosis fields', () => {
     expect(plantDiagnosisSchema.parse({ healthy: true })).toEqual({
+      isPlant: true,
       name: '',
       healthy: true,
       summary: '',
       problems: [],
     })
+  })
+
+  it('keeps an explicit not-a-plant verdict', () => {
+    expect(plantDiagnosisSchema.parse({ isPlant: false }).isPlant).toBe(false)
   })
 })

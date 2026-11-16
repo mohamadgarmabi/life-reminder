@@ -180,7 +180,7 @@ const MinesView = () => {
         dir="ltr"
         role="grid"
         aria-label="میدان مین"
-        className="@container grid gap-[2px] rounded-2xl glass p-1.5 select-none"
+        className="@container grid gap-[2px] rounded-2xl surface p-1.5 select-none"
         style={{
           gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`,
           width: `min(100cqw, calc(100cqh * ${cols / rows}))`,

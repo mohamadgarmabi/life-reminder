@@ -9,4 +9,6 @@ interface ImportMetaEnv {
   /** Push relay URL (push-worker/); without it notifications only fire while the app is open. */
   readonly VITE_PUSH_URL?: string
   readonly VITE_VAPID_PUBLIC_KEY?: string
+  /** "true" turns on Google sign-in + Calendar sync (needs the worker's Google setup, see README). */
+  readonly VITE_GOOGLE_SIGN_IN?: string
 }

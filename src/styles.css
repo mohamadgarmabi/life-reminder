@@ -30,8 +30,6 @@
   --ring: oklch(0.55 0 0);
 
   /* Floating material (menus, sheets, tab bar); cards stay flat. */
-  --material: oklch(0.99 0 0 / 0.82);
-  --material-blur: 20px;
   --material-shadow: 0 0 0 0.5px oklch(0 0 0 / 0.06), 0 8px 28px -6px oklch(0 0 0 / 0.14);
   --field: oklch(0.47 0.01 286 / 0.08);
 }
@@ -58,36 +56,14 @@
   --input: oklch(1 0 0 / 0.1);
   --ring: oklch(0.75 0 0);
 
-  --material: oklch(0.24 0.003 286 / 0.82);
   --material-shadow: 0 0 0 0.5px oklch(1 0 0 / 0.08), 0 8px 28px -6px oklch(0 0 0 / 0.6);
   --field: oklch(0.6 0.01 286 / 0.16);
 }
 
-/* Users who ask iOS to reduce transparency get solid surfaces. */
-@media (prefers-reduced-transparency: reduce) {
-  :root {
-    --material: var(--popover);
-    --material-blur: 0px;
-  }
-}
-
 /* Flat surface: cards, tiles. */
-@utility glass {
+@utility surface {
   background-color: var(--card);
   box-shadow: 0 0 0 0.5px var(--border);
-}
-
-/* simple-liquid-glass sets its drop shadow inline together with the rim highlights; soft glass keeps the
-   highlights and swaps the heavy shadow for a small one. */
-.glass-soft [style*='box-shadow'] {
-  box-shadow:
-    inset 0 1px 2px #ffffffa0,
-    inset 0 -1px 2px #ffffff30,
-    0 4px 14px -4px rgb(0 0 0 / 0.14) !important;
-}
-/* Page-toned glass (headers) has no rim light either, so it melts into the background. */
-.glass-bare [style*='box-shadow'] {
-  box-shadow: none !important;
 }
 
 /* Tab bar water drop: one pill shared by all tabs. The outer span slides (overshooting ease = spring), the inner
@@ -112,23 +88,29 @@
   animation: nav-drop 520ms cubic-bezier(0.3, 0.7, 0.4, 1);
 }
 @keyframes nav-drop {
-  0% { transform: scale(1, 1); }
-  30% { transform: scale(1.35, 0.78); }
-  55% { transform: scale(0.9, 1.1); }
-  75% { transform: scale(1.05, 0.96); }
-  100% { transform: scale(1, 1); }
-}
-/* Dragged along the glass bar: the drop follows the finger 1:1 and swells into a lens. */
-.nav-drop--drag {
-  transition: none;
-}
-.nav-drop--drag .nav-drop__body {
-  transform: scale(1.18, 1.12);
-  transition: transform 200ms ease-out;
+  0% {
+    transform: scale(1, 1);
+  }
+  30% {
+    transform: scale(1.35, 0.78);
+  }
+  55% {
+    transform: scale(0.9, 1.1);
+  }
+  75% {
+    transform: scale(1.05, 0.96);
+  }
+  100% {
+    transform: scale(1, 1);
+  }
 }
 @media (prefers-reduced-motion: reduce) {
-  .nav-drop { transition: none; }
-  .nav-drop__body { animation: none; }
+  .nav-drop {
+    transition: none;
+  }
+  .nav-drop__body {
+    animation: none;
+  }
 }
 
 /* SwipeRow surfaces: no grey flash on tap. */
@@ -136,11 +118,9 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-/* Floating, frosted surface: menus, dialogs, sheets, toasts. */
-@utility glass-strong {
-  background-color: var(--material);
-  -webkit-backdrop-filter: blur(var(--material-blur)) saturate(180%);
-  backdrop-filter: blur(var(--material-blur)) saturate(180%);
+/* Floating surface: game overlays and panels. */
+@utility surface-strong {
+  background-color: var(--popover);
   box-shadow: var(--material-shadow);
 }
 
@@ -190,10 +170,6 @@
     overscroll-behavior-y: none;
     touch-action: pan-y pan-x;
   }
-  /* Backdrop the LiquidGlass tab bar refracts (see app-shell). */
-  .mesh {
-    background: var(--background);
-  }
   /* Theme toggle (settings) animates its own circular reveal instead of the default cross-fade. */
   ::view-transition-old(root),
   ::view-transition-new(root) {
@@ -210,16 +186,21 @@
   animation-delay: -130ms;
 }
 @keyframes widget-wiggle {
-  from { rotate: -0.7deg; }
-  to { rotate: 0.7deg; }
+  from {
+    rotate: -0.7deg;
+  }
+  to {
+    rotate: 0.7deg;
+  }
 }
 @media (prefers-reduced-motion: reduce) {
-  .widget-wiggle { animation: none; }
+  .widget-wiggle {
+    animation: none;
+  }
 }
 
 /* Page transitions (router defaultViewTransition). The tab bar and its fade keep their own names so they stay put. */
-/* Named only during a transition: a view-transition-name makes the bar a backdrop root, so its glass would
-   blur and refract nothing (the page behind it is cut off). */
+/* Named only during a transition, so the bar is not a separate view-transition layer the rest of the time. */
 :root:active-view-transition .vt-tab-bar {
   view-transition-name: tab-bar;
 }
@@ -264,9 +245,36 @@
     animation-name: vt-from-right-dim;
   }
 }
-@keyframes vt-fade-out { to { opacity: 0; } }
-@keyframes vt-fade-in { from { opacity: 0; transform: scale(0.98); } }
-@keyframes vt-from-left { from { transform: translateX(-100%); } }
-@keyframes vt-to-left { to { transform: translateX(-100%); } }
-@keyframes vt-to-right-dim { to { transform: translateX(30%); filter: brightness(0.85); } }
-@keyframes vt-from-right-dim { from { transform: translateX(30%); filter: brightness(0.85); } }
+@keyframes vt-fade-out {
+  to {
+    opacity: 0;
+  }
+}
+@keyframes vt-fade-in {
+  from {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+}
+@keyframes vt-from-left {
+  from {
+    transform: translateX(-100%);
+  }
+}
+@keyframes vt-to-left {
+  to {
+    transform: translateX(-100%);
+  }
+}
+@keyframes vt-to-right-dim {
+  to {
+    transform: translateX(30%);
+    filter: brightness(0.85);
+  }
+}
+@keyframes vt-from-right-dim {
+  from {
+    transform: translateX(30%);
+    filter: brightness(0.85);
+  }
+}

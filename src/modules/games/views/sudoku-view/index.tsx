@@ -36,7 +36,7 @@ const SudokuView = () => {
         </div>
 
         <div className="w-full min-w-0 space-y-3">
-          <div className="grid grid-cols-3 gap-1 rounded-full glass p-1" role="group" aria-label="سطح دشواری">
+          <div className="grid grid-cols-3 gap-1 rounded-full surface p-1" role="group" aria-label="سطح دشواری">
             {difficulties.map((d) => (
               <Button
                 key={d.value}
@@ -61,7 +61,7 @@ const SudokuView = () => {
           </div>
 
           {isSolved ? (
-            <div className="flex flex-col items-center gap-3 rounded-2xl glass p-4 text-center" role="status">
+            <div className="flex flex-col items-center gap-3 rounded-2xl surface p-4 text-center" role="status">
               <PartyPopper className="size-6" aria-hidden />
               <p className="font-semibold">آفرین! این مرحله را حل کردی.</p>
               {canGoNext && <Button onClick={handleNext}>مرحله بعد</Button>}

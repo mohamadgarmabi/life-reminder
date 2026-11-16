@@ -2,7 +2,13 @@ import { describe, expect, it } from 'vitest'
 import { newDate } from 'date-fns-jalali'
 import { formatDateTime } from '#/modules/shell/utils/format'
 import type { Reminder } from '#/modules/reminders/types'
-import { completion, dueAt, occurrence, pendingOccurrence } from '#/modules/reminders/utils/schedule'
+import {
+  completion,
+  dueAt,
+  occurrence,
+  occurrencesBetween,
+  pendingOccurrence,
+} from '#/modules/reminders/utils/schedule'
 
 const reminder = (over: Partial<Reminder>): Reminder => ({
   id: 'r1',
@@ -73,5 +79,36 @@ describe('snooze', () => {
     const r = reminder({ snoozedUntil: until })
     expect(dueAt(r)).toEqual(new Date(until))
     expect(apply(r, new Date(2026, 9, 1, 9, 5)).snoozedUntil).toBeNull()
+  })
+})
+
+describe('occurrencesBetween', () => {
+  const week = [new Date(2026, 9, 3), new Date(2026, 9, 10)] as const
+
+  it('marks done, pending and future occurrences of a daily reminder', () => {
+    const r = apply(reminder({}), new Date(2026, 9, 4, 9, 0)) // done through the 4th
+    const days = occurrencesBetween(r, ...week).map((o) => [o.at.getDate(), o.isDone, o.isPending])
+    expect(days).toEqual([
+      [3, true, false],
+      [4, true, false],
+      [6, false, false],
+      [7, false, false],
+      [8, false, false],
+      [9, false, false],
+      [5, false, true],
+    ])
+  })
+
+  it('shows a snoozed occurrence on its new day only', () => {
+    const r = reminder({ recurrence: 'none', snoozedUntil: new Date(2026, 9, 12, 10).toISOString() })
+    expect(occurrencesBetween(r, new Date(2026, 9, 1), new Date(2026, 9, 2))).toEqual([])
+    expect(occurrencesBetween(r, new Date(2026, 9, 12), new Date(2026, 9, 13))).toHaveLength(1)
+  })
+
+  it('keeps a completed one-time reminder as done', () => {
+    const r = apply(reminder({ recurrence: 'none' }), new Date(2026, 9, 2))
+    expect(occurrencesBetween(r, new Date(2026, 9, 1), new Date(2026, 9, 2))).toEqual([
+      { at: new Date(2026, 9, 1, 8), isDone: true, isPending: false },
+    ])
   })
 })

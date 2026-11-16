@@ -46,6 +46,8 @@ const plantIdentifySchema = z.object({
 })
 
 const plantDiagnosisSchema = z.object({
+  // Missing → true: only an explicit "not a plant" from the model rejects the photo.
+  isPlant: z.boolean().catch(true),
   name: z.string().catch(''),
   healthy: z.boolean().catch(false),
   summary: z.string().catch(''),

@@ -1,4 +1,3 @@
-import { GlassLayer } from '#/components/glass'
 import { cn } from '#/modules/shell/utils/cn'
 import {
   cardVariants,
@@ -22,7 +21,6 @@ import type {
 const Card = ({ className, children, ...props }: CardProps) => {
   return (
     <div data-slot="card" className={cn(cardVariants(), className)} {...props}>
-      <GlassLayer radius={16} />
       {children}
     </div>
   )

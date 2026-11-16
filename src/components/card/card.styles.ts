@@ -1,6 +1,8 @@
 import { cva } from 'class-variance-authority'
 
-const cardVariants = cva('flex flex-col gap-3 relative isolate rounded-2xl border border-transparent py-4 text-card-foreground')
+const cardVariants = cva(
+  'flex flex-col gap-3 relative rounded-2xl bg-card bg-clip-padding border border-transparent py-4 text-card-foreground',
+)
 
 const cardHeaderVariants = cva([
   '@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-1.5 px-4',

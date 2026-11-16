@@ -1,7 +1,8 @@
 import { PageHeader } from '#/modules/shell/components/states'
+import { AccountCard } from '#/modules/account/components/account-card'
+import { AnalysisCard } from '#/modules/settings/components/analysis-card'
 import { DataCard } from '#/modules/settings/components/data-card'
 import { GamesCard } from '#/modules/settings/components/games-card'
-import { GlassCard } from '#/modules/settings/components/glass-card'
 import { NotificationsCard } from '#/modules/settings/components/notifications-card'
 import { SettingsSection } from '#/modules/settings/components/settings-section'
 import { StorageCard } from '#/modules/settings/components/storage-card'
@@ -16,11 +17,12 @@ const SettingsView = () => {
     <>
       <PageHeader title="تنظیمات" />
       <div className="space-y-6">
+        <AccountCard />
         <NotificationsCard />
+        <AnalysisCard />
         <SettingsSection title="ظاهر">
           <ThemeCard />
           <TransitionsCard />
-          <GlassCard />
         </SettingsSection>
         <SettingsSection title="سرگرمی">
           <GamesCard />

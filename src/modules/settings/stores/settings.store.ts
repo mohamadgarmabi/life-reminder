@@ -8,21 +8,6 @@ const settingsSchema = z.object({
   defaultReminderTime: z.string().regex(/^\d{2}:\d{2}$/),
   /** Animated page changes (View Transitions); read by the router on every navigation. */
   pageTransitions: z.boolean(),
-  /** Off: every surface is a plain solid colour and the glass renderer stays idle. */
-  glassEnabled: z.boolean(),
-  /** Liquid glass on every surface (simple-liquid-glass). Unset numbers inherit the material preset. */
-  glass: z.object({
-    material: z.enum(['clear', 'frosted', 'smoked', 'subtle']),
-    blur: z.number().optional(),
-    saturation: z.number().optional(),
-    scale: z.number().optional(),
-    aberrationIntensity: z.number().optional(),
-    frost: z.number().optional(),
-    /** Opacity of the theme-coloured tint (white in light theme, #2C2C2E in dark). */
-    tint: z.number(),
-    /** Opacity of the light rim around each surface. */
-    rim: z.number(),
-  }),
   /** List or grid layout, remembered per page. */
   views: z.object({
     installments: z.enum(['list', 'grid']),
@@ -31,6 +16,13 @@ const settingsSchema = z.object({
   }),
   /** The one-time "swipe cards" tip was dismissed. */
   swipeHintSeen: z.boolean(),
+  /** The first-launch welcome (sign in with Google or continue without) was answered. */
+  welcomeSeen: z.boolean(),
+  /** Random id the sync worker keys this install's Google sign-in by; null = not connected. */
+  googleSession: z
+    .string()
+    .regex(/^[a-f0-9]{64}$/)
+    .nullable(),
   /** Home screen widgets in display order; mini = quarter row, small = half, large = full width. */
   widgets: z.array(
     z.object({
@@ -44,16 +36,14 @@ const settingsSchema = z.object({
 // synchronously before first paint. They are included in JSON export/import.
 const SETTINGS_KEY = 'life-reminder:settings'
 
-const DEFAULT_GLASS: Settings['glass'] = { material: 'frosted', tint: 0.55, rim: 0.75 }
-
 const DEFAULT_SETTINGS: Settings = {
   theme: 'system',
   notificationsEnabled: true,
   defaultReminderTime: '09:00',
   pageTransitions: true,
-  glassEnabled: false,
-  glass: DEFAULT_GLASS,
   swipeHintSeen: false,
+  welcomeSeen: false,
+  googleSession: null,
   views: { installments: 'list', reminders: 'list', plants: 'grid' },
   widgets: [
     { id: 'dollar', size: 'small' },
@@ -98,4 +88,4 @@ const initSettings = () => {
 
 const updateSettings = (patch: Partial<Settings>) => settingsStore.setState((s) => ({ ...s, ...patch }))
 
-export { settingsSchema, SETTINGS_KEY, DEFAULT_SETTINGS, DEFAULT_GLASS, settingsStore, initSettings, updateSettings }
+export { settingsSchema, SETTINGS_KEY, DEFAULT_SETTINGS, settingsStore, initSettings, updateSettings }

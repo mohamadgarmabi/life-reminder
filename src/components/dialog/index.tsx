@@ -1,5 +1,4 @@
 'use client'
-import { GlassLayer } from '#/components/glass'
 
 import { cn } from '#/modules/shell/utils/cn'
 import { XIcon } from 'lucide-react'
@@ -56,7 +55,6 @@ const DialogContent = ({ className, children, showCloseButton = true, ...props }
     <DialogPortal data-slot="dialog-portal">
       <DialogOverlay />
       <DialogPrimitive.Content data-slot="dialog-content" className={cn(dialogContentVariants(), className)} {...props}>
-        <GlassLayer radius={16} thick />
         {children}
         {showCloseButton && (
           <DialogPrimitive.Close data-slot="dialog-close" className={dialogCloseVariants()}>

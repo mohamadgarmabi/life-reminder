@@ -183,7 +183,7 @@ const GameShell = ({
         {overlay && (
           <div className="absolute inset-0 z-10 flex items-center justify-center bg-background/55 p-6 animate-in fade-in duration-200">
             <div
-              className="flex w-full max-w-xs flex-col items-center gap-3 rounded-3xl glass-strong p-6 text-center animate-in zoom-in-95 duration-200"
+              className="flex w-full max-w-xs flex-col items-center gap-3 rounded-3xl surface-strong p-6 text-center animate-in zoom-in-95 duration-200"
               role="status"
             >
               <p className="text-2xl font-bold">{overlay.title}</p>

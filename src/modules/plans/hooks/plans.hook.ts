@@ -3,6 +3,7 @@ import { useNavigate, useSearch } from '@tanstack/react-router'
 import { getYear } from 'date-fns-jalali'
 import { toast } from '#/components/sonner'
 import { useLiveQuery } from '#/modules/database/hooks/database.hook'
+import { isAiAvailable } from '#/modules/shell/apis/ai.api'
 import { toFaDigits } from '#/modules/shell/utils/format'
 import { planRepo } from '#/modules/plans/apis/plans.api'
 import { STATUS, STATUS_ORDER } from '#/modules/plans/utils/plans.constants'
@@ -62,7 +63,11 @@ const usePlans = () => {
   const editItem = dialog?.type === 'edit' ? dialog.item : undefined
 
   return {
-    plans: visible.map((plan) => ({ plan, onEdit: () => setDialog({ type: 'edit', item: plan }) })),
+    plans: visible.map((plan) => ({
+      plan,
+      onEdit: () => setDialog({ type: 'edit', item: plan }),
+      onTutor: isAiAvailable ? () => setDialog({ type: 'tutor', item: plan }) : undefined,
+    })),
     isLoading: q.status === 'loading',
     error: q.status === 'error' ? q.error : undefined,
     isEmpty: q.status === 'success' && !items.length,
@@ -104,7 +109,9 @@ const usePlans = () => {
     handleTagChange: setTag,
     // new plans default to the year being viewed
     defaultYear: year === 'all' ? currentYear : Number(year),
-    isFormOpen: dialog !== null,
+    isFormOpen: dialog?.type === 'create' || dialog?.type === 'edit',
+    tutorPlan: dialog?.type === 'tutor' ? dialog.item : undefined,
+    tutorTitle: dialog?.type === 'tutor' ? `آموزش: ${dialog.item.title}` : 'آموزش',
     formTitle: editItem ? 'ویرایش برنامه' : 'برنامهٔ جدید',
     editItem,
     handleOpenCreate: () => setDialog({ type: 'create' }),

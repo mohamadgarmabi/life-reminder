@@ -1,5 +1,4 @@
 'use client'
-import { GlassLayer } from '#/components/glass'
 
 import { cn } from '#/modules/shell/utils/cn'
 import { CheckIcon, ChevronRightIcon, CircleIcon } from 'lucide-react'
@@ -57,7 +56,6 @@ const DropdownMenuContent = ({ className, sideOffset = 4, children, ...props }: 
         className={cn(dropdownMenuContentVariants(), className)}
         {...props}
       >
-        <GlassLayer radius={16} thick />
         {children}
       </DropdownMenuPrimitive.Content>
     </DropdownMenuPrimitive.Portal>
@@ -171,7 +169,6 @@ const DropdownMenuSubContent = ({ className, children, ...props }: DropdownMenuS
       className={cn(dropdownMenuSubContentVariants(), className)}
       {...props}
     >
-      <GlassLayer radius={16} thick />
       {children}
     </DropdownMenuPrimitive.SubContent>
   )

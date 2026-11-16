@@ -8,7 +8,7 @@ const MAX_STAGGER = 8
 
 /**
  * Card list that springs its items in one after another on load and glides them between list and grid.
- * Transform only, no fade: an opacity ancestor blanks Chromium's glass (backdrop-filter) until the fade ends.
+ * Transform only, no fade.
  * Each item is a `@container`, so cards can rearrange for a narrow grid cell with `@xs:` classes.
  */
 const AnimatedList = ({ view, children }: { view: ViewMode; children: ReactNode }) => {

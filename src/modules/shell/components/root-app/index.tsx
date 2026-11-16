@@ -1,5 +1,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { Outlet } from '@tanstack/react-router'
+import WelcomeView from '#/modules/account/views/welcome-view'
 import { AppShell } from '#/modules/shell/components/app-shell'
 import { StorageError } from '#/modules/shell/components/storage-error'
 import { Toaster } from '#/components/sonner'
@@ -10,16 +11,19 @@ import { useRootApp } from '#/modules/shell/hooks/shell.hook'
 const queryClient = new QueryClient()
 
 const RootApp = () => {
-  const { isDbError, dbErrorMessage } = useRootApp()
+  const { isDbError, dbErrorMessage, showWelcome } = useRootApp()
 
   return (
     <QueryClientProvider client={queryClient}>
-      <AppShell>
-        {isDbError && <StorageError message={dbErrorMessage} />}
-        {!isDbError && <Outlet />}
-        <Toaster />
-        <UpdatePrompt />
-      </AppShell>
+      {showWelcome && <WelcomeView />}
+      {!showWelcome && (
+        <AppShell>
+          {isDbError && <StorageError message={dbErrorMessage} />}
+          {!isDbError && <Outlet />}
+          <UpdatePrompt />
+        </AppShell>
+      )}
+      <Toaster />
     </QueryClientProvider>
   )
 }

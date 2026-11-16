@@ -19,7 +19,7 @@ const UpdatePrompt = () => {
         <div className="overflow-y-auto px-4">
           <h3 className="mb-2 text-sm font-semibold">تغییرات این نسخه</h3>
           {hasNotes && (
-            <ul className="mb-2 space-y-1.5 rounded-2xl glass p-4 text-sm" dir="auto">
+            <ul className="mb-2 space-y-1.5 rounded-2xl surface p-4 text-sm" dir="auto">
               {notes.map((note) => (
                 <li key={note.title} className="flex gap-2">
                   <span aria-hidden className="mt-2 size-1.5 shrink-0 rounded-full bg-foreground/40" />
@@ -32,7 +32,7 @@ const UpdatePrompt = () => {
             </ul>
           )}
           {!hasNotes && (
-            <p className="mb-2 rounded-2xl glass p-4 text-sm text-muted-foreground">بهبودها و رفع اشکال‌ها.</p>
+            <p className="mb-2 rounded-2xl surface p-4 text-sm text-muted-foreground">بهبودها و رفع اشکال‌ها.</p>
           )}
         </div>
         <div className="grid gap-2 px-4 pt-3 pb-[max(1.25rem,env(safe-area-inset-bottom))]">

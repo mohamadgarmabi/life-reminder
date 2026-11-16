@@ -10,6 +10,8 @@ type PlanFormValues = z.infer<typeof planFormSchema>
 type PlanCardProps = {
   plan: Plan
   onEdit: () => void
+  /** Absent when the AI service isn't configured. */
+  onTutor?: () => void
 }
 
 type PlanFormProps = {
@@ -18,6 +20,6 @@ type PlanFormProps = {
   onSubmit: (values: PlanFormValues) => Promise<void>
 }
 
-type PlansDialog = { type: 'create' } | { type: 'edit'; item: Plan } | null
+type PlansDialog = { type: 'create' } | { type: 'edit' | 'tutor'; item: Plan } | null
 
 export type { Plan, PlanStatus, PlanFormValues, PlanCardProps, PlanFormProps, PlansDialog }

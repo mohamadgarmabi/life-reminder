@@ -1,5 +1,4 @@
 import { LayoutGrid, List } from 'lucide-react'
-import { GlassLayer } from '#/components/glass'
 import { useViewMode, type ViewPage } from '#/modules/shell/hooks/view-toggle.hook'
 import { cn } from '#/modules/shell/utils/cn'
 
@@ -12,8 +11,7 @@ const OPTIONS = [
 const ViewToggle = ({ page }: { page: ViewPage }) => {
   const { view, setView } = useViewMode(page)
   return (
-    <div role="radiogroup" aria-label="نوع نمایش" className="relative isolate flex rounded-full p-0.5">
-      <GlassLayer radius={18} />
+    <div role="radiogroup" aria-label="نوع نمایش" className="flex rounded-full bg-card p-0.5">
       {OPTIONS.map(({ value, label, icon: Icon }) => (
         <button
           key={value}
