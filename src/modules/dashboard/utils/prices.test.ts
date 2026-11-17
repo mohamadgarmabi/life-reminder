@@ -21,6 +21,15 @@ describe('parsePrices', () => {
     expect(prices.gold?.changePercent).toBe(-0.5)
   })
 
+  it('reads world prices in USD for English', () => {
+    const prices = parsePrices(
+      { current: { 'eur-usd-ask': entry('1.0992', 0.09, 'low'), ons: entry('3,858.31', 0.17, 'high') } },
+      'en',
+    )
+    expect(prices.dollar).toMatchObject({ price: 1.0992, changePercent: -0.09 })
+    expect(prices.gold?.price).toBe(3858.31)
+  })
+
   it('returns null for missing or broken entries instead of throwing', () => {
     expect(parsePrices(null)).toEqual({ dollar: null, gold: null })
     expect(parsePrices({ current: { price_dollar_rl: { p: 'n/a' }, geram18: entry('abc', 0, '') } })).toEqual({

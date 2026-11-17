@@ -22,6 +22,7 @@ import {
   useTimeSelect,
 } from '#/modules/shell/hooks/form-fields.hook'
 import type { SelectOption } from '#/modules/shell/types'
+import { t } from '#/modules/shell/utils/i18n'
 
 interface ShellProps {
   label: string
@@ -79,7 +80,7 @@ const TextareaField = ({
 }
 
 const NumberField = ({ label, description, suffix }: Omit<ShellProps, 'children'> & { suffix?: string }) => {
-  const { field, controlProps, inputClassName, displayValue, handleChange } = useNumberField(suffix)
+  const { field, controlProps, inputClassName, displayValue, placeholder, handleChange } = useNumberField(suffix)
   return (
     <FieldShell label={label} description={description}>
       <div className="relative">
@@ -88,7 +89,7 @@ const NumberField = ({ label, description, suffix }: Omit<ShellProps, 'children'
           name={field.name}
           inputMode="numeric"
           autoComplete="off"
-          placeholder="۰"
+          placeholder={placeholder}
           className={inputClassName}
           value={displayValue}
           onBlur={field.handleBlur}
@@ -105,9 +106,11 @@ const NumberField = ({ label, description, suffix }: Omit<ShellProps, 'children'
 }
 
 const WHEEL_CLASSES = {
-  optionItem: 'text-muted-foreground',
-  // `!`: the library's unlayered CSS (font-weight: 500) beats Tailwind's layered utilities otherwise
-  highlightWrapper: 'rounded-md bg-muted font-normal! text-foreground',
+  optionItem: 'font-normal text-muted-foreground',
+  // `!`: the library's unlayered CSS (font-weight: 500) beats Tailwind's layered utilities otherwise.
+  // Opaque band: a translucent one lets the grey option underneath show through, doubling the text so it looks bold.
+  highlightWrapper: 'rounded-md bg-[color-mix(in_oklab,var(--foreground)_7%,var(--card))] font-normal! text-foreground',
+  highlightItem: 'font-normal',
 }
 
 const DateField = ({ label, description }: Omit<ShellProps, 'children'>) => {
@@ -196,7 +199,7 @@ const TimeSelect = ({
     <div className="flex items-center gap-2" dir="ltr">
       <Select
         nested={nested}
-        label="ساعت"
+        label={t('shell.time.hour')}
         id={id}
         aria-invalid={invalid}
         value={hour}
@@ -207,7 +210,7 @@ const TimeSelect = ({
       <span aria-hidden>:</span>
       <Select
         nested={nested}
-        label="دقیقه"
+        label={t('shell.time.minute')}
         value={minute}
         onValueChange={handleMinuteChange}
         options={minuteOptions}

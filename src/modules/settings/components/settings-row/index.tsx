@@ -34,7 +34,7 @@ const SettingsRow = ({
           {description && <div className="mt-0.5 text-xs text-muted-foreground">{description}</div>}
         </div>
         {trailing}
-        {isAction && <ChevronLeft className="size-4 shrink-0 text-muted-foreground" aria-hidden />}
+        {isAction && <ChevronLeft className="size-4 shrink-0 ltr:rotate-180 text-muted-foreground" aria-hidden />}
       </div>
       {children && <div className="pb-3">{children}</div>}
     </>

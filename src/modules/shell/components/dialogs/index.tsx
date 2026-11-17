@@ -2,6 +2,7 @@ import type { ReactNode } from 'react'
 import { Button } from '#/components/button'
 import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle } from '#/components/drawer'
 import { useFormDialog } from '#/modules/shell/hooks/dialogs.hook'
+import { t } from '#/modules/shell/utils/i18n'
 
 const FormDialog = ({
   open,
@@ -35,7 +36,7 @@ const ConfirmDialog = ({
   onOpenChange,
   title,
   description,
-  confirmLabel = 'حذف',
+  confirmLabel,
   onConfirm,
 }: {
   open: boolean
@@ -60,10 +61,10 @@ const ConfirmDialog = ({
               onOpenChange(false)
             }}
           >
-            {confirmLabel}
+            {confirmLabel ?? t('common.delete')}
           </Button>
           <Button variant="outline" onClick={() => onOpenChange(false)}>
-            انصراف
+            {t('common.cancel')}
           </Button>
         </div>
       </DrawerContent>

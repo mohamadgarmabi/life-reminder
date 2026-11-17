@@ -4,6 +4,7 @@ import { Button } from '#/components/button'
 import { Input } from '#/components/input'
 import { usePlanTutor } from '#/modules/plans/hooks/plan-tutor.hook'
 import type { Plan } from '#/modules/plans/types'
+import { t } from '#/modules/shell/utils/i18n'
 
 const PlanTutor = ({ plan }: { plan: Plan }) => {
   const {
@@ -34,7 +35,7 @@ const PlanTutor = ({ plan }: { plan: Plan }) => {
         ))}
         {isSending && (
           <p role="status" className="flex items-center gap-2 self-end text-sm text-muted-foreground">
-            <Loader2 className="size-4 animate-spin" aria-hidden /> در حال نوشتن…
+            <Loader2 className="size-4 animate-spin" aria-hidden /> {t('plans.tutorWriting')}
           </p>
         )}
       </div>
@@ -58,21 +59,21 @@ const PlanTutor = ({ plan }: { plan: Plan }) => {
 
       <form className="flex items-center gap-2" onSubmit={handleSubmit}>
         <label htmlFor={inputId} className="sr-only">
-          پیام شما
+          {t('plans.tutorMessage')}
         </label>
         <Input
           id={inputId}
           value={draft}
           onChange={handleDraftChange}
-          placeholder="سؤالتان دربارهٔ همین موضوع…"
+          placeholder={t('plans.tutorPlaceholder')}
           maxLength={2000}
           autoComplete="off"
         />
-        <Button type="submit" size="icon" aria-label="ارسال" disabled={!canSend}>
+        <Button type="submit" size="icon" aria-label={t('plans.send')} disabled={!canSend}>
           <SendHorizontal className="rotate-180" />
         </Button>
       </form>
-      <p className="text-xs text-muted-foreground">پاسخ‌های هوش مصنوعی ممکن است خطا داشته باشد.</p>
+      <p className="text-xs text-muted-foreground">{t('plans.aiDisclaimer')}</p>
     </div>
   )
 }

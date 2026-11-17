@@ -1,5 +1,6 @@
 import type { SudokuBoardProps } from '#/modules/games/types'
 import { useSudokuBoard } from '#/modules/games/hooks/sudoku-board.hook'
+import { t } from '#/modules/shell/utils/i18n'
 
 const SudokuBoard = (props: SudokuBoardProps) => {
   const { cells } = useSudokuBoard(props)
@@ -8,7 +9,7 @@ const SudokuBoard = (props: SudokuBoardProps) => {
     <div
       dir="ltr"
       role="grid"
-      aria-label="جدول سودوکو"
+      aria-label={t('games.sudoku.grid')}
       className="@container grid aspect-square w-full grid-cols-9 overflow-hidden rounded-xl border-2 border-foreground/40 surface"
     >
       {cells.map((cell) => (

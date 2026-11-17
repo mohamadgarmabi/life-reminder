@@ -15,9 +15,17 @@ import {
 
 const world = (id: string): AdventureWorld => ({
   id,
-  title: id,
-  description: '',
-  items: { a: { id: 'a', kind: 'tool', name: 'a', description: '', icon: 'a' } },
+  title: 'adventure.testRoom.title',
+  description: 'adventure.testRoom.description',
+  items: {
+    a: {
+      id: 'a',
+      kind: 'tool',
+      name: 'adventure.testRoom.key.name',
+      description: 'adventure.testRoom.key.description',
+      icon: 'a',
+    },
+  },
   puzzles: {},
   checkpoints: { start: { id: 'start', position: [0, 0, 0], yaw: 0 } },
   secrets: {},

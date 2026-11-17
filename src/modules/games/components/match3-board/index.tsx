@@ -1,5 +1,6 @@
 import type { Match3BoardProps } from '#/modules/games/types'
 import { useMatch3Board } from '#/modules/games/hooks/match3-board.hook'
+import { t } from '#/modules/shell/utils/i18n'
 
 const Match3Board = (props: Match3BoardProps) => {
   const { tiles, handlePointerDown, handlePointerMove, handlePointerEnd, handleTileClick } = useMatch3Board(props)
@@ -8,7 +9,7 @@ const Match3Board = (props: Match3BoardProps) => {
     <div
       dir="ltr"
       role="grid"
-      aria-label="صفحهٔ بازی"
+      aria-label={t('games.gameBoard')}
       aria-busy={props.busy}
       className="@container relative aspect-square w-full touch-none overflow-hidden rounded-2xl surface select-none contain-layout contain-paint"
       onPointerDown={handlePointerDown}

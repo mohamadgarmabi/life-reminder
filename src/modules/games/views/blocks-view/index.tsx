@@ -19,8 +19,9 @@ import {
   type Piece,
 } from '#/modules/games/utils/blocks'
 import { sfx } from '#/modules/games/utils/sfx'
-import { toFaDigits } from '#/modules/shell/utils/format'
+import { toLocalDigits } from '#/modules/shell/utils/format'
 import { Button } from '#/components/button'
+import { t } from '#/modules/shell/utils/i18n'
 
 const CELL = 20
 const PANEL = 84
@@ -44,8 +45,8 @@ const newGame = () => {
 
 const BlocksView = () => {
   const arcade = useArcade('blocks', {
-    title: 'بلوک‌ریز',
-    detail: 'لمس = چرخش، کشیدن = جابه‌جایی، کشیدن سریع رو به پایین = سقوط.',
+    title: t('games.blocks.title'),
+    detail: t('games.blocks.intro'),
   })
   const game = useRef(newGame())
   const drag = useRef<{ x: number; y: number; moved: boolean; t: number } | null>(null)
@@ -145,17 +146,17 @@ const BlocksView = () => {
     ctx.fillStyle = pal.muted
     ctx.font = '600 12px Vazirmatn Variable, system-ui'
     ctx.textAlign = 'center'
-    ctx.fillText('بعدی', px + PANEL / 2, 22)
+    ctx.fillText(t('games.blocks.next'), px + PANEL / 2, 22)
     const next = SHAPES[g.bag[0]]
     next.cells.forEach(([cx, cy]) =>
       drawCell(ctx, px + PANEL / 2 + (cx - next.box / 2) * 16, 34 + cy * 16, COLORS[g.bag[0]], 16),
     )
-    ctx.fillText('ردیف', px + PANEL / 2, 120)
-    ctx.fillText('سطح', px + PANEL / 2, 180)
+    ctx.fillText(t('games.blocks.lines'), px + PANEL / 2, 120)
+    ctx.fillText(t('games.blocks.level'), px + PANEL / 2, 180)
     ctx.fillStyle = pal.fg
     ctx.font = '700 20px Vazirmatn Variable, system-ui'
-    ctx.fillText(toFaDigits(g.lines), px + PANEL / 2, 146)
-    ctx.fillText(toFaDigits(g.level), px + PANEL / 2, 206)
+    ctx.fillText(toLocalDigits(g.lines), px + PANEL / 2, 146)
+    ctx.fillText(toLocalDigits(g.level), px + PANEL / 2, 206)
   })
 
   useKeys((e) => {
@@ -196,16 +197,16 @@ const BlocksView = () => {
   }
 
   const controls = [
-    { action: 'left', icon: ArrowLeft, label: 'چپ' },
-    { action: 'rotate', icon: RotateCw, label: 'چرخش' },
-    { action: 'down', icon: ArrowDown, label: 'پایین' },
-    { action: 'drop', icon: ChevronsDown, label: 'سقوط' },
-    { action: 'right', icon: ArrowRight, label: 'راست' },
+    { action: 'left', icon: ArrowLeft, label: t('games.blocks.left') },
+    { action: 'rotate', icon: RotateCw, label: t('games.blocks.rotate') },
+    { action: 'down', icon: ArrowDown, label: t('games.blocks.down') },
+    { action: 'drop', icon: ChevronsDown, label: t('games.blocks.drop') },
+    { action: 'right', icon: ArrowRight, label: t('games.blocks.right') },
   ] as const
 
   return (
     <GameShell
-      title="بلوک‌ریز"
+      title={t('games.blocks.title')}
       stats={arcade.stats}
       overlay={arcade.overlay}
       onRestart={start}
@@ -232,7 +233,7 @@ const BlocksView = () => {
         ref={canvasRef}
         width={W}
         height={H}
-        label="صفحهٔ بلوک‌ریز"
+        label={t('games.boardLabel', { name: t('games.blocks.title') })}
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}

@@ -3,6 +3,7 @@ import { GameCanvas, GameShell } from '#/modules/games/components/game-shell'
 import { useArcade } from '#/modules/games/hooks/arcade.hook'
 import { useCanvasGame, useKeys } from '#/modules/games/hooks/canvas-game.hook'
 import { sfx } from '#/modules/games/utils/sfx'
+import { t } from '#/modules/shell/utils/i18n'
 
 const W = 360
 const H = 540
@@ -52,8 +53,8 @@ const newGame = () => ({
 
 const MeteorView = () => {
   const arcade = useArcade('meteor', {
-    title: 'باران شهاب',
-    detail: 'انگشتت را روی صفحه بکش؛ سفینه خودکار شلیک می‌کند. ستاره‌ها شلیک سه‌تایی می‌دهند.',
+    title: t('games.meteor.title'),
+    detail: t('games.meteor.intro'),
   })
   const game = useRef(newGame())
   const held = useRef({ left: false, right: false, up: false, down: false })
@@ -269,7 +270,7 @@ const MeteorView = () => {
 
   return (
     <GameShell
-      title="باران شهاب"
+      title={t('games.meteor.title')}
       stats={arcade.stats}
       overlay={arcade.overlay}
       onRestart={start}
@@ -280,7 +281,7 @@ const MeteorView = () => {
         ref={canvasRef}
         width={W}
         height={H}
-        label="صفحهٔ باران شهاب"
+        label={t('games.boardLabel', { name: t('games.meteor.title') })}
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={() => (drag.current = null)}

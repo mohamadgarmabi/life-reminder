@@ -2,6 +2,7 @@ import { Sparkles } from 'lucide-react'
 import { Button } from '#/components/button'
 import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle } from '#/components/drawer'
 import { useUpdatePrompt } from '#/modules/shell/hooks/update-prompt.hook'
+import { t } from '#/modules/shell/utils/i18n'
 
 const UpdatePrompt = () => {
   const { open, versionLabel, notes, hasNotes, applying, handleOpenChange, handleApply } = useUpdatePrompt()
@@ -13,11 +14,11 @@ const UpdatePrompt = () => {
           <div className="mb-1 rounded-full bg-secondary p-3">
             <Sparkles className="size-6" aria-hidden />
           </div>
-          <DrawerTitle>به‌روزرسانی آماده است</DrawerTitle>
+          <DrawerTitle>{t('shell.update.title')}</DrawerTitle>
           <DrawerDescription>{versionLabel}</DrawerDescription>
         </DrawerHeader>
         <div className="overflow-y-auto px-4">
-          <h3 className="mb-2 text-sm font-semibold">تغییرات این نسخه</h3>
+          <h3 className="mb-2 text-sm font-semibold">{t('shell.update.changes')}</h3>
           {hasNotes && (
             <ul className="mb-2 space-y-1.5 rounded-2xl surface p-4 text-sm" dir="auto">
               {notes.map((note) => (
@@ -32,15 +33,15 @@ const UpdatePrompt = () => {
             </ul>
           )}
           {!hasNotes && (
-            <p className="mb-2 rounded-2xl surface p-4 text-sm text-muted-foreground">بهبودها و رفع اشکال‌ها.</p>
+            <p className="mb-2 rounded-2xl surface p-4 text-sm text-muted-foreground">{t('shell.update.noNotes')}</p>
           )}
         </div>
         <div className="grid gap-2 px-4 pt-3 pb-[max(1.25rem,env(safe-area-inset-bottom))]">
           <Button size="lg" onClick={handleApply} disabled={applying}>
-            اعمال به‌روزرسانی
+            {t('shell.update.apply')}
           </Button>
           <Button size="lg" variant="ghost" onClick={() => handleOpenChange(false)}>
-            بعداً
+            {t('common.later')}
           </Button>
         </div>
       </DrawerContent>

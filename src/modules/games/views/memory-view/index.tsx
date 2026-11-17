@@ -4,13 +4,14 @@ import { GameShell } from '#/modules/games/components/game-shell'
 import { useScores } from '#/modules/games/hooks/scores.hook'
 import { sfx } from '#/modules/games/utils/sfx'
 import { cn } from '#/modules/shell/utils/cn'
-import { toFaDigits } from '#/modules/shell/utils/format'
+import { toLocalDigits } from '#/modules/shell/utils/format'
 import { Button } from '#/components/button'
+import { t } from '#/modules/shell/utils/i18n'
 
 const SIZES = {
-  small: { label: '۱۲ کارت', cols: 3, pairs: 6 },
-  medium: { label: '۱۶ کارت', cols: 4, pairs: 8 },
-  large: { label: '۲۰ کارت', cols: 4, pairs: 10 },
+  small: { cols: 3, pairs: 6 },
+  medium: { cols: 4, pairs: 8 },
+  large: { cols: 4, pairs: 10 },
 }
 type Size = keyof typeof SIZES
 
@@ -73,18 +74,23 @@ const MemoryView = () => {
 
   return (
     <GameShell
-      title="کارت حافظه"
+      title={t('games.memory.title')}
       stats={[
-        { label: 'حرکت', value: toFaDigits(moves) },
-        { label: 'بهترین', value: best === null ? '—' : toFaDigits(best) },
+        { label: t('games.moves'), value: toLocalDigits(moves) },
+        { label: t('games.best'), value: best === null ? '—' : toLocalDigits(best) },
       ]}
       overlay={
         done
-          ? { title: 'آفرین!', detail: `با ${toFaDigits(moves)} حرکت`, action: 'دوباره', onAction: () => restart() }
+          ? {
+              title: t('games.wellDone'),
+              detail: t('games.memory.withMoves', { n: toLocalDigits(moves) }),
+              action: t('games.playAgain'),
+              onAction: () => restart(),
+            }
           : null
       }
       scores={scores}
-      formatScore={(s) => `${toFaDigits(s)} حرکت`}
+      formatScore={(s) => t('games.memory.movesCount', { n: toLocalDigits(s) })}
       before={
         <div className="flex gap-2">
           {(Object.keys(SIZES) as Size[]).map((s) => (
@@ -95,14 +101,14 @@ const MemoryView = () => {
               aria-pressed={size === s}
               onClick={() => restart(s)}
             >
-              {SIZES[s].label}
+              {t('games.memory.cards', { n: toLocalDigits(SIZES[s].pairs * 2) })}
             </Button>
           ))}
         </div>
       }
       after={
         <Button variant="outline" onClick={() => restart()}>
-          <RotateCcw /> شروع دوباره
+          <RotateCcw /> {t('games.startOver')}
         </Button>
       }
     >
@@ -119,7 +125,7 @@ const MemoryView = () => {
             <button
               key={i}
               type="button"
-              aria-label={up ? card.face : 'کارت بسته'}
+              aria-label={up ? card.face : t('games.memory.hidden')}
               className="aspect-square rounded-xl outline-none perspective-distant focus-visible:ring-[3px] focus-visible:ring-ring/50"
               onClick={() => flip(i)}
             >

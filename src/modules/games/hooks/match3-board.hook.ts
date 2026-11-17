@@ -2,15 +2,16 @@ import { useRef, type PointerEvent } from 'react'
 import type { Match3BoardProps } from '#/modules/games/types'
 import { SIZE } from '#/modules/games/utils/match3'
 import { cn } from '#/modules/shell/utils/cn'
+import { t, type MessageKey } from '#/modules/shell/utils/i18n'
 
 // Own palette (no external art): emoji on tinted gems.
-const KINDS = [
-  { emoji: '🌸', bg: 'bg-pink-400/30', label: 'شکوفه' },
-  { emoji: '🍋', bg: 'bg-yellow-400/30', label: 'لیمو' },
-  { emoji: '🍀', bg: 'bg-green-500/30', label: 'شبدر' },
-  { emoji: '💧', bg: 'bg-sky-400/30', label: 'قطره' },
-  { emoji: '🔥', bg: 'bg-orange-500/30', label: 'آتش' },
-  { emoji: '🍇', bg: 'bg-violet-500/30', label: 'انگور' },
+const KINDS: { emoji: string; bg: string; label: MessageKey }[] = [
+  { emoji: '🌸', bg: 'bg-pink-400/30', label: 'games.match3.gem.blossom' },
+  { emoji: '🍋', bg: 'bg-yellow-400/30', label: 'games.match3.gem.lemon' },
+  { emoji: '🍀', bg: 'bg-green-500/30', label: 'games.match3.gem.clover' },
+  { emoji: '💧', bg: 'bg-sky-400/30', label: 'games.match3.gem.drop' },
+  { emoji: '🔥', bg: 'bg-orange-500/30', label: 'games.match3.gem.fire' },
+  { emoji: '🍇', bg: 'bg-violet-500/30', label: 'games.match3.gem.grapes' },
 ]
 
 const useMatch3Board = ({ grid, clearing, spawned, selected, onTap, onSwap }: Match3BoardProps) => {
@@ -49,7 +50,7 @@ const useMatch3Board = ({ grid, clearing, spawned, selected, onTap, onSwap }: Ma
         id: tile.id,
         index: i,
         emoji: kind.emoji,
-        label: kind.label,
+        label: t(kind.label),
         style: { transform: `translate(${(i % SIZE) * 100}%, ${Math.floor(i / SIZE) * 100}%)` },
         innerClassName: cn(
           'flex size-full items-center justify-center rounded-xl text-[clamp(1rem,6cqw,2rem)] transition-[scale,opacity,box-shadow] duration-200',

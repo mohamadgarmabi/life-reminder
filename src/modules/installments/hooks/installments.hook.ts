@@ -3,13 +3,11 @@ import { useState } from 'react'
 import { toast } from '#/components/sonner'
 import { useLiveQuery } from '#/modules/database/hooks/database.hook'
 import { toIsoDate } from '#/modules/shell/utils/dates'
-import { formatMoney, toFaDigits } from '#/modules/shell/utils/format'
+import { formatMoney, localYear, monthNames, toLocalDigits } from '#/modules/shell/utils/format'
 import { useNow } from '#/modules/shell/hooks/now.hook'
 import { installmentRepo } from '#/modules/installments/apis/installments.api'
 import type { Installment, InstallmentFormValues } from '#/modules/installments/types'
-import { getYear } from 'date-fns-jalali'
-import { JALALI_MONTHS } from '#/modules/shell/hooks/form-fields.hook'
-import { parseIsoDate } from '#/modules/shell/utils/dates'
+import { t } from '#/modules/shell/utils/i18n'
 import {
   installmentStatus,
   nextPayment,
@@ -23,19 +21,19 @@ type Dialog = { type: 'create' } | { type: 'edit' | 'history'; item: Installment
 const ORDER = ['overdue', 'today', 'soon', 'upcoming', 'paused', 'done']
 
 const SORT_OPTIONS = [
-  { value: 'status', label: 'مرتب‌سازی: وضعیت' },
-  { value: 'next', label: 'نزدیک‌ترین سررسید' },
-  { value: 'amount', label: 'بیشترین مبلغ قسط' },
-  { value: 'remaining', label: 'بیشترین مانده' },
-  { value: 'end', label: 'زودترین پایان اقساط' },
-]
+  { value: 'status', label: 'installments.sort.status' },
+  { value: 'next', label: 'installments.sort.next' },
+  { value: 'amount', label: 'installments.sort.amount' },
+  { value: 'remaining', label: 'installments.sort.remaining' },
+  { value: 'end', label: 'installments.sort.end' },
+] as const
 
 const FILTERS = [
-  { value: 'all', label: 'همه', match: () => true },
-  { value: 'running', label: 'در جریان', match: (s: string) => s !== 'done' && s !== 'paused' },
-  { value: 'overdue', label: 'معوق', match: (s: string) => s === 'overdue' },
-  { value: 'done', label: 'تسویه', match: (s: string) => s === 'done' },
-]
+  { value: 'all', label: 'installments.filter.all', match: () => true },
+  { value: 'running', label: 'installments.filter.running', match: (s: string) => s !== 'done' && s !== 'paused' },
+  { value: 'overdue', label: 'installments.filter.overdue', match: (s: string) => s === 'overdue' },
+  { value: 'done', label: 'installments.filter.done', match: (s: string) => s === 'done' },
+] as const
 
 const useInstallments = () => {
   const search = useSearch({ from: '/installments' })
@@ -59,7 +57,7 @@ const useInstallments = () => {
       toast.success(message)
       close()
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : 'خطا در ذخیره‌سازی')
+      toast.error(e instanceof Error ? e.message : t('installments.saveError'))
     }
   }
 
@@ -80,10 +78,11 @@ const useInstallments = () => {
   const remainingTotal = active.reduce((sum, i) => sum + remainingPayments(i) * i.amount, 0)
   const monthlyTotal = active.reduce((sum, i) => sum + (remainingPayments(i) ? i.amount : 0), 0)
   const statusOf = (i: Installment) => installmentStatus(i, today)
-  const filters = FILTERS.map((f) => ({ value: f.value, label: f.label }))
-  const match = FILTERS.find((f) => f.value === filter)?.match ?? (() => true)
+  const filters = FILTERS.map((f) => ({ value: f.value, label: t(f.label) }))
+  const match: (s: string) => boolean = FILTERS.find((f) => f.value === filter)?.match ?? (() => true)
 
-  const yearOf = (i: Installment, n: number) => getYear(parseIsoDate(paymentDueDate(i, n)))
+  // Filter years/months follow the display calendar (Jalali in Persian, Gregorian in English).
+  const yearOf = (i: Installment, n: number) => localYear(paymentDueDate(i, n))
   const years = items.length
     ? Array.from(
         {
@@ -102,13 +101,14 @@ const useInstallments = () => {
     (i) => match(statusOf(i)) && periodCount(i) > 0 && (tag === 'all' || i.tags.includes(tag)),
   )
   const periodTotal = visible.reduce((sum, i) => sum + periodCount(i) * i.amount, 0)
-  const periodLabel = `${month === 'all' ? '' : `${JALALI_MONTHS[Number(month)]} `}${toFaDigits(year)}`
+  const months = monthNames()
+  const periodLabel = `${month === 'all' ? '' : `${months[Number(month)]} `}${toLocalDigits(year)}`
 
   const cards = visible.map((inst) => ({
     inst,
     onEdit: () => setDialog({ type: 'edit', item: inst }),
     onHistory: () => setDialog({ type: 'history', item: inst }),
-    onDelete: () => void save(installmentRepo.remove(inst.id), 'قسط حذف شد.'),
+    onDelete: () => void save(installmentRepo.remove(inst.id), t('installments.deleted')),
   }))
 
   const editItem = dialog?.type === 'edit' ? dialog.item : undefined
@@ -122,7 +122,9 @@ const useInstallments = () => {
     isEmpty: q.status === 'success' && !items.length,
     hasItems: items.length > 0,
     isFilterEmpty: items.length > 0 && !cards.length,
-    listLabel: `${toFaDigits(cards.length)} قسط`,
+    listLabel: t(cards.length === 1 ? 'installments.list.one' : 'installments.list.many', {
+      n: toLocalDigits(cards.length),
+    }),
     filters,
     filter,
     handleFilterChange: setFilter,
@@ -136,32 +138,38 @@ const useInstallments = () => {
     year,
     month,
     yearOptions: [
-      { value: 'all', label: 'همهٔ سال‌ها' },
-      ...years.map((y) => ({ value: String(y), label: toFaDigits(y) })),
+      { value: 'all', label: t('installments.filter.allYears') },
+      ...years.map((y) => ({ value: String(y), label: toLocalDigits(y) })),
     ],
     monthOptions: [
-      { value: 'all', label: 'همهٔ ماه‌ها' },
-      ...JALALI_MONTHS.map((label, m) => ({ value: String(m), label })),
+      { value: 'all', label: t('installments.filter.allMonths') },
+      ...months.map((label, m) => ({ value: String(m), label })),
     ],
     isMonthDisabled: year === 'all',
-    periodSummary: year === 'all' ? undefined : `جمع اقساط ${periodLabel}: ${formatMoney(periodTotal)}`,
+    periodSummary:
+      year === 'all'
+        ? undefined
+        : t('installments.periodSummary', { period: periodLabel, total: formatMoney(periodTotal) }),
     handleYearChange: (v: string) => {
       setYear(v)
       if (v === 'all') setMonth('all')
     },
     handleMonthChange: setMonth,
     sort,
-    sortOptions: SORT_OPTIONS,
+    sortOptions: SORT_OPTIONS.map((o) => ({ value: o.value, label: t(o.label) })),
     handleSortChange: setSort,
     tag,
     hasTags: allTags.length > 0,
-    tagOptions: [{ value: 'all', label: 'همهٔ تگ‌ها' }, ...allTags.map((t) => ({ value: t, label: t }))],
+    tagOptions: [
+      { value: 'all', label: t('installments.filter.allTags') },
+      ...allTags.map((tg) => ({ value: tg, label: tg })),
+    ],
     handleTagChange: setTag,
     headerDescription: items.length
-      ? `پرداخت ماهانه: ${formatMoney(monthlyTotal)} · مانده کل: ${formatMoney(remainingTotal)}`
+      ? t('installments.header', { monthly: formatMoney(monthlyTotal), remaining: formatMoney(remainingTotal) })
       : undefined,
     isFormOpen: dialog?.type === 'create' || dialog?.type === 'edit',
-    formTitle: dialog?.type === 'edit' ? 'ویرایش قسط' : 'قسط جدید',
+    formTitle: t(dialog?.type === 'edit' ? 'installments.edit' : 'installments.new'),
     isCreate: dialog?.type === 'create',
     editItem,
     historyItem,
@@ -170,10 +178,10 @@ const useInstallments = () => {
     handleOpenChange: (o: boolean) => {
       if (!o) close()
     },
-    handleCreate: (v: InstallmentFormValues) => save(installmentRepo.create(v), 'قسط اضافه شد.'),
+    handleCreate: (v: InstallmentFormValues) => save(installmentRepo.create(v), t('installments.added')),
     // the edit form only renders while editItem is set
     handleUpdate: async (v: InstallmentFormValues) => {
-      if (editItem) await save(installmentRepo.update(editItem.id, v), 'تغییرات ذخیره شد.')
+      if (editItem) await save(installmentRepo.update(editItem.id, v), t('installments.saved'))
     },
   }
 }

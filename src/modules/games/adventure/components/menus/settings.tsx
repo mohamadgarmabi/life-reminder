@@ -7,12 +7,10 @@ import { useEngine, useGame, patchGame } from '#/modules/games/adventure/stores/
 import { updateSettings } from '#/modules/games/adventure/stores/engine.actions'
 import type { Quality } from '#/modules/games/adventure/types'
 import { Panel } from '#/modules/games/adventure/components/menus/panel'
+import { t } from '#/modules/shell/utils/i18n'
 
-const QUALITY_OPTIONS: { value: Quality; label: string }[] = [
-  { value: 'auto', label: 'خودکار' },
-  { value: 'low', label: 'کم' },
-  { value: 'high', label: 'زیاد' },
-]
+const QUALITIES: Quality[] = ['auto', 'low', 'high']
+const qualityOptions = () => QUALITIES.map((value) => ({ value, label: t(`adventure.settings.quality.${value}`) }))
 
 const Row = ({ label, children }: { label: string; children: ReactNode }) => (
   <label className="flex flex-col gap-1 text-start text-sm font-medium">
@@ -42,10 +40,10 @@ const SettingsPanel = ({ onClose }: { onClose: () => void }) => {
   const set = (patch: Parameters<typeof updateSettings>[1]) => updateSettings(engine, patch)
 
   return (
-    <Panel title="تنظیمات">
-      <Row label="موسیقی و صدای محیط">
+    <Panel title={t('adventure.settings')}>
+      <Row label={t('adventure.settings.music')}>
         <Slider
-          label="موسیقی و صدای محیط"
+          label={t('adventure.settings.music')}
           min={0}
           max={1}
           step={0.05}
@@ -53,9 +51,9 @@ const SettingsPanel = ({ onClose }: { onClose: () => void }) => {
           onValueChange={([v]) => set({ musicVolume: v })}
         />
       </Row>
-      <Row label="جلوه‌های صوتی">
+      <Row label={t('adventure.settings.sfx')}>
         <Slider
-          label="جلوه‌های صوتی"
+          label={t('adventure.settings.sfx')}
           min={0}
           max={1}
           step={0.05}
@@ -63,9 +61,9 @@ const SettingsPanel = ({ onClose }: { onClose: () => void }) => {
           onValueChange={([v]) => set({ sfxVolume: v })}
         />
       </Row>
-      <Row label="حساسیت چرخش دوربین">
+      <Row label={t('adventure.settings.sensitivity')}>
         <Slider
-          label="حساسیت چرخش دوربین"
+          label={t('adventure.settings.sensitivity')}
           min={0.5}
           max={2}
           step={0.1}
@@ -73,17 +71,17 @@ const SettingsPanel = ({ onClose }: { onClose: () => void }) => {
           onValueChange={([v]) => set({ lookSensitivity: v })}
         />
       </Row>
-      <SwitchRow label="معکوس کردن بالا و پایین" checked={s.invertY} onChange={(v) => set({ invertY: v })} />
+      <SwitchRow label={t('adventure.settings.invertY')} checked={s.invertY} onChange={(v) => set({ invertY: v })} />
       <SwitchRow
-        label="چپ‌دست (جای دسته و دوربین عوض شود)"
+        label={t('adventure.settings.leftHanded')}
         checked={s.leftHanded}
         onChange={(v) => set({ leftHanded: v })}
       />
-      <Row label="کیفیت گرافیک">
+      <Row label={t('adventure.settings.quality')}>
         <Select
-          label="کیفیت گرافیک"
+          label={t('adventure.settings.quality')}
           value={s.quality}
-          options={QUALITY_OPTIONS}
+          options={qualityOptions()}
           onValueChange={(v) => set({ quality: v as Quality })}
         />
       </Row>
@@ -91,13 +89,13 @@ const SettingsPanel = ({ onClose }: { onClose: () => void }) => {
         variant="secondary"
         onClick={() => {
           set({ hintSeen: false })
-          patchGame(engine.store, { notice: 'راهنمای کنترل‌ها دفعهٔ بعد نشان داده می‌شود' })
+          patchGame(engine.store, { notice: t('adventure.settings.guideNotice') })
         }}
       >
-        نمایش دوبارهٔ راهنمای کنترل‌ها
+        {t('adventure.settings.showGuide')}
       </Button>
       <Button size="lg" className="h-12" onClick={onClose}>
-        بازگشت
+        {t('adventure.back')}
       </Button>
     </Panel>
   )

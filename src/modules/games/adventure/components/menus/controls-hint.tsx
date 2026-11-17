@@ -3,19 +3,22 @@ import { Button } from '#/components/button'
 import { useEngine, useGame } from '#/modules/games/adventure/stores/session.store'
 import { updateSettings } from '#/modules/games/adventure/stores/engine.actions'
 import { Panel } from '#/modules/games/adventure/components/menus/panel'
+import { t } from '#/modules/shell/utils/i18n'
 
 /** First-run controls guide; shown again after "show controls guide" in settings. */
 const ControlsHint = () => {
   const engine = useEngine()
   const leftHanded = useGame((g) => g.settings.leftHanded)
-  const [moveSide, lookSide] = leftHanded ? ['راست', 'چپ'] : ['چپ', 'راست']
+  const [moveSide, lookSide] = leftHanded
+    ? [t('adventure.side.right'), t('adventure.side.left')]
+    : [t('adventure.side.left'), t('adventure.side.right')]
   const rows = [
-    { icon: Move, text: `انگشتت را روی نیمهٔ ${moveSide} صفحه بگذار و بکش تا راه بروی.` },
-    { icon: RotateCw, text: `روی نیمهٔ ${lookSide} صفحه بکش تا به اطراف نگاه کنی.` },
-    { icon: Hand, text: 'نزدیک چیزهایی که می‌درخشند، دکمهٔ کار ظاهر می‌شود؛ آن را بزن.' },
+    { icon: Move, text: t('adventure.controls.move', { side: moveSide }) },
+    { icon: RotateCw, text: t('adventure.controls.look', { side: lookSide }) },
+    { icon: Hand, text: t('adventure.controls.act') },
   ]
   return (
-    <Panel title="راهنمای کنترل‌ها">
+    <Panel title={t('adventure.controls.title')}>
       <ul className="flex flex-col gap-3 text-start">
         {rows.map(({ icon: Icon, text }) => (
           <li key={text} className="flex items-center gap-3">
@@ -25,7 +28,7 @@ const ControlsHint = () => {
         ))}
       </ul>
       <Button size="lg" className="h-12 text-base" autoFocus onClick={() => updateSettings(engine, { hintSeen: true })}>
-        فهمیدم
+        {t('adventure.controls.gotIt')}
       </Button>
     </Panel>
   )

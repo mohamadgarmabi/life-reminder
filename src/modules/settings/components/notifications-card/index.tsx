@@ -5,6 +5,7 @@ import { Switch } from '#/components/switch'
 import { SettingsRow } from '#/modules/settings/components/settings-row'
 import { SettingsSection } from '#/modules/settings/components/settings-section'
 import { useNotificationsCard } from '#/modules/settings/hooks/notifications-card.hook'
+import { useI18n } from '#/modules/shell/hooks/i18n.hook'
 
 const NotificationsCard = () => {
   const {
@@ -18,17 +19,18 @@ const NotificationsCard = () => {
     handleDefaultTimeChange,
     handleTestNotification,
   } = useNotificationsCard()
+  const { t } = useI18n()
 
   return (
-    <SettingsSection title="اعلان‌ها">
+    <SettingsSection title={t('settings.notifications.title')}>
       <SettingsRow
         icon={Bell}
         tone="bg-red-500"
-        title="نمایش اعلان یادآورها"
+        title={t('settings.notifications.show')}
         htmlFor="notifications"
         description={
           <>
-            مجوز مرورگر: <Badge variant={badgeVariant}>{permissionLabel}</Badge>
+            {t('settings.notifications.permission')} <Badge variant={badgeVariant}>{permissionLabel}</Badge>
           </>
         }
         trailing={
@@ -38,14 +40,19 @@ const NotificationsCard = () => {
       <SettingsRow
         icon={Clock}
         tone="bg-orange-500"
-        title="ساعت پیش‌فرض یادآوری"
+        title={t('settings.notifications.defaultTime')}
         htmlFor="default-time"
-        description="زمان اعلان اقساط و آبیاری، و ساعت پیشنهادی یادآورهای جدید."
+        description={t('settings.notifications.defaultTimeHint')}
       >
         <TimeSelect id="default-time" value={defaultReminderTime} onChange={handleDefaultTimeChange} />
       </SettingsRow>
       {canSendTest && (
-        <SettingsRow icon={BellRing} tone="bg-amber-500" title="ارسال اعلان آزمایشی" onClick={handleTestNotification} />
+        <SettingsRow
+          icon={BellRing}
+          tone="bg-amber-500"
+          title={t('settings.notifications.sendTest')}
+          onClick={handleTestNotification}
+        />
       )}
     </SettingsSection>
   )

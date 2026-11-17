@@ -4,6 +4,7 @@ import Image from '#/components/image'
 import type { WidgetSize } from '#/modules/dashboard/types'
 import type { Plant } from '#/modules/plants/types'
 import { cn } from '#/modules/shell/utils/cn'
+import { t } from '#/modules/shell/utils/i18n'
 
 const TILE = 'outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 active:scale-95 transition-transform'
 
@@ -19,7 +20,7 @@ const PlantsWidget = ({ size, plants }: { size: WidgetSize; plants: Plant[] }) =
         )}
       >
         <Flower2 className="size-6" aria-hidden />
-        گیاهان
+        {t('dashboard.plants')}
       </Link>
     )
   }
@@ -29,8 +30,8 @@ const PlantsWidget = ({ size, plants }: { size: WidgetSize; plants: Plant[] }) =
     <>
       <Link to="/plants" className={cn('mb-2 flex items-center gap-2 rounded-lg', TILE)}>
         <Flower2 className="size-4" aria-hidden />
-        <span className="flex-1 text-sm font-semibold">گیاهان</span>
-        <ChevronLeft className="size-4 text-muted-foreground" aria-hidden />
+        <span className="flex-1 text-sm font-semibold">{t('dashboard.plants')}</span>
+        <ChevronLeft className="size-4 ltr:rotate-180 text-muted-foreground" aria-hidden />
       </Link>
       {!plants.length && (
         <Link
@@ -38,7 +39,7 @@ const PlantsWidget = ({ size, plants }: { size: WidgetSize; plants: Plant[] }) =
           search={{ new: true }}
           className={cn('flex flex-1 items-center justify-center text-sm text-muted-foreground', TILE)}
         >
-          هنوز گیاهی ثبت نشده. افزودن گیاه
+          {t('dashboard.plants.empty')}
         </Link>
       )}
       <ul

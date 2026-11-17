@@ -4,18 +4,19 @@ import { getYear } from 'date-fns-jalali'
 import { toast } from '#/components/sonner'
 import { useLiveQuery } from '#/modules/database/hooks/database.hook'
 import { isAiAvailable } from '#/modules/shell/apis/ai.api'
-import { toFaDigits } from '#/modules/shell/utils/format'
+import { formatJalaliYear, toLocalDigits } from '#/modules/shell/utils/format'
+import { t } from '#/modules/shell/utils/i18n'
 import { planRepo } from '#/modules/plans/apis/plans.api'
 import { STATUS, STATUS_ORDER } from '#/modules/plans/utils/plans.constants'
 import { planReport } from '#/modules/plans/utils/report'
 import type { Plan, PlanFormValues, PlansDialog } from '#/modules/plans/types'
 
 const SORT_OPTIONS = [
-  { value: 'status', label: 'مرتب‌سازی: وضعیت' },
-  { value: 'newest', label: 'جدیدترین' },
-  { value: 'updated', label: 'آخرین تغییر' },
-  { value: 'title', label: 'عنوان' },
-]
+  { value: 'status', labelKey: 'plans.sortStatus' },
+  { value: 'newest', labelKey: 'plans.sortNewest' },
+  { value: 'updated', labelKey: 'plans.sortUpdated' },
+  { value: 'title', labelKey: 'plans.sortTitle' },
+] as const
 
 const byStatus = (a: Plan, b: Plan) => STATUS_ORDER.indexOf(a.status) - STATUS_ORDER.indexOf(b.status)
 const SORTS: Record<string, (a: Plan, b: Plan) => number> = {
@@ -46,7 +47,7 @@ const usePlans = () => {
       toast.success(message)
       close()
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : 'خطا در ذخیره‌سازی')
+      toast.error(e instanceof Error ? e.message : t('plans.saveError'))
     }
   }
 
@@ -73,11 +74,11 @@ const usePlans = () => {
     isEmpty: q.status === 'success' && !items.length,
     hasItems: items.length > 0,
     isFilterEmpty: items.length > 0 && !visible.length,
-    listLabel: `${toFaDigits(visible.length)} برنامه`,
+    listLabel: t('plans.count', { n: toLocalDigits(visible.length) }),
     filter,
     filters: [
       // Counts live in the report card's stats; repeating them here overflows the pill on phones.
-      { value: 'all', label: 'همه' },
+      { value: 'all', label: t('plans.filterAll') },
       ...STATUS_ORDER.map((s) => ({ value: s, label: STATUS[s].label })),
     ],
     handleFilterChange: setFilter,
@@ -89,39 +90,45 @@ const usePlans = () => {
     },
     report: {
       percent: report.percent,
-      percentLabel: `${toFaDigits(report.percent)}٪`,
-      title: year === 'all' ? 'پیشرفت همهٔ سال‌ها' : `پیشرفت سال ${toFaDigits(year)}`,
-      detail: `${toFaDigits(report.counts.done)} از ${toFaDigits(report.total)} برنامه انجام شده`,
-      stats: STATUS_ORDER.map((s) => ({ key: s, label: STATUS[s].label, value: toFaDigits(report.counts[s]) })),
+      percentLabel: t('plans.percent', { n: toLocalDigits(report.percent) }),
+      title:
+        year === 'all'
+          ? t('plans.progressAllYears')
+          : t('plans.progressYear', { year: formatJalaliYear(Number(year)) }),
+      detail: t('plans.progressDetail', {
+        done: toLocalDigits(report.counts.done),
+        total: toLocalDigits(report.total),
+      }),
+      stats: STATUS_ORDER.map((s) => ({ key: s, label: STATUS[s].label, value: toLocalDigits(report.counts[s]) })),
     },
     year,
     yearOptions: [
-      { value: 'all', label: 'همهٔ سال‌ها' },
-      ...years.map((y) => ({ value: String(y), label: toFaDigits(y) })),
+      { value: 'all', label: t('plans.allYears') },
+      ...years.map((y) => ({ value: String(y), label: formatJalaliYear(y) })),
     ],
     handleYearChange: setYear,
     sort,
-    sortOptions: SORT_OPTIONS,
+    sortOptions: SORT_OPTIONS.map((o) => ({ value: o.value, label: t(o.labelKey) })),
     handleSortChange: setSort,
     tag,
     hasTags: allTags.length > 0,
-    tagOptions: [{ value: 'all', label: 'همهٔ تگ‌ها' }, ...allTags.map((t) => ({ value: t, label: t }))],
+    tagOptions: [{ value: 'all', label: t('plans.allTags') }, ...allTags.map((t) => ({ value: t, label: t }))],
     handleTagChange: setTag,
     // new plans default to the year being viewed
     defaultYear: year === 'all' ? currentYear : Number(year),
     isFormOpen: dialog?.type === 'create' || dialog?.type === 'edit',
     tutorPlan: dialog?.type === 'tutor' ? dialog.item : undefined,
-    tutorTitle: dialog?.type === 'tutor' ? `آموزش: ${dialog.item.title}` : 'آموزش',
-    formTitle: editItem ? 'ویرایش برنامه' : 'برنامهٔ جدید',
+    tutorTitle: dialog?.type === 'tutor' ? t('plans.tutorTitle', { title: dialog.item.title }) : t('plans.tutor'),
+    formTitle: editItem ? t('plans.edit') : t('plans.new'),
     editItem,
     handleOpenCreate: () => setDialog({ type: 'create' }),
     handleOpenChange: (o: boolean) => {
       if (!o) close()
     },
-    handleCreate: (v: PlanFormValues) => save(planRepo.create(v), 'برنامه اضافه شد.'),
+    handleCreate: (v: PlanFormValues) => save(planRepo.create(v), t('plans.added')),
     // the edit form only renders while editItem is set
     handleUpdate: async (v: PlanFormValues) => {
-      if (editItem) await save(planRepo.update(editItem.id, v), 'تغییرات ذخیره شد.')
+      if (editItem) await save(planRepo.update(editItem.id, v), t('plans.updated'))
     },
   }
 }

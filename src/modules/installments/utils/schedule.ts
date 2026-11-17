@@ -1,5 +1,6 @@
-import { addMonths, getDaysInMonth, getMonth, getYear, setDate, startOfMonth } from 'date-fns-jalali'
+import { addMonths, getDaysInMonth, setDate, startOfMonth } from 'date-fns-jalali'
 import { daysBetween, parseIsoDate, toIsoDate } from '#/modules/shell/utils/dates'
+import { localMonth, localYear } from '#/modules/shell/utils/format'
 import { type IsoDate } from '#/modules/shell/types'
 import type { Installment } from '#/modules/installments/types'
 import type { InstallmentStatus } from '#/modules/installments/types'
@@ -34,12 +35,13 @@ const installmentStatus = (inst: Installment, today: IsoDate): InstallmentStatus
   return days <= Math.max(3, ...inst.reminderDaysBefore) ? 'soon' : 'upcoming'
 }
 
-/** How many payments fall in Jalali `year` (and 0-based `month`, if given). */
-const paymentsIn = (inst: Installment, year: number, month?: number) => {
-  const first = parseIsoDate(paymentDueDate(inst, 0))
-  const lo = (year - getYear(first)) * 12 + (month ?? 0) - getMonth(first)
-  const hi = lo + (month === undefined ? 11 : 0)
-  return Math.max(0, Math.min(hi, inst.totalPayments - 1) - Math.max(lo, 0) + 1)
-}
+/**
+ * How many payments fall in `year` (and 0-based `month`, if given) of the display calendar.
+ * Counts real due dates: a Jalali-monthly schedule can put two payments in one Gregorian month.
+ */
+const paymentsIn = (inst: Installment, year: number, month?: number) =>
+  Array.from({ length: inst.totalPayments }, (_, n) => paymentDueDate(inst, n)).filter(
+    (d) => localYear(d) === year && (month === undefined || localMonth(d) === month),
+  ).length
 
 export { paymentDueDate, remainingPayments, nextPayment, installmentStatus, paymentsIn }

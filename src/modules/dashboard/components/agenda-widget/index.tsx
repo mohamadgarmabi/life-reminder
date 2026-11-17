@@ -7,8 +7,8 @@ import { cn } from '#/modules/shell/utils/cn'
 const SWIPE = 'snap-y snap-mandatory overflow-y-auto [scrollbar-width:none]'
 
 const AgendaWidget = (props: AgendaWidgetProps) => {
-  const { title, empty, size, icon: Icon } = props
-  const { countLabel, accentClassName, isEmpty, moreLabel, pages } = useAgendaWidget(props)
+  const { size, icon: Icon } = props
+  const { title, empty, countLabel, accentClassName, isEmpty, moreLabel, pages } = useAgendaWidget(props)
 
   if (size === 'mini') {
     return (

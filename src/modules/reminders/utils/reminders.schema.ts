@@ -1,5 +1,6 @@
 import { z } from 'zod'
 import { id, isoDate, isoDateTime } from '#/modules/shell/utils/zod'
+import { t } from '#/modules/shell/utils/i18n'
 
 const recurrenceSchema = z.enum(['none', 'daily', 'weekly', 'monthly'])
 
@@ -28,7 +29,11 @@ const reminderEventSchema = z.object({
 })
 
 const reminderFormSchema = z.object({
-  title: z.string().trim().min(1, 'عنوان را وارد کنید').max(100, 'عنوان طولانی است'),
+  title: z
+    .string()
+    .trim()
+    .min(1, { error: () => t('reminders.form.titleRequired') })
+    .max(100, { error: () => t('reminders.form.titleTooLong') }),
   description: z.string().max(2000),
   date: isoDate,
   time: z.string().regex(/^\d{2}:\d{2}$/),

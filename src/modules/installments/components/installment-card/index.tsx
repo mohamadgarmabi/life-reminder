@@ -1,3 +1,4 @@
+import { t } from '#/modules/shell/utils/i18n'
 import { Check, History, MoreVertical, Pencil } from 'lucide-react'
 import { SwipeRow } from '#/modules/shell/components/swipe-row'
 import { Badge } from '#/components/badge'
@@ -17,9 +18,7 @@ const InstallmentCard = ({ inst, today, onEdit, onHistory, onDelete }: Installme
     statusVariant,
     amountLabel,
     menuAriaLabel,
-    paidCountLabel,
-    totalCountLabel,
-    remainingLabel,
+    progressLabel,
     lastDueLabel,
     nextDueLabel,
     nextRelativeLabel,
@@ -32,9 +31,17 @@ const InstallmentCard = ({ inst, today, onEdit, onHistory, onDelete }: Installme
       direction="right"
       label={inst.title}
       actions={[
-        { id: 'delete', label: 'حذف', onSelect: onDelete },
+        { id: 'delete', label: t('installments.card.delete'), onSelect: onDelete },
         ...(hasNext
-          ? [{ id: 'pay', label: 'پرداخت', icon: <Check className="size-5" />, color: '#30a46c', onSelect: handlePay }]
+          ? [
+              {
+                id: 'pay',
+                label: t('installments.card.pay'),
+                icon: <Check className="size-5" />,
+                color: '#30a46c',
+                onSelect: handlePay,
+              },
+            ]
           : []),
       ]}
     >
@@ -58,8 +65,8 @@ const InstallmentCard = ({ inst, today, onEdit, onHistory, onDelete }: Installme
               groups={[
                 {
                   items: [
-                    { label: 'ویرایش', icon: <Pencil />, onSelect: onEdit },
-                    { label: 'سابقهٔ پرداخت', icon: <History />, onSelect: onHistory },
+                    { label: t('installments.card.editAction'), icon: <Pencil />, onSelect: onEdit },
+                    { label: t('installments.card.history'), icon: <History />, onSelect: onHistory },
                   ],
                 },
               ]}
@@ -67,17 +74,14 @@ const InstallmentCard = ({ inst, today, onEdit, onHistory, onDelete }: Installme
           </div>
 
           <div className="space-y-1">
-            <Progress value={progress} aria-label="پیشرفت پرداخت" />
-            <p className="text-xs text-muted-foreground">
-              {paidCountLabel} از {totalCountLabel} قسط پرداخت شده
-              {remainingLabel}
-            </p>
-            <p className="text-xs text-muted-foreground">آخرین قسط: {lastDueLabel}</p>
+            <Progress value={progress} aria-label={t('installments.card.progress')} />
+            <p className="text-xs text-muted-foreground">{progressLabel}</p>
+            <p className="text-xs text-muted-foreground">{lastDueLabel}</p>
             {inst.tags.length > 0 && (
               <div className="flex flex-wrap gap-1 pt-0.5">
-                {inst.tags.map((t) => (
-                  <Badge key={t} variant="outline" className="text-[11px] font-normal">
-                    {t}
+                {inst.tags.map((tagName) => (
+                  <Badge key={tagName} variant="outline" className="text-[11px] font-normal">
+                    {tagName}
                   </Badge>
                 ))}
               </div>
@@ -88,12 +92,12 @@ const InstallmentCard = ({ inst, today, onEdit, onHistory, onDelete }: Installme
           {hasNext && (
             <div className="flex flex-col items-stretch gap-2 @xs:flex-row @xs:items-center @xs:justify-between @xs:gap-3">
               <p className="text-xs">
-                <span className="text-muted-foreground">قسط بعدی: </span>
+                <span className="text-muted-foreground">{t('installments.card.nextDue')}</span>
                 {nextDueLabel}
                 <span className={relativeClassName}> ({nextRelativeLabel})</span>
               </p>
               <Button size="sm" className="shrink-0" onClick={handlePay} disabled={paying}>
-                <Check /> پرداخت شد
+                <Check /> {t('installments.card.markPaid')}
               </Button>
             </div>
           )}

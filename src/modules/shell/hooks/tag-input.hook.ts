@@ -1,4 +1,5 @@
 import { useState, type KeyboardEvent } from 'react'
+import { t } from '#/modules/shell/utils/i18n'
 
 type TagInputArgs = { value: string[]; onChange: (value: string[]) => void; knownTags: string[] }
 
@@ -6,8 +7,8 @@ type TagInputArgs = { value: string[]; onChange: (value: string[]) => void; know
 const useTagInput = ({ value, onChange, knownTags }: TagInputArgs) => {
   const [draft, setDraft] = useState('')
   const add = (tag: string) => {
-    const t = tag.trim()
-    if (t && !value.includes(t)) onChange([...value, t])
+    const clean = tag.trim()
+    if (clean && !value.includes(clean)) onChange([...value, clean])
     setDraft('')
   }
   const q = draft.trim()
@@ -21,10 +22,14 @@ const useTagInput = ({ value, onChange, knownTags }: TagInputArgs) => {
     },
     handleAdd: () => add(draft),
     canAdd: q.length > 0 && !value.includes(q),
-    selected: value.map((t) => ({ tag: t, onRemove: () => onChange(value.filter((x) => x !== t)) })),
+    selected: value.map((tag) => ({
+      tag,
+      removeLabel: t('shell.tags.remove', { tag }),
+      onRemove: () => onChange(value.filter((x) => x !== tag)),
+    })),
     suggestions: knownTags
-      .filter((t) => !value.includes(t) && t.includes(q))
-      .map((t) => ({ tag: t, onAdd: () => add(t) })),
+      .filter((tag) => !value.includes(tag) && tag.includes(q))
+      .map((tag) => ({ tag, onAdd: () => add(tag) })),
   }
 }
 

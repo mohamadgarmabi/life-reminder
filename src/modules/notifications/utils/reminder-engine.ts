@@ -4,12 +4,13 @@ import type { Installment } from '#/modules/installments/types'
 import { nextPayment } from '#/modules/installments/utils/schedule'
 import { plantRepo } from '#/modules/plants/apis/plants.api'
 import type { Plant } from '#/modules/plants/types'
-import { nextWateringDate } from '#/modules/plants/utils/schedule'
+import { nextWateringDate, wateringEveryLabel } from '#/modules/plants/utils/schedule'
 import { reminderRepo } from '#/modules/reminders/apis/reminders.api'
 import type { Reminder } from '#/modules/reminders/types'
 import { dueAt } from '#/modules/reminders/utils/schedule'
 import { addDaysIso, atTime } from '#/modules/shell/utils/dates'
-import { formatDate, formatDateTime, formatMoney, relativeDay, toFaDigits } from '#/modules/shell/utils/format'
+import { formatDate, formatDateTime, formatMoney, relativeDay, toLocalDigits } from '#/modules/shell/utils/format'
+import { t } from '#/modules/shell/utils/i18n'
 import { settingsStore } from '#/modules/settings/stores/settings.store'
 import { claimKeys, pruneLedger } from '#/modules/notifications/utils/notification-ledger'
 import { permissionStatus, showNotification, syncBadge, syncPush } from '#/modules/notifications/apis/notifications.api'
@@ -39,8 +40,12 @@ const collectCandidates = (data: Data, defaultTime: string, now: Date): Candidat
       fireAt: latest.fireAt,
       tag: `installment:${inst.id}`,
       path: '/installments',
-      title: `قسط ${inst.title}`,
-      body: `${formatMoney(inst.amount, inst.currency)} — سررسید ${relativeDay(next.dueDate, now)} (${formatDate(next.dueDate)})`,
+      title: t('notifications.installmentTitle', { title: inst.title }),
+      body: t('notifications.installmentBody', {
+        amount: formatMoney(inst.amount, inst.currency),
+        when: relativeDay(next.dueDate, now),
+        date: formatDate(next.dueDate),
+      }),
     })
   }
 
@@ -53,8 +58,11 @@ const collectCandidates = (data: Data, defaultTime: string, now: Date): Candidat
       fireAt,
       tag: `plant:${plant.id}`,
       path: '/plants',
-      title: `آبیاری ${plant.name}`,
-      body: `هر ${toFaDigits(plant.wateringIntervalDays)} روز — موعد آبیاری ${relativeDay(next, now)}`,
+      title: t('notifications.plantTitle', { name: plant.name }),
+      body: t('notifications.plantBody', {
+        every: wateringEveryLabel(plant.wateringIntervalDays),
+        when: relativeDay(next, now),
+      }),
     })
   }
 
@@ -124,8 +132,8 @@ const runReminderCheck = async (now: Date = new Date()) => {
   if (fresh.length > SUMMARY_THRESHOLD) {
     // Opening the app after a long time shouldn't produce a burst of notifications.
     await showNotification({
-      title: 'یادآورهای معوق',
-      body: `${toFaDigits(fresh.length)} مورد در انتظار شماست`,
+      title: t('notifications.summaryTitle'),
+      body: t('notifications.summaryBody', { n: toLocalDigits(fresh.length) }),
       tag: 'summary',
       path: '/',
     })

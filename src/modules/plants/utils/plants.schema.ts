@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { t } from '#/modules/shell/utils/i18n'
 import { id, isoDate, isoDateTime, notes } from '#/modules/shell/utils/zod'
 
 const plantSchema = z.object({
@@ -22,9 +23,17 @@ const wateringSchema = z.object({
 })
 
 const plantFormSchema = z.object({
-  name: z.string().trim().min(1, 'نام گیاه را وارد کنید').max(100, 'نام طولانی است'),
+  name: z
+    .string()
+    .trim()
+    .min(1, { error: () => t('plants.nameRequired') })
+    .max(100, { error: () => t('plants.nameTooLong') }),
   image: z.string().nullable(),
-  wateringIntervalDays: z.number().int('عدد صحیح وارد کنید').min(1, 'حداقل یک روز').max(365, 'حداکثر ۳۶۵ روز'),
+  wateringIntervalDays: z
+    .number()
+    .int({ error: () => t('plants.integerRequired') })
+    .min(1, { error: () => t('plants.minOneDay') })
+    .max(365, { error: () => t('plants.max365Days') }),
   lastWateredAt: isoDate,
   notes: z.string().max(2000),
 })

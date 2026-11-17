@@ -1,13 +1,14 @@
-import type { Agenda } from '#/modules/dashboard/types'
+import type { Agenda, AgendaItem } from '#/modules/dashboard/types'
 import { KIND } from '#/modules/dashboard/utils/dashboard.constants'
-import type { Price, PriceId } from '#/modules/dashboard/utils/prices'
+import { formatPrice, PRICE_LABELS, type Price, type PriceId } from '#/modules/dashboard/utils/prices'
 import type { Installment } from '#/modules/installments/types'
 import { nextPayment, remainingPayments } from '#/modules/installments/utils/schedule'
 import type { Plan } from '#/modules/plans/types'
 import { planReport } from '#/modules/plans/utils/report'
 import type { Plant } from '#/modules/plants/types'
 import { nextWateringDate } from '#/modules/plants/utils/schedule'
-import { formatDateLong, formatMoney, relativeDay } from '#/modules/shell/utils/format'
+import { formatDateLong, formatJalaliYear, formatMoney, relativeDay } from '#/modules/shell/utils/format'
+import { t, type MessageKey } from '#/modules/shell/utils/i18n'
 
 /** Keeps the prompt small; the model only needs the most relevant rows. */
 const MAX_ROWS = 15
@@ -24,8 +25,17 @@ type AnalysisInput = {
 const section = (title: string, rows: string[], empty: string) =>
   [title, ...(rows.length ? rows.slice(0, MAX_ROWS).map((r) => `- ${r}`) : [`- ${empty}`])].join('\n')
 
-const priceRow = (label: string, p: Price | null | undefined) =>
-  p ? `${label}: ${formatMoney(p.price)} (تغییر روز ${p.changePercent}٪)` : `${label}: نامشخص`
+const priceRow = (label: MessageKey, p: Price | null | undefined) =>
+  p
+    ? t('settings.snapshot.priceRow', {
+        label: t(label),
+        price: t('settings.snapshot.priceValue', { price: formatPrice(p.price) }),
+        percent: p.changePercent,
+      })
+    : t('settings.snapshot.priceUnknown', { label: t(label) })
+
+const kindItem = (item: AgendaItem) =>
+  t('settings.snapshot.kindItem', { kind: KIND[item.kind].label, title: item.title })
 
 /** Plain-text snapshot sent to the AI; it carries no ids, only what a human summary needs. */
 const buildAnalysisSnapshot = ({ installments, plants, plans, agenda, prices, year }: AnalysisInput, now: Date) => {
@@ -34,38 +44,58 @@ const buildAnalysisSnapshot = ({ installments, plants, plans, agenda, prices, ye
   const report = planReport(yearPlans)
   const reminders = [...agenda.overdue, ...agenda.today, ...agenda.upcoming].filter((i) => i.kind === 'reminder')
   return [
-    `امروز: ${formatDateLong(now)}`,
+    // The worker's prompt asks for Persian; this line switches the reply to the app language.
+    t('settings.snapshot.answerLanguage'),
+    t('settings.snapshot.today', { date: formatDateLong(now) }),
     section(
-      'اقساط:',
+      t('settings.snapshot.installments'),
       active.map((i) => {
         const next = nextPayment(i)
-        const due = next ? `، قسط بعدی ${relativeDay(next.dueDate, now)}` : ''
-        return `${i.title}: ${formatMoney(i.amount, i.currency)}، ${remainingPayments(i)} از ${i.totalPayments} قسط مانده${due}`
+        const due = next ? t('settings.snapshot.nextDue', { when: relativeDay(next.dueDate, now) }) : ''
+        return t('settings.snapshot.installmentRow', {
+          title: i.title,
+          amount: formatMoney(i.amount, i.currency),
+          remaining: remainingPayments(i),
+          total: i.totalPayments,
+          due,
+        })
       }),
-      'قسط فعالی نیست',
+      t('settings.snapshot.noInstallments'),
     ),
-    section('دلار و طلا:', [priceRow('دلار', prices?.dollar), priceRow('طلای ۱۸ عیار (گرم)', prices?.gold)], ''),
     section(
-      `برنامه‌های سال ${year}: ${report.counts.done} از ${report.total} انجام شده (${report.percent}٪)`,
+      t('settings.snapshot.prices'),
+      [priceRow(PRICE_LABELS.dollar.short, prices?.dollar), priceRow(PRICE_LABELS.gold.title, prices?.gold)],
+      '',
+    ),
+    section(
+      t('settings.snapshot.plans', {
+        year: formatJalaliYear(year),
+        done: report.counts.done,
+        total: report.total,
+        percent: report.percent,
+      }),
       yearPlans
         .filter((p) => p.status === 'in-progress' || p.status === 'planned')
-        .map((p) => `${p.title} (${p.status === 'in-progress' ? 'در حال انجام' : 'شروع نشده'})`),
-      'برنامهٔ باقی‌مانده‌ای نیست',
+        .map(
+          (p) =>
+            `${p.title} (${t(p.status === 'in-progress' ? 'settings.snapshot.inProgress' : 'settings.snapshot.notStarted')})`,
+        ),
+      t('settings.snapshot.noPlans'),
     ),
     section(
-      'گیاهان:',
-      plants.map((p) => `${p.name}: آبیاری ${relativeDay(nextWateringDate(p), now)}`),
-      'گیاهی ثبت نشده',
+      t('settings.snapshot.plants'),
+      plants.map((p) => t('settings.snapshot.watering', { name: p.name, when: relativeDay(nextWateringDate(p), now) })),
+      t('settings.snapshot.noPlants'),
     ),
     section(
-      'یادآورها:',
+      t('settings.snapshot.reminders'),
       reminders.map((r) => `${r.title}: ${relativeDay(r.day, now)}`),
-      'یادآوری برای این هفته نیست',
+      t('settings.snapshot.noReminders'),
     ),
     section(
-      'کارهای عقب‌افتاده:',
-      agenda.overdue.map((i) => `${KIND[i.kind].label} «${i.title}»: ${relativeDay(i.day, now)}`),
-      'هیچ',
+      t('settings.snapshot.overdue'),
+      agenda.overdue.map((i) => `${kindItem(i)}: ${relativeDay(i.day, now)}`),
+      t('settings.snapshot.none'),
     ),
   ].join('\n\n')
 }
@@ -74,8 +104,7 @@ const buildAnalysisSnapshot = ({ installments, plants, plans, agenda, prices, ye
 const nearestItem = (agenda: Agenda, now: Date) => {
   const item = agenda.overdue[0] ?? agenda.today[0] ?? agenda.upcoming[0]
   if (!item) return null
-  const { label, to } = KIND[item.kind]
-  return { to, label: `${label} «${item.title}» · ${relativeDay(item.day, now)}` }
+  return { to: KIND[item.kind].to, label: `${kindItem(item)} · ${relativeDay(item.day, now)}` }
 }
 
 export { buildAnalysisSnapshot, nearestItem }

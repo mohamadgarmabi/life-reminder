@@ -4,6 +4,7 @@ import { useId, useState } from 'react'
 import { diagnosePlant } from '#/modules/plants/apis/plant-ai.api'
 import type { PlantDiagnosis } from '#/modules/plants/types'
 import { resizeImage } from '#/modules/plants/utils/image'
+import { t } from '#/modules/shell/utils/i18n'
 
 const usePlantDoctor = () => {
   const fileId = useId()
@@ -23,10 +24,10 @@ const usePlantDoctor = () => {
       const resized = await resizeImage(file)
       setImage(resized)
       const diagnosis = await diagnosePlant(resized)
-      if (!diagnosis.isPlant) throw new Error('این عکس گل یا گیاه نیست؛ فقط عکس گل و گیاه را می‌توانم بررسی کنم.')
+      if (!diagnosis.isPlant) throw new Error(t('plants.notAPlant'))
       setResult(diagnosis)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'تحلیل عکس ممکن نشد.')
+      setError(err instanceof Error ? err.message : t('plants.analyzeFailed'))
     } finally {
       setIsAnalyzing(false)
     }
@@ -39,10 +40,13 @@ const usePlantDoctor = () => {
     error,
     isAnalyzing,
     handleImageChange,
-    uploadHint: image ? 'عکس دیگری انتخاب کنید' : 'از برگ‌ها یا بخش آسیب‌دیده عکس واضح بگیرید',
+    uploadHint: image ? t('plants.doctorPickAnother') : t('plants.doctorHint'),
     StatusIcon: result?.healthy ? CircleCheck : TriangleAlert,
     statusTitle: result
-      ? `${result.name || 'گیاه'} — ${result.healthy ? 'سالم به نظر می‌رسد' : 'نیاز به رسیدگی دارد'}`
+      ? t('plants.statusTitle', {
+          name: result.name || t('plants.plant'),
+          status: result.healthy ? t('plants.healthy') : t('plants.needsCare'),
+        })
       : '',
   }
 }

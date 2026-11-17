@@ -2,6 +2,7 @@ import { createFetch } from 'tanstack-fetch'
 import { z } from 'zod'
 import { AI_URL } from '#/modules/shell/apis/ai.api'
 import { parseIsoDate } from '#/modules/shell/utils/dates'
+import { t } from '#/modules/shell/utils/i18n'
 import type { CalendarEvent } from '#/modules/reminders/types'
 
 // The worker (push-worker/src/google.ts) reads the calendar with the user's Google sign-in (account module).
@@ -17,7 +18,7 @@ const toDate = (value: string, allDay: boolean) => (allDay ? parseIsoDate(value)
 
 /** connected=false: the sign-in hasn't finished yet, or access was removed in the Google account. */
 const fetchGoogleEvents = async (session: string, from: Date, to: Date, signal: AbortSignal) => {
-  if (!AI_URL) throw new Error('سرویس همگام‌سازی پیکربندی نشده است.')
+  if (!AI_URL) throw new Error(t('reminders.sync.notConfigured'))
   let raw: unknown
   try {
     raw = await createFetch({ baseUrl: AI_URL, timeoutMs: 30_000 }).post<unknown>('/google/events', {
@@ -25,7 +26,7 @@ const fetchGoogleEvents = async (session: string, from: Date, to: Date, signal: 
       signal,
     })
   } catch {
-    throw new Error('دریافت تقویم گوگل ممکن نشد؛ اینترنت را بررسی کنید.')
+    throw new Error(t('reminders.sync.fetchFailed'))
   }
   const { connected, events } = responseSchema.parse(raw)
   return {

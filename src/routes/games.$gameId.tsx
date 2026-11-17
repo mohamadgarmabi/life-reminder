@@ -3,6 +3,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { BackButton } from '#/modules/games/components/back-button'
 import { EmptyState, ListSkeleton } from '#/modules/shell/components/states'
 import { Gamepad2 } from 'lucide-react'
+import { t } from '#/modules/shell/utils/i18n'
 
 // One chunk per game; the service worker precaches them all, so every game works offline.
 const VIEWS = {
@@ -30,9 +31,9 @@ const GameRoute = () => {
     return (
       <EmptyState
         icon={Gamepad2}
-        title="بازی پیدا نشد"
-        description="این بازی وجود ندارد."
-        action={<BackButton to="/games" label="بازی‌ها" />}
+        title={t('shell.gameNotFound.title')}
+        description={t('shell.gameNotFound.description')}
+        action={<BackButton to="/games" label={t('shell.gameNotFound.back')} />}
       />
     )
   return (

@@ -9,6 +9,7 @@ import {
   signOutGoogle,
 } from '#/modules/account/apis/google-account.api'
 import { settingsStore, updateSettings } from '#/modules/settings/stores/settings.store'
+import { t } from '#/modules/shell/utils/i18n'
 
 /** While the sign-in tab is open, check often so the app reacts as soon as it finishes. */
 const SIGN_IN_POLL_MS = 3000
@@ -38,7 +39,7 @@ const useGoogleAccount = () => {
   const signOut = () => {
     if (session) void signOutGoogle(session)
     updateSettings({ googleSession: null })
-    toast.success('از حساب گوگل خارج شدید.')
+    toast.success(t('account.signedOut'))
   }
 
   return {

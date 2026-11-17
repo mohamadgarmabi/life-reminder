@@ -3,7 +3,8 @@ import { toast } from '#/components/sonner'
 import { downloadText, exportData, importData, parseBackup } from '#/modules/settings/apis/backup.api'
 import type { Backup } from '#/modules/settings/types'
 import { todayIso } from '#/modules/shell/utils/dates'
-import { toFaDigits } from '#/modules/shell/utils/format'
+import { toLocalDigits } from '#/modules/shell/utils/format'
+import { t } from '#/modules/shell/utils/i18n'
 
 const useDataCard = () => {
   const fileRef = useRef<HTMLInputElement>(null)
@@ -18,19 +19,24 @@ const useDataCard = () => {
     try {
       await exportBackup('-before-import') // safety copy of what is about to be replaced
       await importData(pending)
-      toast.success('اطلاعات با موفقیت بازیابی شد.')
+      toast.success(t('settings.data.importSuccess'))
     } catch (e) {
-      toast.error(`بازیابی ناموفق بود؛ اطلاعات فعلی دست‌نخورده باقی ماند. ${e instanceof Error ? e.message : ''}`)
+      toast.error(t('settings.data.importFailed', { error: e instanceof Error ? e.message : '' }))
     } finally {
       setPending(null)
     }
   }
 
-  const counts = pending
-    ? `${toFaDigits(pending.data.installments.length)} قسط، ${toFaDigits(pending.data.plants.length)} گیاه، ${toFaDigits(pending.data.reminders.length)} یادآور و ${toFaDigits(pending.data.plans.length)} برنامه`
+  const confirmDescription = pending
+    ? t('settings.data.confirmDescription', {
+        installments: toLocalDigits(pending.data.installments.length),
+        plants: toLocalDigits(pending.data.plants.length),
+        reminders: toLocalDigits(pending.data.reminders.length),
+        plans: toLocalDigits(pending.data.plans.length),
+      })
     : ''
 
-  const handleExport = () => void exportBackup().catch(() => toast.error('خروجی گرفتن ناموفق بود.'))
+  const handleExport = () => void exportBackup().catch(() => toast.error(t('settings.data.exportFailed')))
 
   const handlePickFile = () => fileRef.current?.click()
 
@@ -50,7 +56,7 @@ const useDataCard = () => {
   return {
     fileRef,
     isConfirmOpen: !!pending,
-    confirmDescription: `فایل شامل ${counts} است و جایگزین همهٔ اطلاعات فعلی می‌شود. پیش از جایگزینی، یک نسخهٔ پشتیبان از اطلاعات فعلی دانلود می‌شود.`,
+    confirmDescription,
     handleExport,
     handlePickFile,
     handleFileChange,

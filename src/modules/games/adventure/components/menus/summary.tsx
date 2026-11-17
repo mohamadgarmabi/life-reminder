@@ -2,13 +2,14 @@ import { Link } from '@tanstack/react-router'
 import { Button } from '#/components/button'
 import { useEngine, useGame, patchGame } from '#/modules/games/adventure/stores/session.store'
 import { summary } from '#/modules/games/adventure/utils/session'
-import { toFaDigits } from '#/modules/shell/utils/format'
+import { toLocalDigits } from '#/modules/shell/utils/format'
 import { Panel } from '#/modules/games/adventure/components/menus/panel'
+import { t } from '#/modules/shell/utils/i18n'
 
 const formatTime = (ms: number) => {
   const min = Math.floor(ms / 60000)
   const sec = Math.floor((ms % 60000) / 1000)
-  return toFaDigits(`${min}:${String(sec).padStart(2, '0')}`)
+  return toLocalDigits(`${min}:${String(sec).padStart(2, '0')}`)
 }
 
 const Summary = () => {
@@ -16,15 +17,19 @@ const Summary = () => {
   const session = useGame((g) => g.session)
   const s = summary(session, world)
   const stats = [
-    { label: 'زمان بازی', value: formatTime(s.playTimeMs) },
-    { label: 'برگ‌های دفترچه', value: `${toFaDigits(s.journals[0])} از ${toFaDigits(s.journals[1])}` },
-    { label: 'رازها', value: `${toFaDigits(s.secrets[0])} از ${toFaDigits(s.secrets[1])}` },
+    { label: t('adventure.summary.playTime'), value: formatTime(s.playTimeMs) },
+    {
+      label: t('adventure.summary.journals'),
+      value: t('adventure.summary.outOf', { done: toLocalDigits(s.journals[0]), total: toLocalDigits(s.journals[1]) }),
+    },
+    {
+      label: t('adventure.summary.secrets'),
+      value: t('adventure.summary.outOf', { done: toLocalDigits(s.secrets[0]), total: toLocalDigits(s.secrets[1]) }),
+    },
   ]
   return (
-    <Panel title="فانوس دوباره روشن شد">
-      <p className="text-sm text-muted-foreground">
-        نور فانوس دوباره بر دریا می‌تابد و کشتی‌ها راه خانه را پیدا می‌کنند.
-      </p>
+    <Panel title={t('adventure.summary.title')}>
+      <p className="text-sm text-muted-foreground">{t('adventure.summary.body')}</p>
       <dl className="flex gap-2">
         {stats.map((stat) => (
           <div
@@ -37,10 +42,10 @@ const Summary = () => {
         ))}
       </dl>
       <Button size="lg" className="h-12 text-base" autoFocus onClick={() => patchGame(store, { phase: 'playing' })}>
-        ادامهٔ گشت‌وگذار
+        {t('adventure.summary.explore')}
       </Button>
       <Button size="lg" variant="ghost" className="h-12" asChild>
-        <Link to="/games">بازگشت به بازی‌ها</Link>
+        <Link to="/games">{t('adventure.backToGames')}</Link>
       </Button>
     </Panel>
   )

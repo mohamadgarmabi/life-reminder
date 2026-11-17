@@ -6,7 +6,8 @@ import { plantRepo } from '#/modules/plants/apis/plants.api'
 import type { PlantFormValues, PlantsDialog } from '#/modules/plants/types'
 import { daysUntilWatering, nextWateringDate } from '#/modules/plants/utils/schedule'
 import { toIsoDate } from '#/modules/shell/utils/dates'
-import { toFaDigits } from '#/modules/shell/utils/format'
+import { toLocalDigits } from '#/modules/shell/utils/format'
+import { t } from '#/modules/shell/utils/i18n'
 import { useNow } from '#/modules/shell/hooks/now.hook'
 
 const usePlants = () => {
@@ -27,7 +28,7 @@ const usePlants = () => {
       toast.success(message)
       close()
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : 'خطا در ذخیره‌سازی')
+      toast.error(e instanceof Error ? e.message : t('plants.saveError'))
     }
   }
 
@@ -45,7 +46,7 @@ const usePlants = () => {
     plant,
     onEdit: () => setDialog({ type: 'edit', item: plant }),
     onHistory: () => setDialog({ type: 'history', item: plant }),
-    onDelete: () => void save(plantRepo.remove(plant.id), 'گیاه حذف شد.'),
+    onDelete: () => void save(plantRepo.remove(plant.id), t('plants.deleted')),
   }))
   const editingPlant = dialog?.type === 'edit' ? dialog.item : undefined
   const historyPlant = dialog?.type === 'history' ? dialog.item : undefined
@@ -55,8 +56,8 @@ const usePlants = () => {
     plants,
     headerDescription: sorted.length
       ? thirsty
-        ? `${toFaDigits(thirsty)} گیاه امروز آب می‌خواهد`
-        : 'همه سیراب‌اند'
+        ? t('plants.thirsty', { n: toLocalDigits(thirsty) })
+        : t('plants.allWatered')
       : undefined,
     isLoading: q.status === 'loading',
     error: q.status === 'error' ? q.error : undefined,
@@ -65,10 +66,10 @@ const usePlants = () => {
     isFilterEmpty: sorted.length > 0 && !visible.length,
     filter,
     filters: [
-      { value: 'all', label: 'همه' },
-      { value: 'today', label: 'امروز' },
-      { value: 'week', label: 'این هفته' },
-      { value: 'later', label: 'بعداً' },
+      { value: 'all', label: t('plants.filterAll') },
+      { value: 'today', label: t('plants.filterToday') },
+      { value: 'week', label: t('plants.filterWeek') },
+      { value: 'later', label: t('plants.filterLater') },
     ],
     handleFilterChange: setFilter,
     openCreate: () => setDialog({ type: 'create' }),
@@ -78,12 +79,12 @@ const usePlants = () => {
       if (!o) close()
     },
     isFormOpen: dialog?.type === 'create' || dialog?.type === 'edit',
-    formTitle: dialog?.type === 'edit' ? 'ویرایش گیاه' : 'گیاه جدید',
+    formTitle: dialog?.type === 'edit' ? t('plants.edit') : t('plants.new'),
     isCreating: dialog?.type === 'create',
-    handleCreate: (v: PlantFormValues) => save(plantRepo.create(v), 'گیاه اضافه شد.'),
+    handleCreate: (v: PlantFormValues) => save(plantRepo.create(v), t('plants.added')),
     editingPlant,
     handleEdit: (v: PlantFormValues) =>
-      editingPlant ? save(plantRepo.update(editingPlant.id, v), 'تغییرات ذخیره شد.') : Promise.resolve(),
+      editingPlant ? save(plantRepo.update(editingPlant.id, v), t('plants.updated')) : Promise.resolve(),
     historyPlant,
     isHistoryOpen: !!historyPlant,
     historyDescription: historyPlant?.name,

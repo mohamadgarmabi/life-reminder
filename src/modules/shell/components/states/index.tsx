@@ -3,6 +3,7 @@ import type { ReactNode } from 'react'
 import { Alert, AlertDescription, AlertTitle } from '#/components/alert'
 import { Skeleton } from '#/components/skeleton'
 import { useListSkeleton } from '#/modules/shell/hooks/states.hook'
+import { t } from '#/modules/shell/utils/i18n'
 
 // Sticky on every page; children (e.g. filter tabs) stick with it.
 const PageHeader = ({
@@ -61,7 +62,7 @@ const ErrorState = ({ error }: { error: Error }) => {
   return (
     <Alert variant="destructive">
       <AlertTriangle />
-      <AlertTitle>خطا در خواندن اطلاعات</AlertTitle>
+      <AlertTitle>{t('shell.error.title')}</AlertTitle>
       <AlertDescription>{error.message}</AlertDescription>
     </Alert>
   )
@@ -70,7 +71,7 @@ const ErrorState = ({ error }: { error: Error }) => {
 const ListSkeleton = ({ rows = 3 }: { rows?: number }) => {
   const { rowKeys } = useListSkeleton(rows)
   return (
-    <div className="space-y-3" aria-busy="true" aria-label="در حال بارگذاری">
+    <div className="space-y-3" aria-busy="true" aria-label={t('common.loading')}>
       {rowKeys.map((key) => (
         <Skeleton key={key} className="h-20 w-full rounded-2xl" />
       ))}

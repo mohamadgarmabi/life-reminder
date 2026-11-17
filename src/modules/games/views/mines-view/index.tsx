@@ -5,13 +5,14 @@ import { useScores } from '#/modules/games/hooks/scores.hook'
 import { blankField, isCleared, neighbors, plantMines, revealCell, type MineCell } from '#/modules/games/utils/mines'
 import { sfx } from '#/modules/games/utils/sfx'
 import { cn } from '#/modules/shell/utils/cn'
-import { toFaDigits } from '#/modules/shell/utils/format'
+import { toLocalDigits } from '#/modules/shell/utils/format'
 import { Button } from '#/components/button'
+import { t } from '#/modules/shell/utils/i18n'
 
 const LEVELS = {
-  easy: { label: 'آسان', rows: 9, cols: 8, mines: 10 },
-  medium: { label: 'متوسط', rows: 12, cols: 10, mines: 20 },
-  hard: { label: 'سخت', rows: 16, cols: 12, mines: 38 },
+  easy: { label: 'games.easy' as const, rows: 9, cols: 8, mines: 10 },
+  medium: { label: 'games.medium' as const, rows: 12, cols: 10, mines: 20 },
+  hard: { label: 'games.hard' as const, rows: 16, cols: 12, mines: 38 },
 }
 type Level = keyof typeof LEVELS
 
@@ -43,7 +44,7 @@ const freshGame = (level: Level): MinesState => ({
   endedAt: 0,
 })
 
-const formatSeconds = (s: number) => `${toFaDigits(s)} ثانیه`
+const formatSeconds = (s: number) => t('games.mines.seconds', { n: toLocalDigits(s) })
 
 const MinesView = () => {
   const [game, setGame] = useState(() => freshGame('easy'))
@@ -128,18 +129,18 @@ const MinesView = () => {
 
   return (
     <GameShell
-      title="مین‌یاب"
+      title={t('games.mines.title')}
       stats={[
-        { label: 'مین', value: toFaDigits(mines - flags) },
-        { label: 'زمان', value: toFaDigits(elapsed) },
-        { label: 'بهترین', value: best === null ? '—' : toFaDigits(best) },
+        { label: t('games.mines.mines'), value: toLocalDigits(mines - flags) },
+        { label: t('games.mines.time'), value: toLocalDigits(elapsed) },
+        { label: t('games.best'), value: best === null ? '—' : toLocalDigits(best) },
       ]}
       overlay={
         done
           ? {
-              title: game.status === 'won' ? 'آفرین! همه پیدا شدند' : 'بوم! روی مین رفتی',
+              title: t(game.status === 'won' ? 'games.mines.won' : 'games.mines.lost'),
               detail: game.status === 'won' ? formatSeconds(elapsed) : undefined,
-              action: 'دوباره',
+              action: t('games.playAgain'),
               onAction: () => setGame(freshGame(game.level)),
             }
           : null
@@ -156,7 +157,7 @@ const MinesView = () => {
               aria-pressed={game.level === level}
               onClick={() => setGame(freshGame(level))}
             >
-              {LEVELS[level].label}
+              {t(LEVELS[level].label)}
             </Button>
           ))}
           <Button
@@ -166,20 +167,20 @@ const MinesView = () => {
             aria-pressed={flagMode}
             onClick={() => setFlagMode(!flagMode)}
           >
-            <Flag /> پرچم
+            <Flag /> {t('games.mines.flag')}
           </Button>
         </div>
       }
       after={
         <Button variant="outline" onClick={() => setGame(freshGame(game.level))}>
-          <RotateCcw /> شروع دوباره
+          <RotateCcw /> {t('games.startOver')}
         </Button>
       }
     >
       <div
         dir="ltr"
         role="grid"
-        aria-label="میدان مین"
+        aria-label={t('games.mines.field')}
         className="@container grid gap-[2px] rounded-2xl surface p-1.5 select-none"
         style={{
           gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`,
@@ -192,7 +193,13 @@ const MinesView = () => {
             type="button"
             role="gridcell"
             aria-label={
-              cell.open ? (cell.mine ? 'مین' : cell.adj ? toFaDigits(cell.adj) : 'خالی') : cell.flag ? 'پرچم' : 'بسته'
+              cell.open
+                ? cell.mine
+                  ? t('games.mines.mine')
+                  : cell.adj
+                    ? toLocalDigits(cell.adj)
+                    : t('games.mines.empty')
+                : t(cell.flag ? 'games.mines.flag' : 'games.mines.closed')
             }
             className={cn(
               'flex aspect-square items-center justify-center rounded-[4px] font-bold outline-none focus-visible:ring-2 focus-visible:ring-ring',
@@ -206,7 +213,7 @@ const MinesView = () => {
               toggleFlag(i)
             }}
           >
-            {cell.open ? (cell.mine ? '💣' : cell.adj ? toFaDigits(cell.adj) : '') : cell.flag ? '🚩' : ''}
+            {cell.open ? (cell.mine ? '💣' : cell.adj ? toLocalDigits(cell.adj) : '') : cell.flag ? '🚩' : ''}
           </button>
         ))}
       </div>

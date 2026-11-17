@@ -12,6 +12,7 @@ import { pickTarget } from '#/modules/games/adventure/utils/interaction'
 import { addItem } from '#/modules/games/adventure/utils/session'
 import { playSfx } from '#/modules/games/adventure/utils/audio'
 import { useHasItem } from '#/modules/games/adventure/hooks/world.hook'
+import { t } from '#/modules/shell/utils/i18n'
 
 const markerMaterial = new THREE.MeshBasicMaterial({ color: '#ffe8a3', toneMapped: false })
 const markerGeometry = new THREE.OctahedronGeometry(0.14)
@@ -118,13 +119,13 @@ const Pickup = ({ itemId, onPick, children, ...rest }: PickupProps) => {
     updateSession(store, (s) => addItem(s, itemId))
     playSfx(journal ? 'page' : 'pickup')
     if (journal) patchGame(store, { reading: itemId, phase: 'paused' })
-    else patchGame(store, { notice: `${item.name} برداشته شد` })
+    else patchGame(store, { notice: t('adventure.pickedUp', { name: t(item.name) }) })
     onPick?.()
   }
   return (
     <Interactable
       id={`pickup:${itemId}`}
-      label={journal ? 'خواندن' : 'برداشتن'}
+      label={t(journal ? 'adventure.action.read' : 'adventure.action.pickUp')}
       onUse={onUse}
       markerHeight={0.9}
       {...rest}

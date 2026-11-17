@@ -1,3 +1,4 @@
+import { t } from '#/modules/shell/utils/i18n'
 import { Plus, Wallet } from 'lucide-react'
 import { FormDialog } from '#/modules/shell/components/dialogs'
 import { EmptyState, ErrorState, ListSkeleton, PageHeader } from '#/modules/shell/components/states'
@@ -62,19 +63,19 @@ const InstallmentsView = () => {
   return (
     <>
       <PageHeader
-        title="اقساط"
+        title={t('installments.title')}
         description={headerDescription}
         action={
           <div className="flex items-center gap-2">
             <ViewToggle page="installments" />
             <Button onClick={handleOpenCreate}>
-              <Plus /> قسط جدید
+              <Plus /> {t('installments.new')}
             </Button>
           </div>
         }
       >
         {hasItems && (
-          <Tabs value={filter} onValueChange={handleFilterChange} dir="rtl">
+          <Tabs value={filter} onValueChange={handleFilterChange}>
             <FilterPill>
               <TabsList className="w-full">
                 {filters.map((f) => (
@@ -93,11 +94,11 @@ const InstallmentsView = () => {
       {isEmpty && (
         <EmptyState
           icon={Wallet}
-          title="قسطی ثبت نشده"
-          description="وام‌ها و پرداخت‌های ماهانه را اضافه کنید تا سررسیدها را فراموش نکنید."
+          title={t('installments.empty.title')}
+          description={t('installments.empty.description')}
           action={
             <Button onClick={handleOpenCreate}>
-              <Plus /> افزودن قسط
+              <Plus /> {t('installments.add')}
             </Button>
           }
         />
@@ -107,23 +108,45 @@ const InstallmentsView = () => {
           <div className="mb-3 flex items-center justify-between gap-2">
             <p className="text-sm font-medium">{periodSummary ?? listLabel}</p>
             <FilterSheet activeCount={activeFilterCount} onReset={handleResetFilters}>
-              <Select nested label="سال" value={year} onValueChange={handleYearChange} options={yearOptions} />
               <Select
                 nested
-                label="ماه"
+                label={t('installments.filter.year')}
+                value={year}
+                onValueChange={handleYearChange}
+                options={yearOptions}
+              />
+              <Select
+                nested
+                label={t('installments.filter.month')}
                 value={month}
                 onValueChange={handleMonthChange}
                 options={monthOptions}
                 disabled={isMonthDisabled}
               />
-              <Select nested label="مرتب‌سازی" value={sort} onValueChange={handleSortChange} options={sortOptions} />
-              {hasTags && <Select nested label="تگ" value={tag} onValueChange={handleTagChange} options={tagOptions} />}
+              <Select
+                nested
+                label={t('installments.filter.sort')}
+                value={sort}
+                onValueChange={handleSortChange}
+                options={sortOptions}
+              />
+              {hasTags && (
+                <Select
+                  nested
+                  label={t('installments.filter.tag')}
+                  value={tag}
+                  onValueChange={handleTagChange}
+                  options={tagOptions}
+                />
+              )}
             </FilterSheet>
           </div>
           <SwipeHint />
         </>
       )}
-      {isFilterEmpty && <p className="py-10 text-center text-sm text-muted-foreground">قسطی در این دسته نیست.</p>}
+      {isFilterEmpty && (
+        <p className="py-10 text-center text-sm text-muted-foreground">{t('installments.filter.empty')}</p>
+      )}
       <AnimatedList view={view}>
         {cards.map((card) => (
           <InstallmentCard
@@ -145,7 +168,7 @@ const InstallmentsView = () => {
       <FormDialog
         open={isHistoryOpen}
         onOpenChange={handleOpenChange}
-        title="سابقهٔ پرداخت"
+        title={t('installments.card.history')}
         description={historyItem?.title}
       >
         {historyItem && <PaymentHistory inst={historyItem} />}

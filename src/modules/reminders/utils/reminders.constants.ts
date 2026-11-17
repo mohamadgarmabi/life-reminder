@@ -1,22 +1,19 @@
 import { addDays, addHours, addMinutes } from 'date-fns'
+import type { MessageKey } from '#/modules/shell/utils/i18n'
 import type { Recurrence } from '#/modules/reminders/types'
 
-const RECURRENCE_LABEL: Record<Recurrence, string> = {
-  none: 'یک‌بار',
-  daily: 'هر روز',
-  weekly: 'هر هفته',
-  monthly: 'هر ماه',
+// Message keys; translate with t() at render time.
+const RECURRENCE_LABEL: Record<Recurrence, MessageKey> = {
+  none: 'reminders.recurrence.none',
+  daily: 'reminders.recurrence.daily',
+  weekly: 'reminders.recurrence.weekly',
+  monthly: 'reminders.recurrence.monthly',
 }
 
-const RECURRENCE_OPTIONS = (Object.keys(RECURRENCE_LABEL) as Recurrence[]).map((value) => ({
-  value,
-  label: RECURRENCE_LABEL[value],
-}))
-
-const SNOOZE = [
-  { label: '۱۵ دقیقه', at: (now: Date) => addMinutes(now, 15) },
-  { label: '۱ ساعت', at: (now: Date) => addHours(now, 1) },
-  { label: 'فردا همین ساعت', at: (now: Date) => addDays(now, 1) },
+const SNOOZE: { label: MessageKey; at: (now: Date) => Date }[] = [
+  { label: 'reminders.snooze.15m', at: (now: Date) => addMinutes(now, 15) },
+  { label: 'reminders.snooze.1h', at: (now: Date) => addHours(now, 1) },
+  { label: 'reminders.snooze.tomorrow', at: (now: Date) => addDays(now, 1) },
 ]
 
-export { RECURRENCE_LABEL, RECURRENCE_OPTIONS, SNOOZE }
+export { RECURRENCE_LABEL, SNOOZE }

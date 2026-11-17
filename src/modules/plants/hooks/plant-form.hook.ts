@@ -4,9 +4,10 @@ import { useId, useState } from 'react'
 import { toast } from '#/components/sonner'
 import { useAppForm } from '#/modules/shell/components/form-fields'
 import { todayIso } from '#/modules/shell/utils/dates'
-import { toFaDigits } from '#/modules/shell/utils/format'
+import { t } from '#/modules/shell/utils/i18n'
 import { identifyPlant, isPlantAiAvailable } from '#/modules/plants/apis/plant-ai.api'
 import { resizeImage } from '#/modules/plants/utils/image'
+import { wateringEveryLabel } from '#/modules/plants/utils/schedule'
 import { plantFormSchema } from '#/modules/plants/utils/plants.schema'
 import type { PlantFormProps, PlantFormValues, PlantIdentify } from '#/modules/plants/types'
 
@@ -46,7 +47,7 @@ const usePlantForm = ({ initial, onSubmit }: PlantFormProps) => {
     try {
       image = await resizeImage(file)
     } catch {
-      toast.error('خواندن این تصویر ممکن نشد.')
+      toast.error(t('plants.imageReadFailed'))
       return
     }
     imageField.handleChange(image)
@@ -58,9 +59,9 @@ const usePlantForm = ({ initial, onSubmit }: PlantFormProps) => {
     try {
       const result = await identifyPlant(image)
       if (result.name) setAnalysis(result)
-      else toast.error('گیاهی در عکس پیدا نشد؛ فیلدها را دستی پر کنید.')
+      else toast.error(t('plants.noPlantFound'))
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : 'تحلیل عکس ممکن نشد.')
+      toast.error(e instanceof Error ? e.message : t('plants.analyzeFailed'))
     } finally {
       setIsAnalyzing(false)
     }
@@ -71,7 +72,7 @@ const usePlantForm = ({ initial, onSubmit }: PlantFormProps) => {
     form.setFieldValue('wateringIntervalDays', analysis.wateringIntervalDays)
     if (analysis.care) form.setFieldValue('notes', analysis.care)
     setAnalysis(null)
-    toast.success('فرم پر شد؛ در صورت نیاز ویرایش کنید.')
+    toast.success(t('plants.formFilled'))
   }
 
   return {
@@ -79,13 +80,13 @@ const usePlantForm = ({ initial, onSubmit }: PlantFormProps) => {
     fileId,
     image,
     analysis,
-    analysisInterval: analysis ? `هر ${toFaDigits(analysis.wateringIntervalDays)} روز` : '',
+    analysisInterval: analysis ? wateringEveryLabel(analysis.wateringIntervalDays) : '',
     canAnalyze: isPlantAiAvailable && !!image && !isAnalyzing && !analysis,
     isAnalyzing,
     applyAnalysis,
     dismissAnalysis: () => setAnalysis(null),
     reanalyze: () => image && analyze(image),
-    submitLabel: initial ? 'ذخیرهٔ تغییرات' : 'افزودن گیاه',
+    submitLabel: initial ? t('plants.saveChanges') : t('plants.add'),
     handleSubmit,
     removeImage,
     handleImageChange,

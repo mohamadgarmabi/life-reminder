@@ -7,6 +7,7 @@ import { resume, saveNow, toCheckpoint } from '#/modules/games/adventure/stores/
 import { SettingsPanel } from '#/modules/games/adventure/components/menus/settings'
 import { InventoryDrawer } from '#/modules/games/adventure/components/menus/inventory'
 import { Panel } from '#/modules/games/adventure/components/menus/panel'
+import { t } from '#/modules/shell/utils/i18n'
 
 const PauseMenu = () => {
   const engine = useEngine()
@@ -14,7 +15,7 @@ const PauseMenu = () => {
   const area = useGame((g) => g.area)
   const [view, setView] = useState<'menu' | 'hint' | 'settings'>('menu')
   const [inventory, setInventory] = useState(false)
-  const hint = engine.world.hints[area] ?? engine.world.hints.start
+  const hint = t(engine.world.hints[area] ?? engine.world.hints.start)
 
   if (view === 'settings') return <SettingsPanel onClose={() => setView('menu')} />
 
@@ -24,27 +25,27 @@ const PauseMenu = () => {
   }
 
   return (
-    <Panel title={view === 'hint' ? 'راهنما' : 'مکث'}>
+    <Panel title={t(view === 'hint' ? 'adventure.pauseMenu.hint' : 'adventure.pause')}>
       {view === 'hint' ? (
         <>
           <p className="text-start leading-7">{hint}</p>
           <Button size="lg" className="h-12" onClick={() => setView('menu')}>
-            بازگشت
+            {t('adventure.back')}
           </Button>
         </>
       ) : (
         <>
           <Button size="lg" className="h-12 text-base" autoFocus onClick={() => resume(engine)}>
-            <Play /> ادامه
+            <Play /> {t('adventure.continue')}
           </Button>
           <Button size="lg" variant="secondary" className="h-12" onClick={() => setView('hint')}>
-            <Lightbulb /> راهنما
+            <Lightbulb /> {t('adventure.pauseMenu.hint')}
           </Button>
           <Button size="lg" variant="secondary" className="h-12" onClick={() => setInventory(true)}>
-            <Backpack /> کوله‌پشتی
+            <Backpack /> {t('adventure.backpack')}
           </Button>
           <Button size="lg" variant="secondary" className="h-12" onClick={() => setView('settings')}>
-            <Settings /> تنظیمات
+            <Settings /> {t('adventure.settings')}
           </Button>
           <Button
             size="lg"
@@ -55,10 +56,10 @@ const PauseMenu = () => {
               resume(engine)
             }}
           >
-            <Undo2 /> گیر کرده‌ام
+            <Undo2 /> {t('adventure.pauseMenu.stuck')}
           </Button>
           <Button size="lg" variant="ghost" className="h-12" onClick={() => void quit()}>
-            <LogOut /> ذخیره و خروج
+            <LogOut /> {t('adventure.pauseMenu.saveQuit')}
           </Button>
         </>
       )}

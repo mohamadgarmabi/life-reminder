@@ -54,7 +54,7 @@ const dropdownMenuSubTriggerVariants = cva([
   "[&_svg:not([class*='text-'])]:text-muted-foreground",
 ])
 
-const dropdownMenuSubTriggerIconVariants = cva('ms-auto size-4')
+const dropdownMenuSubTriggerIconVariants = cva('ms-auto size-4 rtl:rotate-180')
 
 const dropdownMenuSubContentVariants = cva([
   'z-50 min-w-[8rem] origin-(--radix-dropdown-menu-content-transform-origin) overflow-hidden relative rounded-2xl bg-card p-1.5 text-popover-foreground',

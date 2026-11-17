@@ -6,6 +6,7 @@ import { ActionSheet } from '#/modules/shell/components/action-sheet'
 import { usePlantCard } from '#/modules/plants/hooks/plant-card.hook'
 import type { PlantCardProps } from '#/modules/plants/types'
 import Image from '#/components/image'
+import { t } from '#/modules/shell/utils/i18n'
 
 const PlantCard = ({ plant, today, onEdit, onHistory, onDelete }: PlantCardProps) => {
   const {
@@ -28,13 +29,13 @@ const PlantCard = ({ plant, today, onEdit, onHistory, onDelete }: PlantCardProps
       className="*:first:h-full"
       actionWidth={64}
       actions={[
-        { id: 'delete', label: 'حذف', onSelect: onDelete },
+        { id: 'delete', label: t('plants.delete'), onSelect: onDelete },
         ...(waterDisabled
           ? []
           : [
               {
                 id: 'water',
-                label: 'آب دادم',
+                label: t('plants.water'),
                 icon: <Droplets className="size-5" />,
                 color: '#0090ff',
                 onSelect: water,
@@ -71,8 +72,8 @@ const PlantCard = ({ plant, today, onEdit, onHistory, onDelete }: PlantCardProps
             groups={[
               {
                 items: [
-                  { label: 'ویرایش', icon: <Pencil />, onSelect: onEdit },
-                  { label: 'سابقهٔ آبیاری', icon: <History />, onSelect: onHistory },
+                  { label: t('plants.editAction'), icon: <Pencil />, onSelect: onEdit },
+                  { label: t('plants.history'), icon: <History />, onSelect: onHistory },
                 ],
               },
             ]}
@@ -82,7 +83,7 @@ const PlantCard = ({ plant, today, onEdit, onHistory, onDelete }: PlantCardProps
         <CardContent className="flex min-w-0 flex-1 flex-col space-y-2 p-4 @xs:space-y-3 @xs:p-4">
           <div className="min-w-0">
             <h3 className="truncate text-sm font-semibold @xs:text-base">{plant.name}</h3>
-            <p className="truncate text-[11px] text-muted-foreground @xs:text-xs">هر {intervalLabel} روز</p>
+            <p className="truncate text-[11px] text-muted-foreground @xs:text-xs">{intervalLabel}</p>
           </div>
           <p className={statusClassName}>
             <Droplets className="me-1 inline size-3.5 align-[-2px] @xs:size-4" aria-hidden />

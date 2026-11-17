@@ -3,6 +3,7 @@ import type { ReactNode } from 'react'
 import type { Installment } from '#/modules/installments/types'
 import type { IsoDate } from '#/modules/shell/types'
 import type { Settings } from '#/modules/settings/types'
+import type { MessageKey } from '#/modules/shell/utils/i18n'
 
 interface AgendaItem {
   key: string
@@ -31,14 +32,14 @@ interface AgendaKindMeta {
 interface QuickActionProps {
   to: AgendaRoute | '/plans'
   icon: LucideIcon
-  label: string
+  labelKey: MessageKey
 }
 
 interface AgendaSectionProps {
-  title: string
+  titleKey: MessageKey
   items: AgendaItem[]
   now: Date
-  empty?: string
+  emptyKey: MessageKey
   danger?: boolean
 }
 

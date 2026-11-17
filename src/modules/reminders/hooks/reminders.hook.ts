@@ -8,6 +8,8 @@ import { useNow } from '#/modules/shell/hooks/now.hook'
 import { cn } from '#/modules/shell/utils/cn'
 import { toIsoDate } from '#/modules/shell/utils/dates'
 import { formatDateLong, formatTime } from '#/modules/shell/utils/format'
+import { t } from '#/modules/shell/utils/i18n'
+import type { MessageKey } from '#/modules/shell/utils/i18n'
 import { useGoogleAccount } from '#/modules/account/hooks/google-account.hook'
 import { fetchGoogleEvents } from '#/modules/reminders/apis/google-calendar.api'
 import { reminderRepo } from '#/modules/reminders/apis/reminders.api'
@@ -25,14 +27,14 @@ const TONE = {
   google: 'border border-dashed border-foreground/30 bg-card',
 } as const
 
-const BADGE = {
-  done: 'انجام شده',
-  upcoming: 'در انتظار',
-  overdue: 'عقب افتاده',
-  google: 'تقویم گوگل',
-} as const
+const BADGE: Record<keyof typeof TONE, MessageKey> = {
+  done: 'reminders.badge.done',
+  upcoming: 'reminders.badge.upcoming',
+  overdue: 'reminders.badge.overdue',
+  google: 'reminders.googleCalendar',
+}
 
-const showError = (e: unknown) => toast.error(e instanceof Error ? e.message : 'خطا در ذخیره‌سازی')
+const showError = (e: unknown) => toast.error(e instanceof Error ? e.message : t('reminders.saveError'))
 
 const run = (task: Promise<unknown>, message: string) => void task.then(() => toast.success(message)).catch(showError)
 
@@ -82,9 +84,9 @@ const useReminders = () => {
     const pendingActions = occurrence.isPending
       ? [
           {
-            label: 'انجام شد',
+            label: t('reminders.markDone'),
             icon: icon(Check),
-            onSelect: () => run(reminderRepo.complete(r.id, occurrence.at.toISOString()), 'انجام شد.'),
+            onSelect: () => run(reminderRepo.complete(r.id, occurrence.at.toISOString()), t('reminders.doneToast')),
           },
         ]
       : []
@@ -92,18 +94,27 @@ const useReminders = () => {
       {
         items: [
           ...pendingActions,
-          { label: 'ویرایش', icon: icon(Pencil), onSelect: () => setDialog({ type: 'edit', item: r }) },
-          { label: 'سابقه', icon: icon(History), onSelect: () => setDialog({ type: 'history', item: r }) },
+          {
+            label: t('reminders.editAction'),
+            icon: icon(Pencil),
+            onSelect: () => setDialog({ type: 'edit', item: r }),
+          },
+          {
+            label: t('reminders.historyAction'),
+            icon: icon(History),
+            onSelect: () => setDialog({ type: 'history', item: r }),
+          },
         ],
       },
       ...(occurrence.isPending
         ? [
             {
-              label: 'تعویق',
+              label: t('reminders.snooze'),
               items: SNOOZE.map((s) => ({
-                label: s.label,
+                label: t(s.label),
                 icon: icon(AlarmClock),
-                onSelect: () => run(reminderRepo.snooze(r.id, s.at(new Date())), `به تعویق افتاد: ${s.label}`),
+                onSelect: () =>
+                  run(reminderRepo.snooze(r.id, s.at(new Date())), t('reminders.snoozedToast', { label: t(s.label) })),
               })),
             },
           ]
@@ -111,10 +122,10 @@ const useReminders = () => {
       {
         items: [
           {
-            label: 'حذف',
+            label: t('reminders.delete'),
             icon: icon(Trash2),
             destructive: true,
-            onSelect: () => run(reminderRepo.remove(r.id), 'یادآور حذف شد.'),
+            onSelect: () => run(reminderRepo.remove(r.id), t('reminders.deletedToast')),
           },
         ],
       },
@@ -125,22 +136,30 @@ const useReminders = () => {
     const { reminder: r, occurrence } = entry
     // First action = full swipe.
     return [
-      { id: 'delete', label: 'حذف', onSelect: () => run(reminderRepo.remove(r.id), 'یادآور حذف شد.') },
+      {
+        id: 'delete',
+        label: t('reminders.delete'),
+        onSelect: () => run(reminderRepo.remove(r.id), t('reminders.deletedToast')),
+      },
       ...(occurrence.isPending
         ? [
             {
               id: 'done',
-              label: 'انجام شد',
+              label: t('reminders.markDone'),
               color: '#30a46c',
               icon: createElement(Check, { className: 'size-5' }),
-              onSelect: () => run(reminderRepo.complete(r.id, occurrence.at.toISOString()), 'انجام شد.'),
+              onSelect: () => run(reminderRepo.complete(r.id, occurrence.at.toISOString()), t('reminders.doneToast')),
             },
             {
               id: 'snooze',
-              label: 'یک ساعت بعد',
+              label: t('reminders.oneHourLater'),
               color: '#f5a524',
               icon: createElement(AlarmClock, { className: 'size-5' }),
-              onSelect: () => run(reminderRepo.snooze(r.id, SNOOZE[1].at(new Date())), 'به تعویق افتاد: ۱ ساعت'),
+              onSelect: () =>
+                run(
+                  reminderRepo.snooze(r.id, SNOOZE[1].at(new Date())),
+                  t('reminders.snoozedToast', { label: t(SNOOZE[1].label) }),
+                ),
             },
           ]
         : []),
@@ -155,12 +174,12 @@ const useReminders = () => {
       key: entry.key,
       title: isReminder ? entry.reminder.title : entry.event.title,
       subtitle: isReminder
-        ? [RECURRENCE_LABEL[entry.reminder.recurrence], entry.reminder.description].filter(Boolean).join(' · ')
+        ? [t(RECURRENCE_LABEL[entry.reminder.recurrence]), entry.reminder.description].filter(Boolean).join(' · ')
         : entry.allDay
-          ? 'تمام روز'
-          : `تا ${formatTime(entry.event.end)}`,
-      timeLabel: entry.allDay ? 'تمام روز' : formatTime(entry.at),
-      badge: BADGE[status],
+          ? t('reminders.allDay')
+          : t('reminders.until', { time: formatTime(entry.event.end) }),
+      timeLabel: entry.allDay ? t('reminders.allDay') : formatTime(entry.at),
+      badge: t(BADGE[status]),
       badgeClassName: cn(
         'rounded-full px-2 py-0.5 text-[11px] font-semibold',
         status === 'overdue' ? 'bg-destructive text-destructive-foreground' : 'bg-secondary text-secondary-foreground',
@@ -170,7 +189,7 @@ const useReminders = () => {
       Icon: isReminder ? (status === 'done' ? Check : Bell) : CalendarDays,
       menu: isReminder ? menuFor(entry) : null,
       swipe: isReminder ? swipeFor(entry) : null,
-      menuAriaLabel: `گزینه‌های ${isReminder ? entry.reminder.title : ''}`,
+      menuAriaLabel: t('reminders.optionsFor', { title: isReminder ? entry.reminder.title : '' }),
     }
   }
 
@@ -182,7 +201,8 @@ const useReminders = () => {
     isLoading: q.status === 'loading',
     error: q.status === 'error' ? q.error : undefined,
     monthLabel: month.label,
-    selectedLabel: selected === today ? `امروز، ${formatDateLong(selected)}` : formatDateLong(selected),
+    selectedLabel:
+      selected === today ? t('reminders.todayWithDate', { date: formatDateLong(selected) }) : formatDateLong(selected),
     days: month.days.map((day) => ({
       key: day,
       ...dayLabels(day),
@@ -210,12 +230,12 @@ const useReminders = () => {
     isConnected: !!googleAccount.session,
     isWaitingForSignIn: googleAccount.isWaiting,
     syncLabel: googleAccount.isWaiting
-      ? 'در انتظار ورود به حساب گوگل…'
+      ? t('reminders.waitingSignIn')
       : google.error
         ? google.error.message
         : google.isFetching
-          ? 'در حال همگام‌سازی با تقویم گوگل…'
-          : 'همگام با تقویم گوگل',
+          ? t('reminders.syncing')
+          : t('reminders.synced'),
     syncClassName: cn('text-xs', google.error ? 'text-destructive' : 'text-muted-foreground'),
     handleConnect: googleAccount.signIn,
     handleDisconnect: googleAccount.cancelSignIn,
@@ -223,8 +243,13 @@ const useReminders = () => {
     googleMenu: [
       {
         items: [
-          { label: 'همگام‌سازی دوباره', icon: icon(RefreshCw), onSelect: () => void google.refetch() },
-          { label: 'خروج از حساب گوگل', icon: icon(LogOut), destructive: true, onSelect: googleAccount.signOut },
+          { label: t('reminders.resync'), icon: icon(RefreshCw), onSelect: () => void google.refetch() },
+          {
+            label: t('reminders.signOutGoogle'),
+            icon: icon(LogOut),
+            destructive: true,
+            onSelect: googleAccount.signOut,
+          },
         ],
       },
     ],
@@ -233,7 +258,7 @@ const useReminders = () => {
     isEdit: !!editItem,
     isHistory: !!historyItem,
     isFormOpen: dialog?.type === 'create' || dialog?.type === 'edit',
-    formTitle: dialog?.type === 'edit' ? 'ویرایش یادآور' : 'یادآور جدید',
+    formTitle: t(dialog?.type === 'edit' ? 'reminders.edit' : 'reminders.new'),
     editItem,
     historyReminderId: historyItem?.id ?? '',
     historyDescription: historyItem?.title,
@@ -242,9 +267,9 @@ const useReminders = () => {
       if (!open) close()
     },
     handleCloseDialog: close,
-    handleCreate: (v: ReminderFormValues) => save(reminderRepo.create(v), 'یادآور اضافه شد.'),
+    handleCreate: (v: ReminderFormValues) => save(reminderRepo.create(v), t('reminders.addedToast')),
     handleEdit: async (v: ReminderFormValues) => {
-      if (editItem) await save(reminderRepo.update(editItem.id, v), 'تغییرات ذخیره شد.')
+      if (editItem) await save(reminderRepo.update(editItem.id, v), t('reminders.savedToast'))
     },
   }
 }

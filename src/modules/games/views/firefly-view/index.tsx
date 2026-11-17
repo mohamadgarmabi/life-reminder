@@ -3,6 +3,7 @@ import { GameCanvas, GameShell } from '#/modules/games/components/game-shell'
 import { useArcade } from '#/modules/games/hooks/arcade.hook'
 import { useCanvasGame, useKeys } from '#/modules/games/hooks/canvas-game.hook'
 import { sfx } from '#/modules/games/utils/sfx'
+import { t } from '#/modules/shell/utils/i18n'
 
 const W = 300
 const H = 450
@@ -20,8 +21,8 @@ const newGame = () => ({ y: H / 2, vy: 0, cols: [] as Column[], next: 0, score: 
 
 const FireflyView = () => {
   const arcade = useArcade('firefly', {
-    title: 'کرم شب‌تاب',
-    detail: 'هر لمس (یا فاصله) یک بال‌زدن است. از لای ستون‌ها رد شو.',
+    title: t('games.firefly.title'),
+    detail: t('games.firefly.intro'),
   })
   const game = useRef(newGame())
   const playing = arcade.status === 'playing'
@@ -118,14 +119,20 @@ const FireflyView = () => {
 
   return (
     <GameShell
-      title="کرم شب‌تاب"
+      title={t('games.firefly.title')}
       stats={arcade.stats}
       overlay={arcade.overlay}
       onRestart={start}
       onPause={arcade.pause}
       scores={arcade.scores}
     >
-      <GameCanvas ref={canvasRef} width={W} height={H} label="صفحهٔ کرم شب‌تاب" onPointerDown={flap} />
+      <GameCanvas
+        ref={canvasRef}
+        width={W}
+        height={H}
+        label={t('games.boardLabel', { name: t('games.firefly.title') })}
+        onPointerDown={flap}
+      />
     </GameShell>
   )
 }

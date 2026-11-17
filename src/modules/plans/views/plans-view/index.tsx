@@ -14,6 +14,7 @@ import { PlanCard } from '#/modules/plans/components/plan-card'
 import { PlanForm } from '#/modules/plans/components/plan-form'
 import { PlanTutor } from '#/modules/plans/components/plan-tutor'
 import { usePlans } from '#/modules/plans/hooks/plans.hook'
+import { t } from '#/modules/shell/utils/i18n'
 
 const PlansView = () => {
   const {
@@ -55,15 +56,15 @@ const PlansView = () => {
   return (
     <>
       <PageHeader
-        title="برنامهٔ سال"
+        title={t('plans.title')}
         action={
           <Button onClick={handleOpenCreate}>
-            <Plus /> برنامهٔ جدید
+            <Plus /> {t('plans.new')}
           </Button>
         }
       >
         {hasItems && (
-          <Tabs value={filter} onValueChange={handleFilterChange} dir="rtl">
+          <Tabs value={filter} onValueChange={handleFilterChange}>
             <FilterPill>
               {/* justify-start: centered overflow clips the leading tabs out of scroll reach */}
               <TabsList className="w-full justify-start overflow-x-auto [scrollbar-width:none]">
@@ -83,11 +84,11 @@ const PlansView = () => {
       {isEmpty && (
         <EmptyState
           icon={Target}
-          title="برنامه‌ای ثبت نشده"
-          description="هدف‌ها و کارهای امسال را بنویسید و پیشرفت‌تان را ببینید."
+          title={t('plans.emptyTitle')}
+          description={t('plans.emptyDescription')}
           action={
             <Button onClick={handleOpenCreate}>
-              <Plus /> افزودن برنامه
+              <Plus /> {t('plans.add')}
             </Button>
           }
         />
@@ -116,15 +117,35 @@ const PlansView = () => {
           <div className="mb-3 flex items-center justify-between gap-2">
             <p className="text-sm text-muted-foreground">{listLabel}</p>
             <FilterSheet activeCount={activeFilterCount} onReset={handleResetFilters}>
-              <Select nested label="سال" value={year} onValueChange={handleYearChange} options={yearOptions} />
-              <Select nested label="مرتب‌سازی" value={sort} onValueChange={handleSortChange} options={sortOptions} />
-              {hasTags && <Select nested label="تگ" value={tag} onValueChange={handleTagChange} options={tagOptions} />}
+              <Select
+                nested
+                label={t('plans.year')}
+                value={year}
+                onValueChange={handleYearChange}
+                options={yearOptions}
+              />
+              <Select
+                nested
+                label={t('plans.sort')}
+                value={sort}
+                onValueChange={handleSortChange}
+                options={sortOptions}
+              />
+              {hasTags && (
+                <Select
+                  nested
+                  label={t('plans.tag')}
+                  value={tag}
+                  onValueChange={handleTagChange}
+                  options={tagOptions}
+                />
+              )}
             </FilterSheet>
           </div>
           <SwipeHint />
         </>
       )}
-      {isFilterEmpty && <p className="py-10 text-center text-sm text-muted-foreground">برنامه‌ای در این دسته نیست.</p>}
+      {isFilterEmpty && <p className="py-10 text-center text-sm text-muted-foreground">{t('plans.filterEmpty')}</p>}
       <AnimatedList view="list">
         {plans.map((p) => (
           <PlanCard key={p.plan.id} plan={p.plan} onEdit={p.onEdit} onTutor={p.onTutor} />

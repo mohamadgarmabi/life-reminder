@@ -23,12 +23,31 @@ const lever: PuzzleDef<{ pulled: boolean }, 'pull'> = {
 
 const world: AdventureWorld = {
   id: 'fixture',
-  title: 'fixture',
-  description: '',
+  title: 'adventure.testRoom.title',
+  description: 'adventure.testRoom.description',
   items: {
-    key: { id: 'key', kind: 'tool', name: 'k', description: '', icon: '🔑' },
-    gem: { id: 'gem', kind: 'artifact', name: 'g', description: '', icon: '💎' },
-    page: { id: 'page', kind: 'journal', name: 'p', description: '', icon: '📜', text: 't' },
+    key: {
+      id: 'key',
+      kind: 'tool',
+      name: 'adventure.testRoom.key.name',
+      description: 'adventure.testRoom.key.description',
+      icon: '🔑',
+    },
+    gem: {
+      id: 'gem',
+      kind: 'artifact',
+      name: 'adventure.testRoom.key.name',
+      description: 'adventure.testRoom.key.description',
+      icon: '💎',
+    },
+    page: {
+      id: 'page',
+      kind: 'journal',
+      name: 'adventure.testRoom.key.name',
+      description: 'adventure.testRoom.key.description',
+      icon: '📜',
+      text: 'adventure.island.journal1.text',
+    },
   },
   puzzles: { lever },
   checkpoints: {

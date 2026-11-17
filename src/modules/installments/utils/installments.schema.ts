@@ -1,16 +1,25 @@
 import { z } from 'zod'
 import { id, isoDate, isoDateTime, notes } from '#/modules/shell/utils/zod'
+import { t } from '#/modules/shell/utils/i18n'
 
 const installmentSchema = z
   .object({
     id,
-    title: z.string().trim().min(1, 'عنوان را وارد کنید').max(100),
-    amount: z.number().positive('مبلغ را وارد کنید'),
+    title: z
+      .string()
+      .trim()
+      .min(1, { error: () => t('installments.error.titleRequired') })
+      .max(100),
+    amount: z.number().positive({ error: () => t('installments.error.amountRequired') }),
     currency: z.string().min(1),
     /** Day of the Jalali month; clamped to the month's last day (e.g. 31 → 30 in Mehr). */
     dueDay: z.number().int().min(1).max(31),
     startDate: isoDate,
-    totalPayments: z.number().int().min(1, 'حداقل یک قسط').max(600),
+    totalPayments: z
+      .number()
+      .int()
+      .min(1, { error: () => t('installments.error.minPayments') })
+      .max(600),
     paidPayments: z.number().int().min(0),
     reminderDaysBefore: z.array(z.number().int().min(0).max(30)),
     // default: records saved before tags existed
@@ -21,7 +30,7 @@ const installmentSchema = z
     updatedAt: isoDateTime,
   })
   .refine((v) => v.paidPayments <= v.totalPayments, {
-    message: 'تعداد پرداخت‌شده بیشتر از کل اقساط است',
+    error: () => t('installments.error.paidExceeds'),
     path: ['paidPayments'],
   })
 
@@ -37,19 +46,35 @@ const paymentSchema = z.object({
 
 const installmentFormSchema = z
   .object({
-    title: z.string().trim().min(1, 'عنوان را وارد کنید').max(100, 'عنوان طولانی است'),
-    amount: z.number().positive('مبلغ را وارد کنید'),
+    title: z
+      .string()
+      .trim()
+      .min(1, { error: () => t('installments.error.titleRequired') })
+      .max(100, { error: () => t('installments.error.titleTooLong') }),
+    amount: z.number().positive({ error: () => t('installments.error.amountRequired') }),
     dueDay: z.number().int().min(1).max(31),
     startDate: isoDate,
-    totalPayments: z.number().int().min(1, 'حداقل یک قسط').max(600, 'حداکثر ۶۰۰ قسط'),
+    totalPayments: z
+      .number()
+      .int()
+      .min(1, { error: () => t('installments.error.minPayments') })
+      .max(600, { error: () => t('installments.error.maxPayments') }),
     paidPayments: z.number().int().min(0),
     reminderDaysBefore: z.array(z.number().int()),
-    tags: z.array(z.string().trim().min(1).max(30, 'تگ طولانی است')).max(20, 'حداکثر ۲۰ تگ'),
+    tags: z
+      .array(
+        z
+          .string()
+          .trim()
+          .min(1)
+          .max(30, { error: () => t('installments.error.tagTooLong') }),
+      )
+      .max(20, { error: () => t('installments.error.maxTags') }),
     notes: z.string().max(2000),
     isActive: z.boolean(),
   })
   .refine((v) => v.paidPayments <= v.totalPayments, {
-    message: 'تعداد پرداخت‌شده بیشتر از کل اقساط است',
+    error: () => t('installments.error.paidExceeds'),
     path: ['paidPayments'],
   })
 

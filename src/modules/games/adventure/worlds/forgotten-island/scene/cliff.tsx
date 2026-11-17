@@ -12,6 +12,7 @@ import { playChime, playSfx } from '#/modules/games/adventure/utils/audio'
 import { site } from '#/modules/games/adventure/worlds/forgotten-island/layout'
 import { CHIME_SEQUENCE } from '#/modules/games/adventure/worlds/forgotten-island/puzzles'
 import { GLYPHS, darkStone, feather, glyphStrip, stone, wood } from './materials'
+import { t } from '#/modules/shell/utils/i18n'
 
 const CHIMES = 5
 const SHOW_STEP = 0.9
@@ -95,7 +96,7 @@ const Chime = ({ index, onRing, enabled }: { index: number; onRing: () => void; 
   return (
     <Interactable
       id={`chime-${index}`}
-      label="نواختن"
+      label={t('adventure.island.ring')}
       enabled={enabled}
       onUse={ring}
       position={[(index - 2) * 1.6, 0, 0]}
@@ -130,7 +131,7 @@ const Cliff = () => {
     const next = dispatch({ ring: i })
     if (!solved && next.rung.length !== state.rung.length + 1) {
       playSfx('wrong')
-      patchGame(engine.store, { notice: 'ترتیب زنگ‌ها اشتباه بود؛ از اول' })
+      patchGame(engine.store, { notice: t('adventure.island.chimesWrong') })
     }
   }
   const [x, y, z] = site('cliff')

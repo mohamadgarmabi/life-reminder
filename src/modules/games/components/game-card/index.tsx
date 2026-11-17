@@ -1,6 +1,7 @@
 import { Link } from '@tanstack/react-router'
 import type { GameEntry } from '#/modules/games/types'
 import { cn } from '#/modules/shell/utils/cn'
+import { t } from '#/modules/shell/utils/i18n'
 
 // Phones and tablets get real fullscreen (hides the browser bars); the tap is the required user gesture.
 // Desktop keeps the window as is and can use the HUD's fullscreen button.
@@ -20,8 +21,8 @@ const GameCard = ({ game }: { game: GameEntry }) => {
       <span className={cn('flex size-11 items-center justify-center rounded-xl text-2xl', game.tint)} aria-hidden>
         {game.emoji}
       </span>
-      <span className="font-semibold">{game.title}</span>
-      <span className="line-clamp-2 text-xs text-muted-foreground">{game.description}</span>
+      <span className="font-semibold">{t(game.title)}</span>
+      <span className="line-clamp-2 text-xs text-muted-foreground">{t(game.description)}</span>
     </Link>
   )
 }

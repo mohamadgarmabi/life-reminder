@@ -30,6 +30,7 @@ import { Summary } from '#/modules/games/adventure/components/menus/summary'
 import { ControlsHint } from '#/modules/games/adventure/components/menus/controls-hint'
 import { InventoryDrawer, JournalReader } from '#/modules/games/adventure/components/menus/inventory'
 import { Panel } from '#/modules/games/adventure/components/menus/panel'
+import { t } from '#/modules/shell/utils/i18n'
 
 const ENDING_SECONDS = 11
 const HUD_BUTTON = 'size-11 rounded-full bg-black/30 text-white backdrop-blur hover:bg-black/40'
@@ -121,7 +122,13 @@ const Hud = () => {
   const [inventory, setInventory] = useState(false)
   return (
     <div className="absolute top-[calc(env(safe-area-inset-top)+0.5rem)] right-[calc(env(safe-area-inset-right)+0.75rem)] left-[calc(env(safe-area-inset-left)+0.75rem)] z-10 flex justify-start gap-2">
-      <Button size="icon" variant="ghost" className={HUD_BUTTON} onClick={() => pause(engine)} aria-label="مکث">
+      <Button
+        size="icon"
+        variant="ghost"
+        className={HUD_BUTTON}
+        onClick={() => pause(engine)}
+        aria-label={t('adventure.pause')}
+      >
         <Pause />
       </Button>
       <Button
@@ -129,7 +136,7 @@ const Hud = () => {
         variant="ghost"
         className={HUD_BUTTON}
         onClick={() => setInventory(true)}
-        aria-label="کوله‌پشتی"
+        aria-label={t('adventure.backpack')}
       >
         <Backpack />
       </Button>
@@ -145,7 +152,7 @@ const Overlays = ({ progress }: { progress: number }) => {
   const hintSeen = useGame((g) => g.settings.hintSeen)
   return (
     <>
-      {phase === 'loading' && <LoadingScreen title={world.title} progress={progress} />}
+      {phase === 'loading' && <LoadingScreen title={t(world.title)} progress={progress} />}
       {phase === 'menu' && <MainMenu />}
       {phase === 'playing' && (
         <>
@@ -169,18 +176,20 @@ class GameErrorBoundary extends Component<{ children: ReactNode }, { failed: boo
   }
   render() {
     if (!this.state.failed) return this.props.children
-    return <GameError message="مشکلی در اجرای بازی پیش آمد." onRetry={() => this.setState({ failed: false })} />
+    return <GameError message={t('adventure.error.crashed')} onRetry={() => this.setState({ failed: false })} />
   }
 }
 
 const GameError = ({ message, onRetry }: { message: string; onRetry: () => void }) => (
-  <Panel title="خطا">
-    <p className="text-sm text-muted-foreground">{message} پیشرفت تا آخرین ذخیره محفوظ است.</p>
+  <Panel title={t('adventure.error.title')}>
+    <p className="text-sm text-muted-foreground">
+      {message} {t('adventure.error.progressSafe')}
+    </p>
     <Button size="lg" className="h-12" onClick={onRetry}>
-      تلاش دوباره
+      {t('adventure.error.retry')}
     </Button>
     <Button size="lg" variant="ghost" className="h-12" asChild>
-      <Link to="/games">بازگشت به بازی‌ها</Link>
+      <Link to="/games">{t('adventure.backToGames')}</Link>
     </Button>
   </Panel>
 )
@@ -193,12 +202,7 @@ const GameCanvas = ({ engine, mark }: { engine: Engine; mark: MarkReady }) => {
   const { world } = engine
 
   if (contextLost)
-    return (
-      <GameError
-        message="نمایشگر گرافیکی متوقف شد (احتمالاً به‌خاطر کمبود حافظه)."
-        onRetry={() => window.location.reload()}
-      />
-    )
+    return <GameError message={t('adventure.error.contextLost')} onRetry={() => window.location.reload()} />
 
   return (
     <Canvas
@@ -251,7 +255,7 @@ const AdventureGame = ({ world }: { world: AdventureWorld }) => {
       <section
         className="fixed inset-0 z-50 overflow-hidden overscroll-none bg-sky-950 text-foreground select-none"
         style={{ touchAction: 'none' }}
-        aria-label={world.title}
+        aria-label={t(world.title)}
       >
         <GameErrorBoundary>
           <GameCanvas engine={engine} mark={mark} />

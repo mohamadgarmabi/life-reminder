@@ -16,6 +16,7 @@ import {
   type ThingKind,
 } from '#/modules/games/utils/runner'
 import { sfx } from '#/modules/games/utils/sfx'
+import { t } from '#/modules/shell/utils/i18n'
 
 // Shared geometry/materials: one GPU upload for the whole pool, swapped per slot by kind.
 const GEOMETRY: Record<ThingKind, THREE.BufferGeometry> = {
@@ -207,8 +208,8 @@ const Scene = ({ game, dark, playing, onStep }: SceneProps) => {
 
 const RunnerView = () => {
   const arcade = useArcade('runner', {
-    title: 'دوندهٔ سه‌بعدی',
-    detail: 'به چپ و راست بکش تا مسیر عوض شود، رو به بالا بکش یا ضربه بزن تا بپری. از مانع قرمز فقط کنار برو.',
+    title: t('games.runner.title'),
+    detail: t('games.runner.intro'),
   })
   const game = useRef(createRunner())
   const scoreClock = useRef(0)
@@ -280,7 +281,7 @@ const RunnerView = () => {
 
   return (
     <GameShell
-      title="دوندهٔ سه‌بعدی"
+      title={t('games.runner.title')}
       stats={arcade.stats}
       overlay={arcade.overlay}
       onRestart={start}
@@ -290,7 +291,7 @@ const RunnerView = () => {
       <div
         className="h-[calc(100cqh-1.5rem)] w-full touch-none overflow-hidden rounded-3xl shadow-[0_0_0_0.5px_var(--border)]"
         role="img"
-        aria-label="صحنهٔ سه‌بعدی دونده"
+        aria-label={t('games.runner.scene')}
         onPointerDown={(e) => (swipe.current = { x: e.clientX, y: e.clientY, done: false })}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}

@@ -13,7 +13,8 @@ import { createEngine, sfx } from '#/modules/games/utils/sfx'
 import { createTrafficScene, type TrafficScene } from '#/modules/games/views/traffic-view/scene'
 import { DEFAULT_SETUP, TrafficSetup, setupSchema, type Setup } from '#/modules/games/views/traffic-view/setup'
 import { cn } from '#/modules/shell/utils/cn'
-import { toFaDigits } from '#/modules/shell/utils/format'
+import { toLocalDigits } from '#/modules/shell/utils/format'
+import { t } from '#/modules/shell/utils/i18n'
 
 const SETUP_KEY = 'traffic:setup'
 const STEER_KEYS: Record<string, -1 | 1> = { ArrowLeft: -1, KeyA: -1, ArrowRight: 1, KeyD: 1 }
@@ -47,7 +48,7 @@ const tiltAngle = (e: DeviceOrientationEvent) => {
 }
 
 const TrafficView = () => {
-  const arcade = useArcade('traffic', { title: 'ترافیک', detail: '' })
+  const arcade = useArcade('traffic', { title: t('games.traffic.title'), detail: '' })
   const host = useRef<HTMLDivElement>(null)
   const scene = useRef<TrafficScene | null>(null)
   const game = useRef(createTraffic())
@@ -148,8 +149,7 @@ const TrafficView = () => {
         paint: run.paint,
         touch: matchMedia('(pointer: coarse)').matches,
         onProgress: (progress) => !cancelled && setLoad((l) => ({ ...l, progress })),
-        onContextLost: () =>
-          setLoad({ progress: 0, ready: false, error: 'نمایشگر گرافیکی متوقف شد (احتمالاً کمبود حافظه).' }),
+        onContextLost: () => setLoad({ progress: 0, ready: false, error: t('games.traffic.contextLost') }),
       },
     )
       .then((s) => {
@@ -162,11 +162,7 @@ const TrafficView = () => {
           startRef.current()
         }
       })
-      .catch(
-        () =>
-          !cancelled &&
-          setLoad({ progress: 0, ready: false, error: 'بارگیری بازی ناموفق بود. اتصال اینترنت را بررسی کن.' }),
-      )
+      .catch(() => !cancelled && setLoad({ progress: 0, ready: false, error: t('games.traffic.loadFailed') }))
     return () => {
       cancelled = true
       scene.current = null
@@ -210,7 +206,7 @@ const TrafficView = () => {
     window.addEventListener('deviceorientation', onTilt)
     const silent = window.setTimeout(() => {
       if (tilt.current.seen) return
-      toast.info('حسگر حرکت پاسخ نداد؛ فرمان به دکمه‌های چپ و راست تغییر کرد.')
+      toast.info(t('games.traffic.tiltSilent'))
       const next = { ...run, control: 'touch' as const }
       setSetup(next)
       setRun(next)
@@ -242,7 +238,7 @@ const TrafficView = () => {
     engine.current ??= createEngine()
     let next = setup
     if (next.control === 'tilt' && !(await requestTilt())) {
-      toast.info('اجازهٔ حسگر حرکت داده نشد؛ با دکمه‌های چپ و راست بازی کن.')
+      toast.info(t('games.traffic.tiltDenied'))
       next = { ...next, control: 'touch' }
     }
     setSetup(next)
@@ -280,9 +276,9 @@ const TrafficView = () => {
       : arcade.status === 'over'
         ? {
             ...arcade.overlay,
-            action: 'دوباره',
+            action: t('games.playAgain'),
             onAction: start,
-            secondary: { label: 'تغییر ماشین و تنظیمات', onAction: toSetup },
+            secondary: { label: t('games.traffic.changeSetup'), onAction: toSetup },
           }
         : arcade.overlay
   const showHud = !!run && load.ready && arcade.status !== 'ready'
@@ -290,7 +286,7 @@ const TrafficView = () => {
 
   return (
     <GameShell
-      title="ترافیک"
+      title={t('games.traffic.title')}
       immersive
       overlay={overlay}
       onRestart={start}
@@ -302,7 +298,7 @@ const TrafficView = () => {
             size="icon"
             className="size-11 bg-secondary/80 hover:bg-secondary [&_svg:not([class*=size-])]:size-5"
             onClick={toggleView}
-            aria-label={setup.view === 'chase' ? 'نمای داخل ماشین' : 'نمای پشت ماشین'}
+            aria-label={t(setup.view === 'chase' ? 'games.traffic.cockpitView' : 'games.traffic.chaseView')}
           >
             {setup.view === 'chase' ? <Armchair /> : <Car />}
           </Button>
@@ -311,7 +307,7 @@ const TrafficView = () => {
       scores={arcade.scores}
     >
       <div className="relative size-full touch-none bg-black select-none">
-        <div ref={host} className="absolute inset-0" role="img" aria-label="صحنهٔ سه‌بعدی بزرگراه" />
+        <div ref={host} className="absolute inset-0" role="img" aria-label={t('games.traffic.scene')} />
 
         {!run && <TrafficSetup value={setup} onChange={setSetup} onStart={() => void handleSetupStart()} />}
 
@@ -320,18 +316,16 @@ const TrafficView = () => {
             {load.error ? (
               <>
                 <p className="text-sm">{load.error}</p>
-                <Button onClick={() => setAttempt((a) => a + 1)}>تلاش دوباره</Button>
+                <Button onClick={() => setAttempt((a) => a + 1)}>{t('games.retry')}</Button>
                 <Button variant="ghost" className="text-white" onClick={toSetup}>
-                  بازگشت به تنظیمات
+                  {t('games.backToSettings')}
                 </Button>
               </>
             ) : (
               <>
-                <p className="text-lg font-bold">در حال آماده‌سازی جاده…</p>
+                <p className="text-lg font-bold">{t('games.traffic.preparing')}</p>
                 <Progress value={load.progress * 100} className="w-56" />
-                <p className="text-xs text-white/70">
-                  بار اول حدود ۱۲ مگابایت بارگیری می‌شود؛ بعد از آن آفلاین هم کار می‌کند.
-                </p>
+                <p className="text-xs text-white/70">{t('games.traffic.firstDownload')}</p>
               </>
             )}
           </div>
@@ -351,19 +345,19 @@ const TrafficView = () => {
             )}
             <div className="pointer-events-none absolute inset-x-0 top-[calc(env(safe-area-inset-top)+4rem)] flex flex-col items-center gap-1 text-white drop-shadow-[0_1px_3px_rgb(0_0_0/0.7)]">
               <p className="text-sm font-semibold tabular-nums">
-                امتیاز {arcade.stats[0].value} · بهترین {arcade.stats[1].value}
+                {t('games.traffic.hud', { score: String(arcade.stats[0].value), best: String(arcade.stats[1].value) })}
               </p>
               {nearMiss > 0 && (
                 <p
                   key={nearMiss}
                   className="text-lg font-bold text-amber-300 animate-out fade-out fill-mode-forwards duration-1000"
                 >
-                  سبقت مرزی! +۲۵
+                  {t('games.traffic.nearMiss')}
                 </p>
               )}
             </div>
             <div className="pointer-events-none absolute inset-x-0 bottom-[calc(env(safe-area-inset-bottom)+7.5rem)] text-center text-white drop-shadow-[0_2px_4px_rgb(0_0_0/0.8)]">
-              <p className="text-5xl leading-none font-black tabular-nums">{toFaDigits(hud.kmh)}</p>
+              <p className="text-5xl leading-none font-black tabular-nums">{toLocalDigits(hud.kmh)}</p>
               <p className="text-xs font-semibold tracking-widest">km/h</p>
             </div>
             {touchControls ? (
@@ -399,7 +393,7 @@ const TrafficView = () => {
             )}
             <button
               type="button"
-              aria-label="ترمز"
+              aria-label={t('games.traffic.brake')}
               onPointerDown={handleBrake}
               onPointerUp={handleBrake}
               onPointerCancel={handleBrake}
@@ -409,7 +403,7 @@ const TrafficView = () => {
                 hud.braking && 'scale-95 border-red-400 bg-red-600/60',
               )}
             >
-              ترمز
+              {t('games.traffic.brake')}
             </button>
           </>
         )}

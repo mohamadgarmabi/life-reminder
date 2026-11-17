@@ -2,13 +2,12 @@ import { revalidateLogic } from '@tanstack/react-form'
 import type { FormEvent } from 'react'
 import { useLiveQuery } from '#/modules/database/hooks/database.hook'
 import { useAppForm } from '#/modules/shell/components/form-fields'
-import { toFaDigits } from '#/modules/shell/utils/format'
+import { formatJalaliYear } from '#/modules/shell/utils/format'
+import { t } from '#/modules/shell/utils/i18n'
 import { planRepo } from '#/modules/plans/apis/plans.api'
 import { STATUS, STATUS_ORDER } from '#/modules/plans/utils/plans.constants'
 import { planFormSchema } from '#/modules/plans/utils/plans.schema'
 import type { PlanFormProps, PlanFormValues } from '#/modules/plans/types'
-
-const STATUS_OPTIONS = STATUS_ORDER.map((s) => ({ value: s, label: STATUS[s].label }))
 
 const usePlanForm = ({ initial, defaultYear, onSubmit }: PlanFormProps) => {
   const defaultValues: PlanFormValues = initial
@@ -36,9 +35,9 @@ const usePlanForm = ({ initial, defaultYear, onSubmit }: PlanFormProps) => {
   return {
     form,
     knownTags,
-    yearOptions: years.map((y) => ({ value: y, label: toFaDigits(y) })),
-    statusOptions: STATUS_OPTIONS,
-    submitLabel: initial ? 'ذخیرهٔ تغییرات' : 'افزودن برنامه',
+    yearOptions: years.map((y) => ({ value: y, label: formatJalaliYear(y) })),
+    statusOptions: STATUS_ORDER.map((s) => ({ value: s, label: STATUS[s].label })),
+    submitLabel: initial ? t('plans.saveChanges') : t('plans.add'),
     handleSubmit: (e: FormEvent<HTMLFormElement>) => {
       e.preventDefault()
       void form.handleSubmit()

@@ -5,6 +5,7 @@ import { Interactable, Pickup } from '#/modules/games/adventure/components/inter
 import { Areas, ObjectiveZone } from '#/modules/games/adventure/components/zones'
 import { usePuzzle } from '#/modules/games/adventure/hooks/world.hook'
 import { TEST_ROOM_DATA } from '#/modules/games/adventure/worlds/test-room/content'
+import { t } from '#/modules/shell/utils/i18n'
 
 // Built only from engine imports, with no engine changes: the reuse check for the next world (SC-009).
 
@@ -55,7 +56,13 @@ const Room = () => {
           <meshStandardMaterial color="#d4a73a" metalness={0.7} roughness={0.3} />
         </mesh>
       </Pickup>
-      <Interactable id="lever" label="کشیدن اهرم" enabled={!open} onUse={() => pull('pull')} position={[-4, 0, -6]}>
+      <Interactable
+        id="lever"
+        label={t('adventure.testRoom.pullLever')}
+        enabled={!open}
+        onUse={() => pull('pull')}
+        position={[-4, 0, -6]}
+      >
         <mesh position={[0, 1, 0]} rotation={[open ? -0.8 : 0.8, 0, 0]}>
           <boxGeometry args={[0.15, 1.2, 0.15]} />
           <meshStandardMaterial color="#9a9a9a" />

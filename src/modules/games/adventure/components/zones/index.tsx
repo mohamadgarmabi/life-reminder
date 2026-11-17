@@ -5,6 +5,7 @@ import { useEngine, useRuntimeRef, patchGame, updateSession } from '#/modules/ga
 import { isObjectiveUnlocked, reachCheckpoint, recordSecret } from '#/modules/games/adventure/utils/session'
 import { playEndingMusic, playSfx, setAmbience, type Ambience } from '#/modules/games/adventure/utils/audio'
 import type { Vec3 } from '#/modules/games/adventure/types'
+import { t } from '#/modules/shell/utils/i18n'
 
 type ZoneProps = {
   position: Vec3
@@ -49,7 +50,7 @@ const SecretZone = ({ id, position, size = [2, 3, 2] }: { id: string; position: 
       onEnter={() => {
         if (store.state.session.secrets.includes(id)) return
         updateSession(store, (s) => recordSecret(s, id))
-        patchGame(store, { notice: 'یک راز پیدا کردی!' })
+        patchGame(store, { notice: t('adventure.secretFound') })
         playSfx('right')
       }}
     />

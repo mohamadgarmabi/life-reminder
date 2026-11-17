@@ -3,12 +3,14 @@ import { useEffect } from 'react'
 import { toast } from '#/components/sonner'
 import { useGoogleAccount } from '#/modules/account/hooks/google-account.hook'
 import { updateSettings } from '#/modules/settings/stores/settings.store'
+import { t } from '#/modules/shell/utils/i18n'
+import type { MessageKey } from '#/modules/shell/utils/i18n'
 
-const FEATURES = [
-  { icon: Wallet, label: 'اقساط' },
-  { icon: Bell, label: 'یادآورها' },
-  { icon: Flower2, label: 'گیاهان' },
-  { icon: Target, label: 'برنامهٔ سال' },
+const FEATURES: { icon: typeof Wallet; label: MessageKey }[] = [
+  { icon: Wallet, label: 'account.welcome.installments' },
+  { icon: Bell, label: 'account.welcome.reminders' },
+  { icon: Flower2, label: 'account.welcome.plants' },
+  { icon: Target, label: 'account.welcome.plans' },
 ]
 
 const finish = () => updateSettings({ welcomeSeen: true })
@@ -21,14 +23,14 @@ const useWelcome = () => {
   useEffect(() => {
     if (!isSignedIn) return
     finish()
-    toast.success(name ? `خوش آمدید، ${name}` : 'با حساب گوگل وارد شدید.')
+    toast.success(name ? t('account.welcome.greeting', { name }) : t('account.welcome.signedIn'))
   }, [isSignedIn, name])
 
   return {
-    features: FEATURES,
+    features: FEATURES.map((f) => ({ icon: f.icon, label: t(f.label) })),
     canSignIn: isAvailable,
     isWaiting,
-    signInLabel: isWaiting ? 'در انتظار ورود به گوگل…' : 'ورود با گوگل',
+    signInLabel: isWaiting ? t('account.welcome.waiting') : t('account.signInWithGoogle'),
     iconSrc: `${import.meta.env.BASE_URL}pwa-192x192.png`,
     handleSignIn: signIn,
     handleCancel: cancelSignIn,

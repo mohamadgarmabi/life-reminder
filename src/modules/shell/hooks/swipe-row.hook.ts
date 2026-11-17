@@ -13,7 +13,7 @@ import {
   type ReactNode,
 } from 'react'
 import { cn } from '#/modules/shell/utils/cn'
-import { toFaDigits } from '#/modules/shell/utils/format'
+import { toLocalDigits } from '#/modules/shell/utils/format'
 import { swipeRowStyles } from '#/modules/shell/utils/swipe-row.styles'
 import type {
   SwipeAction,
@@ -22,6 +22,7 @@ import type {
   SwipeRowPhase,
   SwipeRowProps,
 } from '#/modules/shell/types/swipe-row'
+import { t } from '#/modules/shell/utils/i18n'
 
 const HYST = 10
 const FLICK = 110
@@ -29,7 +30,6 @@ const DECEL = 0.998
 const VMAX = 1500
 const EASE_OUT: [number, number, number, number] = [0.23, 1, 0.32, 1]
 const SPRING_UI = { type: 'spring' as const, duration: 0.3, bounce: 0 }
-const DEFAULT_ACTIONS: SwipeAction[] = [{ id: 'delete', label: 'حذف' }]
 
 type Sample = [number, number]
 
@@ -113,7 +113,7 @@ const watchWindow = (live: { current: Live }) => {
 
 const useSwipeRow = ({
   children,
-  actions = DEFAULT_ACTIONS,
+  actions = [{ id: 'delete', label: t('common.delete') }],
   actionColor = '#e5484d',
   drawerColor = '#3f3f46',
   rowColor = 'var(--card)',
@@ -134,7 +134,7 @@ const useSwipeRow = ({
   onCommit,
   closeOnAction = true,
   haptic = true,
-  label = 'ردیف فهرست',
+  label = t('shell.swipe.rowLabel'),
   className = '',
   style,
 }: SwipeRowProps): SwipeRowModel => {
@@ -251,7 +251,7 @@ const useSwipeRow = ({
     if (reduce) spread.set(on ? 1 : 0)
     else void animate(spread, on ? 1 : 0, SPRING_UI)
     if (on && primary) {
-      setSay(`رها کنید تا ${primary.label}`)
+      setSay(t('shell.swipe.releaseTo', { action: primary.label }))
       if (haptic && gripRef.current?.touch) navigator.vibrate?.(8)
     }
   }
@@ -417,7 +417,7 @@ const useSwipeRow = ({
     headingRef.current = drawerWidth
     x.set(sign * drawerWidth)
     setOpen(true)
-    setSay(`${toFaDigits(actionCount)} گزینه نمایان شد`)
+    setSay(t('shell.swipe.revealed', { n: toLocalDigits(actionCount) }))
   }
 
   const closeNow = () => {
@@ -518,7 +518,7 @@ const useSwipeRow = ({
     handleToggleKey,
     handleToggleClick,
     actionsCount: actionCount,
-    actionsNoun: 'گزینه',
+    actionsNoun: t('shell.swipe.optionsNoun'),
   }
 }
 

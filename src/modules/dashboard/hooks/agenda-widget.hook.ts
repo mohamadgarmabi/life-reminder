@@ -1,12 +1,13 @@
 import type { AgendaWidgetProps } from '#/modules/dashboard/types'
 import { KIND } from '#/modules/dashboard/utils/dashboard.constants'
-import { formatMoney, formatTime, relativeDay, toFaDigits } from '#/modules/shell/utils/format'
+import { formatMoney, formatTime, relativeDay, toLocalDigits } from '#/modules/shell/utils/format'
 import { cn } from '#/modules/shell/utils/cn'
+import { t } from '#/modules/shell/utils/i18n'
 
 /** Rows per swipe page in a large widget; a small one pages through one item at a time. */
 const MAX_ROWS = 3
 
-const useAgendaWidget = ({ items, now, danger, size }: AgendaWidgetProps) => {
+const useAgendaWidget = ({ items, now, danger, size, titleKey, emptyKey }: AgendaWidgetProps) => {
   const perPage = size === 'large' ? MAX_ROWS : 1
   const hidden = items.length - perPage
   const rows = items.map((item) => {
@@ -24,11 +25,13 @@ const useAgendaWidget = ({ items, now, danger, size }: AgendaWidgetProps) => {
     }
   })
   return {
-    countLabel: toFaDigits(items.length),
+    title: t(titleKey),
+    empty: t(emptyKey),
+    countLabel: toLocalDigits(items.length),
     accentClassName: danger && items.length > 0 ? 'text-destructive' : 'text-foreground',
     isEmpty: items.length === 0,
     // Hint that more items are a swipe away.
-    moreLabel: hidden > 0 ? `و ${toFaDigits(hidden)} مورد دیگر · بکشید ↕` : null,
+    moreLabel: hidden > 0 ? t('dashboard.agenda.more', { n: toLocalDigits(hidden) }) : null,
     /** Swipe pages (scroll-snapped vertically in the widget). */
     pages: Array.from({ length: Math.ceil(rows.length / perPage) }, (_, i) =>
       rows.slice(i * perPage, (i + 1) * perPage),

@@ -7,9 +7,10 @@ import { GameIsland } from '#/modules/games/components/game-island'
 import type { GameOverlay, GameStat, ScoreEntry } from '#/modules/games/types'
 import { loadGameData, saveGameData } from '#/modules/games/utils/game-db'
 import { setMuted } from '#/modules/games/utils/sfx'
-import { toFaDigits } from '#/modules/shell/utils/format'
+import { toLocalDigits } from '#/modules/shell/utils/format'
 import { Button } from '#/components/button'
 import { cn } from '#/modules/shell/utils/cn'
+import { t } from '#/modules/shell/utils/i18n'
 
 type GameShellProps = {
   title: string
@@ -52,7 +53,7 @@ const SoundToggle = () => {
       size="icon"
       className={HUD_BUTTON}
       onClick={toggle}
-      aria-label={muted ? 'روشن کردن صدا' : 'بی‌صدا'}
+      aria-label={muted ? t('games.unmute') : t('games.mute')}
       aria-pressed={muted}
     >
       {muted ? <VolumeX /> : <Volume2 />}
@@ -80,7 +81,7 @@ const FullscreenToggle = () => {
       size="icon"
       className={HUD_BUTTON}
       onClick={toggle}
-      aria-label={on ? 'خروج از تمام‌صفحه' : 'تمام‌صفحه'}
+      aria-label={on ? t('games.exitFullscreen') : t('games.fullscreen')}
     >
       {on ? <Minimize /> : <Maximize />}
     </Button>
@@ -99,7 +100,7 @@ const GameShell = ({
   onRestart,
   onPause,
   scores,
-  formatScore = toFaDigits,
+  formatScore = toLocalDigits,
   actions,
   before,
   after,
@@ -133,7 +134,7 @@ const GameShell = ({
         )}
       >
         <Button variant="secondary" size="icon" className={HUD_BUTTON} asChild>
-          <Link to="/games" aria-label="بازگشت به بازی‌ها">
+          <Link to="/games" aria-label={t('games.backToGames')}>
             <ChevronRight />
           </Link>
         </Button>
@@ -148,7 +149,13 @@ const GameShell = ({
         </h1>
         {actions}
         {onPause && (
-          <Button variant="secondary" size="icon" className={HUD_BUTTON} onClick={onPause} aria-label="مکث">
+          <Button
+            variant="secondary"
+            size="icon"
+            className={HUD_BUTTON}
+            onClick={onPause}
+            aria-label={t('games.pause')}
+          >
             <Pause />
           </Button>
         )}
@@ -200,14 +207,14 @@ const GameShell = ({
               )}
               {overlay.onAction && overlay.restart && onRestart && (
                 <Button variant="secondary" size="lg" className="w-full" onClick={onRestart}>
-                  <RotateCcw /> از اول
+                  <RotateCcw /> {t('games.restart')}
                 </Button>
               )}
               {scores && scores.length > 0 && (
-                <ol className="mt-1 w-full space-y-1 border-t pt-3 text-sm" aria-label="بهترین امتیازها">
+                <ol className="mt-1 w-full space-y-1 border-t pt-3 text-sm" aria-label={t('games.topScores')}>
                   {scores.map((entry, i) => (
                     <li key={entry.at} className="flex justify-between tabular-nums">
-                      <span className="text-muted-foreground">{toFaDigits(i + 1)}.</span>
+                      <span className="text-muted-foreground">{toLocalDigits(i + 1)}.</span>
                       <span className={i === 0 ? 'font-bold' : undefined}>{formatScore(entry.score)}</span>
                     </li>
                   ))}

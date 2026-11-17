@@ -4,6 +4,7 @@ import { useArcade } from '#/modules/games/hooks/arcade.hook'
 import { useCanvasGame, useKeys } from '#/modules/games/hooks/canvas-game.hook'
 import { sfx } from '#/modules/games/utils/sfx'
 import { createSnake, stepSnake, turnSnake, type Point } from '#/modules/games/utils/snake'
+import { t } from '#/modules/shell/utils/i18n'
 
 const SIZE = 18
 const CELL = 20
@@ -21,7 +22,7 @@ const KEYS: Record<string, Point> = {
 }
 
 const SnakeView = () => {
-  const arcade = useArcade('snake', { title: 'مار', detail: 'انگشتت را بکش یا از کلیدهای جهت استفاده کن.' })
+  const arcade = useArcade('snake', { title: t('games.snake.title'), detail: t('games.snake.intro') })
   const game = useRef({ s: createSnake(SIZE), prev: [] as Point[], acc: 0 })
   const swipe = useRef<{ x: number; y: number } | null>(null)
 
@@ -108,7 +109,7 @@ const SnakeView = () => {
 
   return (
     <GameShell
-      title="مار"
+      title={t('games.snake.title')}
       stats={arcade.stats}
       overlay={arcade.overlay}
       onRestart={start}
@@ -119,7 +120,7 @@ const SnakeView = () => {
         ref={canvasRef}
         width={WORLD}
         height={WORLD}
-        label="صفحهٔ بازی مار"
+        label={t('games.snake.board')}
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={() => (swipe.current = null)}

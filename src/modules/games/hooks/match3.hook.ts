@@ -15,7 +15,8 @@ import {
   swapCells,
 } from '#/modules/games/utils/match3'
 import { level, readGame, writeGame } from '#/modules/games/utils/storage'
-import { toFaDigits } from '#/modules/shell/utils/format'
+import { toLocalDigits } from '#/modules/shell/utils/format'
+import { t } from '#/modules/shell/utils/i18n'
 
 const PROGRESS_KEY = 'match3:progress'
 const progressSchema = z.object({
@@ -135,10 +136,10 @@ const useMatch3 = () => {
       const best = progress.best[i + 1]
       return {
         level: i + 1,
-        label: toFaDigits(i + 1),
+        label: toLocalDigits(i + 1),
         locked,
-        ariaLabel: `مرحلهٔ ${toFaDigits(i + 1)}${locked ? ' (قفل)' : ''}`,
-        bestLabel: best ? toFaDigits(best) : null,
+        ariaLabel: t(locked ? 'games.match3.levelLocked' : 'games.match3.level', { level: toLocalDigits(i + 1) }),
+        bestLabel: best ? toLocalDigits(best) : null,
         variant: locked ? ('ghost' as const) : best ? ('secondary' as const) : ('outline' as const),
       }
     }),
@@ -149,12 +150,12 @@ const useMatch3 = () => {
     busy,
     status,
     canGoNext: level !== null && level < MATCH3_LEVELS,
-    levelLabel: `مرحلهٔ ${toFaDigits(level ?? 1)}`,
-    scoreLabel: toFaDigits(score),
-    targetLabel: toFaDigits(config.target),
-    movesLabel: toFaDigits(movesLeft),
-    comboLabel: combo > 1 ? `×${toFaDigits(combo)}` : null,
-    bestLabel: level !== null && progress.best[level] ? toFaDigits(progress.best[level]) : null,
+    levelLabel: t('games.match3.level', { level: toLocalDigits(level ?? 1) }),
+    scoreLabel: toLocalDigits(score),
+    targetLabel: toLocalDigits(config.target),
+    movesLabel: toLocalDigits(movesLeft),
+    comboLabel: combo > 1 ? `×${toLocalDigits(combo)}` : null,
+    bestLabel: level !== null && progress.best[level] ? toLocalDigits(progress.best[level]) : null,
     progressValue: Math.min(100, (score / config.target) * 100),
     handleStart: start,
     handleRetry: () => level !== null && start(level),

@@ -4,6 +4,7 @@ import { Field, FieldLabel } from '#/components/field'
 import { usePlantForm } from '#/modules/plants/hooks/plant-form.hook'
 import type { PlantFormProps } from '#/modules/plants/types'
 import Image from '#/components/image'
+import { t } from '#/modules/shell/utils/i18n'
 
 const PlantForm = ({ initial, onSubmit }: PlantFormProps) => {
   const {
@@ -29,17 +30,17 @@ const PlantForm = ({ initial, onSubmit }: PlantFormProps) => {
   return (
     <form noValidate className="space-y-5" onSubmit={handleSubmit}>
       <Field>
-        <FieldLabel htmlFor={fileId}>عکس (اختیاری)</FieldLabel>
+        <FieldLabel htmlFor={fileId}>{t('plants.photoOptional')}</FieldLabel>
         <div className="flex items-center gap-3">
           {image && (
             <div className="relative">
-              <Image src={image} alt="پیش‌نمایش عکس گیاه" className="size-20 rounded-xl object-cover" />
+              <Image src={image} alt={t('plants.photoPreview')} className="size-20 rounded-xl object-cover" />
               <Button
                 type="button"
                 size="icon-sm"
                 variant="secondary"
                 className="absolute -inset-e-2 -top-2 rounded-full"
-                aria-label="حذف عکس"
+                aria-label={t('plants.removePhoto')}
                 onClick={removeImage}
               >
                 <X />
@@ -56,12 +57,12 @@ const PlantForm = ({ initial, onSubmit }: PlantFormProps) => {
           )}
           {isAnalyzing && (
             <span role="status" className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Loader2 className="size-4 animate-spin" aria-hidden /> در حال شناسایی گیاه…
+              <Loader2 className="size-4 animate-spin" aria-hidden /> {t('plants.identifying')}
             </span>
           )}
           {canAnalyze && (
             <Button type="button" size="sm" variant="secondary" onClick={reanalyze}>
-              <Sparkles /> تحلیل عکس
+              <Sparkles /> {t('plants.analyzePhoto')}
             </Button>
           )}
           <input id={fileId} type="file" accept="image/*" className="sr-only" onChange={handleImageChange} />
@@ -80,21 +81,23 @@ const PlantForm = ({ initial, onSubmit }: PlantFormProps) => {
           {analysis.care && <p className="whitespace-pre-line text-muted-foreground">{analysis.care}</p>}
           <div className="flex gap-2">
             <Button type="button" size="sm" onClick={applyAnalysis}>
-              پر کردن فرم
+              {t('plants.fillForm')}
             </Button>
             <Button type="button" size="sm" variant="ghost" onClick={dismissAnalysis}>
-              نه، دستی پر می‌کنم
+              {t('plants.fillManually')}
             </Button>
           </div>
         </section>
       )}
-      <form.AppField name="name">{(f) => <f.TextField label="نام گیاه" placeholder="مثلاً پوتوس" />}</form.AppField>
-      <form.AppField name="wateringIntervalDays">
-        {(f) => <f.NumberField label="فاصلهٔ آبیاری" suffix="روز" />}
+      <form.AppField name="name">
+        {(f) => <f.TextField label={t('plants.name')} placeholder={t('plants.namePlaceholder')} />}
       </form.AppField>
-      <form.AppField name="lastWateredAt">{(f) => <f.DateField label="آخرین آبیاری" />}</form.AppField>
+      <form.AppField name="wateringIntervalDays">
+        {(f) => <f.NumberField label={t('plants.interval')} suffix={t('plants.days')} />}
+      </form.AppField>
+      <form.AppField name="lastWateredAt">{(f) => <f.DateField label={t('plants.lastWatered')} />}</form.AppField>
       <form.AppField name="notes">
-        {(f) => <f.TextareaField label="یادداشت" placeholder="نور، کود، نکات نگهداری…" />}
+        {(f) => <f.TextareaField label={t('plants.notes')} placeholder={t('plants.notesPlaceholder')} />}
       </form.AppField>
       <form.AppForm>
         <form.SubmitButton>{submitLabel}</form.SubmitButton>

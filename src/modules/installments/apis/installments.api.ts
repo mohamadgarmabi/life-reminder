@@ -1,3 +1,4 @@
+import { t } from '#/modules/shell/utils/i18n'
 import { abortTx, getDb, newId, validRecords } from '#/modules/database/apis/database.api'
 import { notifyDbChange } from '#/modules/database/utils/live'
 import { nowIso } from '#/modules/shell/utils/dates'
@@ -67,7 +68,7 @@ const installmentRepo = {
     const inst = installmentSchema.parse(await tx.objectStore('installments').get(id))
     if (inst.paidPayments !== index || index >= inst.totalPayments) {
       abortTx(tx)
-      throw new PaymentConflictError('این قسط قبلاً ثبت شده است.')
+      throw new PaymentConflictError(t('installments.alreadyPaid'))
     }
     const payment: Payment = {
       id: newId(),
@@ -92,7 +93,7 @@ const installmentRepo = {
     const inst = installmentSchema.parse(await tx.objectStore('installments').get(payment.installmentId))
     if (inst.paidPayments !== payment.index + 1) {
       abortTx(tx)
-      throw new PaymentConflictError('فقط آخرین پرداخت قابل لغو است.')
+      throw new PaymentConflictError(t('installments.onlyLastUndo'))
     }
     await tx.objectStore('payments').delete(paymentId)
     await tx.objectStore('installments').put({ ...inst, paidPayments: payment.index, updatedAt: nowIso() })

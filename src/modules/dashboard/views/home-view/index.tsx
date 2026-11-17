@@ -12,6 +12,7 @@ import { useDashboard } from '#/modules/dashboard/hooks/dashboard.hook'
 import type { WidgetConfig } from '#/modules/dashboard/types'
 import { AGENDA_WIDGETS } from '#/modules/dashboard/utils/dashboard.constants'
 import { ErrorState, PageHeader } from '#/modules/shell/components/states'
+import { t } from '#/modules/shell/utils/i18n'
 
 const HomeView = () => {
   const {
@@ -25,6 +26,7 @@ const HomeView = () => {
     market,
     widgets,
     editing,
+    editLabel,
     toggleEditing,
     startEditing,
     handleMove,
@@ -61,21 +63,17 @@ const HomeView = () => {
   return (
     <>
       <PageHeader
-        title="امروز"
+        title={t('dashboard.home.title')}
         description={dateLabel}
         action={
           <Button variant={editing ? 'default' : 'secondary'} size="sm" onClick={toggleEditing}>
-            {editing ? 'تمام' : 'ویرایش'}
+            {editLabel}
           </Button>
         }
       />
 
       {error && <ErrorState error={error} />}
-      {editing && (
-        <p className="mb-3 text-center text-xs text-muted-foreground">
-          ویجت‌ها را بکشید تا جابه‌جا شوند؛ دکمهٔ گوشه اندازه را عوض می‌کند.
-        </p>
-      )}
+      {editing && <p className="mb-3 text-center text-xs text-muted-foreground">{t('dashboard.home.editHint')}</p>}
       {/* 4 columns of square cells (row height = column width; 2.25rem = 3 gaps): mini 1×1, small 2×2, large 4 wide.
           Rows grow only for taller content. dense: a later mini fills a free cell beside or under earlier tiles. */}
       <div className="@container">

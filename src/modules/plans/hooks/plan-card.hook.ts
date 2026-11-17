@@ -1,11 +1,12 @@
 import { toast } from '#/components/sonner'
-import { toFaDigits } from '#/modules/shell/utils/format'
+import { formatJalaliYear } from '#/modules/shell/utils/format'
+import { t } from '#/modules/shell/utils/i18n'
 import { planRepo } from '#/modules/plans/apis/plans.api'
 import { STATUS } from '#/modules/plans/utils/plans.constants'
 import type { Plan, PlanStatus } from '#/modules/plans/types'
 
 const showError = (e: unknown) => {
-  toast.error(e instanceof Error ? e.message : 'خطا در ذخیره‌سازی')
+  toast.error(e instanceof Error ? e.message : t('plans.saveError'))
 }
 
 const usePlanCard = (plan: Plan) => {
@@ -14,8 +15,11 @@ const usePlanCard = (plan: Plan) => {
     planRepo
       .setStatus(plan.id, status)
       .then(() =>
-        toast.success(`«${plan.title}»: ${STATUS[status].label}`, {
-          action: { label: 'بازگردانی', onClick: () => void planRepo.setStatus(plan.id, previous).catch(showError) },
+        toast.success(t('plans.statusToast', { title: plan.title, status: STATUS[status].label }), {
+          action: {
+            label: t('plans.undo'),
+            onClick: () => void planRepo.setStatus(plan.id, previous).catch(showError),
+          },
         }),
       )
       .catch(showError)
@@ -25,8 +29,8 @@ const usePlanCard = (plan: Plan) => {
     planRepo
       .remove(plan.id)
       .then(() =>
-        toast.success('برنامه حذف شد.', {
-          action: { label: 'بازگردانی', onClick: () => void planRepo.restore(plan).catch(showError) },
+        toast.success(t('plans.deleted'), {
+          action: { label: t('plans.undo'), onClick: () => void planRepo.restore(plan).catch(showError) },
         }),
       )
       .catch(showError)
@@ -34,13 +38,13 @@ const usePlanCard = (plan: Plan) => {
 
   const isOpen = plan.status === 'planned' || plan.status === 'in-progress'
   // First action = full swipe. Finished plans get "reset" instead of done/skip.
-  const deleteAction = { id: 'delete' as const, label: 'حذف', onSelect: handleDelete }
+  const deleteAction = { id: 'delete' as const, label: t('plans.delete'), onSelect: handleDelete }
   const statusActions = isOpen
     ? [
-        { id: 'done' as const, label: 'انجام شد', color: '#30a46c', onSelect: () => setStatus('done') },
-        { id: 'skip' as const, label: 'رد کردن', color: '#f5a524', onSelect: () => setStatus('skipped') },
+        { id: 'done' as const, label: t('plans.markDone'), color: '#30a46c', onSelect: () => setStatus('done') },
+        { id: 'skip' as const, label: t('plans.skip'), color: '#f5a524', onSelect: () => setStatus('skipped') },
       ]
-    : [{ id: 'reset' as const, label: 'بی‌وضعیت', color: '#8b8d98', onSelect: () => setStatus('planned') }]
+    : [{ id: 'reset' as const, label: t('plans.reset'), color: '#8b8d98', onSelect: () => setStatus('planned') }]
   // Same actions back the swipe row and the ⋮ menu.
   const swipeActions = [deleteAction, ...statusActions]
 
@@ -50,15 +54,15 @@ const usePlanCard = (plan: Plan) => {
     deleteAction,
     statusLabel: STATUS[plan.status].label,
     statusVariant: STATUS[plan.status].variant,
-    yearLabel: toFaDigits(plan.year),
+    yearLabel: t('plans.yearLabel', { year: formatJalaliYear(plan.year) }),
     isFinished: !isOpen,
-    menuAriaLabel: `گزینه‌های ${plan.title}`,
+    menuAriaLabel: t('plans.options', { title: plan.title }),
     // One tap moves the plan forward: planned → in progress → done.
     nextStep:
       plan.status === 'planned'
-        ? { kind: 'start' as const, label: 'شروع', onClick: () => setStatus('in-progress') }
+        ? { kind: 'start' as const, label: t('plans.start'), onClick: () => setStatus('in-progress') }
         : plan.status === 'in-progress'
-          ? { kind: 'done' as const, label: 'انجام شد', onClick: () => setStatus('done') }
+          ? { kind: 'done' as const, label: t('plans.markDone'), onClick: () => setStatus('done') }
           : null,
   }
 }

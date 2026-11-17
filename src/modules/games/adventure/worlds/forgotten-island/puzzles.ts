@@ -2,7 +2,14 @@ import { z } from 'zod'
 import type { PuzzleDef } from '#/modules/games/adventure/types'
 
 // Glyph indices used by pillars, sluice plates and chime marks (drawn in scene/glyphs.ts).
-const GLYPH_NAMES = ['خورشید', 'ماه', 'موج', 'ستاره', 'برگ', 'ماهی'] as const
+const GLYPH_NAMES = [
+  'adventure.island.glyph.sun',
+  'adventure.island.glyph.moon',
+  'adventure.island.glyph.wave',
+  'adventure.island.glyph.star',
+  'adventure.island.glyph.leaf',
+  'adventure.island.glyph.fish',
+] as const
 
 /** Shore shrine: the mural shows these glyphs, left to right. */
 const PILLAR_CODE = [0, 3, 2]

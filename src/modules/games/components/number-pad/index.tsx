@@ -1,6 +1,7 @@
 import { Eraser } from 'lucide-react'
 import { Button } from '#/components/button'
-import { toFaDigits } from '#/modules/shell/utils/format'
+import { toLocalDigits } from '#/modules/shell/utils/format'
+import { t } from '#/modules/shell/utils/i18n'
 
 const DIGITS = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 
@@ -17,10 +18,16 @@ const NumberPad = ({
     <div dir="ltr" className="grid grid-cols-5 gap-2">
       {DIGITS.map((d) => (
         <Button key={d} variant="secondary" className="h-11 text-lg" disabled={disabled} onClick={() => onInput(d)}>
-          {toFaDigits(d)}
+          {toLocalDigits(d)}
         </Button>
       ))}
-      <Button variant="outline" className="h-11" disabled={disabled} onClick={onErase} aria-label="پاک کردن">
+      <Button
+        variant="outline"
+        className="h-11"
+        disabled={disabled}
+        onClick={onErase}
+        aria-label={t('games.sudoku.erase')}
+      >
         <Eraser />
       </Button>
     </div>

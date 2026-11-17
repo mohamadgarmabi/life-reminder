@@ -27,6 +27,7 @@ import type {
   DialogTitleProps,
   DialogDescriptionProps,
 } from './dialog.types'
+import { t } from '#/modules/shell/utils/i18n'
 
 const Dialog = ({ ...props }: DialogProps) => {
   return <DialogPrimitive.Root data-slot="dialog" {...props} />
@@ -59,7 +60,7 @@ const DialogContent = ({ className, children, showCloseButton = true, ...props }
         {showCloseButton && (
           <DialogPrimitive.Close data-slot="dialog-close" className={dialogCloseVariants()}>
             <XIcon />
-            <span className={dialogCloseLabelVariants()}>بستن</span>
+            <span className={dialogCloseLabelVariants()}>{t('common.close')}</span>
           </DialogPrimitive.Close>
         )}
       </DialogPrimitive.Content>
@@ -77,7 +78,7 @@ const DialogFooter = ({ className, showCloseButton = false, children, ...props }
       {children}
       {showCloseButton && (
         <DialogPrimitive.Close asChild>
-          <Button variant="outline">بستن</Button>
+          <Button variant="outline">{t('common.close')}</Button>
         </DialogPrimitive.Close>
       )}
     </div>

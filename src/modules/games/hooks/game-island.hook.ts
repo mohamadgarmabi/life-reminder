@@ -18,6 +18,7 @@ import {
   gameIslandTitleStyles,
   gameIslandValueStyles,
 } from '#/modules/games/utils/game-island.styles'
+import { t } from '#/modules/shell/utils/i18n'
 
 const SPRING = { type: 'spring', stiffness: 420, damping: 34 } as const
 const INSTANT = { duration: 0 } as const
@@ -26,7 +27,7 @@ const RADIUS = { compact: 18, expanded: 32 } as const
 
 /**
  * The game's Dynamic Island: the first stat (the live score) rides in a black pill at the top of the
- * play area; a tap opens the rest. Values arrive formatted by the views (`toFaDigits`), so they stay
+ * play area; a tap opens the rest. Values arrive formatted by the views (`toLocalDigits`), so they stay
  * Persian. In RTL the first flex child sits on the right, so the glyph leads as a Persian reader expects.
  */
 const useGameIsland = ({ title, stats, overlay }: GameIslandProps) => {
@@ -42,11 +43,11 @@ const useGameIsland = ({ title, stats, overlay }: GameIslandProps) => {
     handleToggle: () => setExpanded((open) => !open),
     Icon: paused ? Pause : Star,
     title,
-    subtitle: paused ? 'مکث' : primary?.label,
+    subtitle: paused ? t('games.paused') : primary?.label,
     value: primary?.value,
     rest,
     hasRest: rest.length > 0,
-    ariaLabel: `${title}، ${primary?.label ?? ''}: ${String(primary?.value ?? '')}`,
+    ariaLabel: t('games.islandLabel', { title, label: primary?.label ?? '', value: String(primary?.value ?? '') }),
     transition,
     pillStyle: { borderRadius: expanded ? RADIUS.expanded : RADIUS.compact },
     // A new score slides up into place; the key restarts the animation on each change.

@@ -4,6 +4,7 @@ import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle, Dr
 import { Separator } from '#/components/separator'
 import { cn } from '#/modules/shell/utils/cn'
 import { useActionSheet } from '#/modules/shell/hooks/action-sheet.hook'
+import { t } from '#/modules/shell/utils/i18n'
 
 type ActionSheetItem = { key?: string; label: string; icon: ReactNode; onSelect: () => void; destructive?: boolean }
 type ActionSheetGroup = { label?: string; items: ActionSheetItem[] }
@@ -26,7 +27,7 @@ const ActionSheet = ({
       <DrawerContent>
         <DrawerHeader>
           <DrawerTitle className="truncate">{title}</DrawerTitle>
-          <DrawerDescription className="sr-only">گزینه‌ها</DrawerDescription>
+          <DrawerDescription className="sr-only">{t('common.options')}</DrawerDescription>
         </DrawerHeader>
         <div className="overflow-y-auto px-2 pb-[max(1rem,env(safe-area-inset-bottom))]">
           {groups.map((g, i) => (

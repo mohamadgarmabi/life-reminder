@@ -9,6 +9,7 @@ import { planSchema } from '#/modules/plans/utils/plans.schema'
 import { reminderEventSchema, reminderSchema } from '#/modules/reminders/utils/reminders.schema'
 import { settingsSchema, settingsStore, updateSettings } from '#/modules/settings/stores/settings.store'
 import type { Backup, ParseResult } from '#/modules/settings/types'
+import { t } from '#/modules/shell/utils/i18n'
 
 const backupSchema = z.object({
   app: z.literal('life-reminder'),
@@ -51,12 +52,12 @@ const parseBackup = (text: string): ParseResult => {
   try {
     json = JSON.parse(text)
   } catch {
-    return { ok: false, error: 'فایل JSON معتبر نیست.' }
+    return { ok: false, error: t('settings.data.invalidJson') }
   }
   const parsed = backupSchema.safeParse(json)
   if (!parsed.success) {
     const issue = parsed.error.issues[0]
-    return { ok: false, error: `ساختار فایل پشتیبان نامعتبر است (${issue.path.join('.') || 'root'}).` }
+    return { ok: false, error: t('settings.data.invalidBackup', { path: issue.path.join('.') || 'root' }) }
   }
   return { ok: true, backup: parsed.data }
 }

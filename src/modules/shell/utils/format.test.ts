@@ -5,12 +5,12 @@ import {
   formatMoney,
   relativeDay,
   toEnDigits,
-  toFaDigits,
+  toLocalDigits,
 } from '#/modules/shell/utils/format'
 
 describe('format', () => {
   it('converts digits both ways', () => {
-    expect(toFaDigits('2026/10')).toBe('۲۰۲۶/۱۰')
+    expect(toLocalDigits('2026/10')).toBe('۲۰۲۶/۱۰')
     expect(toEnDigits('۱۲۳٤٥')).toBe('12345')
   })
 

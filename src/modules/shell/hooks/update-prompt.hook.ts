@@ -2,8 +2,9 @@ import { useEffect, useState } from 'react'
 import { toast } from '#/components/sonner'
 import { useRegisterSW } from 'virtual:pwa-register/react'
 import { z } from 'zod'
-import { toFaDigits } from '#/modules/shell/utils/format'
+import { toLocalDigits } from '#/modules/shell/utils/format'
 import { notesSince, type ReleaseNote } from '#/modules/shell/utils/release-notes'
+import { t } from '#/modules/shell/utils/i18n'
 
 const versionSchema = z.object({
   version: z.string(),
@@ -21,7 +22,7 @@ const useUpdatePrompt = () => {
 
   useEffect(() => {
     if (!offlineReady) return
-    toast.success('برنامه برای استفادهٔ آفلاین آماده است.')
+    toast.success(t('shell.update.offlineReady'))
     setOfflineReady(false)
   }, [offlineReady, setOfflineReady])
 
@@ -43,7 +44,9 @@ const useUpdatePrompt = () => {
 
   return {
     open: needRefresh,
-    versionLabel: info ? `نسخهٔ ${toFaDigits(info.version)}` : 'نسخهٔ جدید',
+    versionLabel: info
+      ? t('shell.update.version', { version: toLocalDigits(info.version) })
+      : t('shell.update.newVersion'),
     notes: info?.notes ?? [],
     hasNotes: !!info?.notes.length,
     applying,

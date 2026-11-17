@@ -8,8 +8,9 @@ import { loadGameData, saveGameData } from '#/modules/games/utils/game-db'
 import { MERGE_SIZE, canMove, slideTiles, spawnTile, type Direction, type MergeTile } from '#/modules/games/utils/merge'
 import { sfx } from '#/modules/games/utils/sfx'
 import { cn } from '#/modules/shell/utils/cn'
-import { toFaDigits } from '#/modules/shell/utils/format'
+import { toLocalDigits } from '#/modules/shell/utils/format'
 import { Button } from '#/components/button'
+import { t } from '#/modules/shell/utils/i18n'
 
 const COLORS = [
   'bg-stone-200 text-stone-700',
@@ -97,17 +98,17 @@ const MergeView = () => {
 
   return (
     <GameShell
-      title="ادغام اعداد"
+      title={t('games.merge.title')}
       stats={[
-        { label: 'امتیاز', value: toFaDigits(game.score) },
-        { label: 'بهترین', value: toFaDigits(Math.max(best ?? 0, game.score)) },
+        { label: t('games.score'), value: toLocalDigits(game.score) },
+        { label: t('games.best'), value: toLocalDigits(Math.max(best ?? 0, game.score)) },
       ]}
       overlay={
         game.over
           ? {
-              title: 'حرکتی نمانده',
-              detail: `امتیاز: ${toFaDigits(game.score)}`,
-              action: 'بازی تازه',
+              title: t('games.merge.noMoves'),
+              detail: t('games.scoreDetail', { score: toLocalDigits(game.score) }),
+              action: t('games.newGame'),
               onAction: () => commit(freshGame()),
             }
           : null
@@ -115,14 +116,14 @@ const MergeView = () => {
       scores={scores}
       after={
         <Button variant="outline" onClick={() => commit(freshGame())}>
-          <RotateCcw /> بازی تازه
+          <RotateCcw /> {t('games.newGame')}
         </Button>
       }
     >
       <div
         dir="ltr"
         role="grid"
-        aria-label="صفحهٔ ادغام؛ با کشیدن یا کلیدهای جهت حرکت بده"
+        aria-label={t('games.merge.board')}
         className="@container relative mx-auto aspect-square w-[min(100cqw,100cqh)] touch-none rounded-2xl bg-secondary p-[1.5%] select-none"
         onPointerDown={(e) => (swipe.current = { x: e.clientX, y: e.clientY })}
         onPointerUp={handlePointerUp}
@@ -161,7 +162,7 @@ const MergeView = () => {
                     t.fresh && 'animate-in zoom-in-50 fade-in delay-75 duration-150 fill-mode-backwards',
                   )}
                 >
-                  {toFaDigits(t.value)}
+                  {toLocalDigits(t.value)}
                 </div>
               </div>
             )

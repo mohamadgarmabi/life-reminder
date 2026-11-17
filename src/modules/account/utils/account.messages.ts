@@ -1,0 +1,58 @@
+// Keys are prefixed with 'account.' (or 'common.' / 'nav.' in shell) so module dictionaries never collide.
+const fa = {
+  'account.title': 'حساب کاربری',
+  'account.googleAccount': 'حساب گوگل',
+  'account.signInWithGoogle': 'ورود با گوگل',
+  'account.signedIn': 'وارد شده‌اید',
+  'account.waiting': 'در انتظار ورود به حساب گوگل…',
+  'account.hint': 'برای نمایش تقویم گوگل در یادآورها؛ بدون حساب هم کار می‌کند.',
+  'account.signOut': 'خروج',
+  'account.cancel': 'لغو',
+  'account.signIn': 'ورود',
+  'account.signedOut': 'از حساب گوگل خارج شدید.',
+  'account.notConfigured': 'سرویس ورود پیکربندی نشده است.',
+  'account.network': 'ارتباط با سرور ممکن نشد؛ اینترنت را بررسی کنید.',
+  'account.welcome.appName': 'یادآور زندگی',
+  'account.welcome.tagline': 'همهٔ کارهای روزمره‌تان در یک جا، آفلاین و روی دستگاه خودتان.',
+  'account.welcome.installments': 'اقساط',
+  'account.welcome.reminders': 'یادآورها',
+  'account.welcome.plants': 'گیاهان',
+  'account.welcome.plans': 'برنامهٔ سال',
+  'account.welcome.greeting': 'خوش آمدید، {name}',
+  'account.welcome.signedIn': 'با حساب گوگل وارد شدید.',
+  'account.welcome.waiting': 'در انتظار ورود به گوگل…',
+  'account.welcome.cancel': 'لغو ورود',
+  'account.welcome.skip': 'ادامه بدون حساب',
+  'account.welcome.calendarHint': 'با ورود، رویدادهای تقویم گوگل‌تان در بخش یادآورها نمایش داده می‌شود (فقط خواندنی).',
+}
+
+const en: Record<keyof typeof fa, string> = {
+  'account.title': 'Account',
+  'account.googleAccount': 'Google account',
+  'account.signInWithGoogle': 'Sign in with Google',
+  'account.signedIn': 'Signed in',
+  'account.waiting': 'Waiting for Google sign-in…',
+  'account.hint': 'Shows your Google Calendar in reminders; the app works without an account too.',
+  'account.signOut': 'Sign out',
+  'account.cancel': 'Cancel',
+  'account.signIn': 'Sign in',
+  'account.signedOut': 'Signed out of Google.',
+  'account.notConfigured': 'The sign-in service isn’t configured.',
+  'account.network': 'Couldn’t reach the server; check your internet connection.',
+  'account.welcome.appName': 'Life Reminder',
+  'account.welcome.tagline': 'All your everyday tasks in one place, offline and on your own device.',
+  'account.welcome.installments': 'Installments',
+  'account.welcome.reminders': 'Reminders',
+  'account.welcome.plants': 'Plants',
+  'account.welcome.plans': 'Yearly plan',
+  'account.welcome.greeting': 'Welcome, {name}',
+  'account.welcome.signedIn': 'Signed in with Google.',
+  'account.welcome.waiting': 'Waiting for Google sign-in…',
+  'account.welcome.cancel': 'Cancel sign-in',
+  'account.welcome.skip': 'Continue without an account',
+  'account.welcome.calendarHint': 'Once signed in, your Google Calendar events appear in Reminders (read-only).',
+}
+
+const messages = { fa, en }
+
+export default messages

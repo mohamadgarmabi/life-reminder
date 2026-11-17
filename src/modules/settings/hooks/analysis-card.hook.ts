@@ -10,6 +10,7 @@ import { reminderRepo } from '#/modules/reminders/apis/reminders.api'
 import { buildAnalysisSnapshot, nearestItem } from '#/modules/settings/utils/analysis'
 import { askAiText, isAiAvailable } from '#/modules/shell/apis/ai.api'
 import { useNow } from '#/modules/shell/hooks/now.hook'
+import { t } from '#/modules/shell/utils/i18n'
 
 const useAnalysisCard = () => {
   const now = useNow()
@@ -36,7 +37,7 @@ const useAnalysisCard = () => {
       const data = buildAnalysisSnapshot({ ...q.data, agenda, prices, year: getYear(now) }, now)
       setText(await askAiText({ mode: 'analysis', data }))
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'تحلیل ممکن نشد.')
+      setError(e instanceof Error ? e.message : t('settings.analysis.failed'))
     } finally {
       setIsAnalyzing(false)
     }
@@ -48,7 +49,7 @@ const useAnalysisCard = () => {
     error,
     isAnalyzing,
     canAnalyze: !!agenda && !isAnalyzing,
-    buttonLabel: text ? 'تحلیل دوباره' : 'تحلیل کن',
+    buttonLabel: t(text ? 'settings.analysis.again' : 'settings.analysis.analyze'),
     // Computed on the device, not by the model, so the link is always right.
     nearest: agenda ? nearestItem(agenda, now) : null,
     handleAnalyze: () => void handleAnalyze(),

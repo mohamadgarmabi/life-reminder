@@ -3,12 +3,13 @@ import { z } from 'zod'
 import type { SudokuDifficulty, SudokuProgress, SudokuPuzzle } from '#/modules/games/types'
 import { level, readGame, writeGame } from '#/modules/games/utils/storage'
 import { SUDOKU_LEVELS, generateSudoku } from '#/modules/games/utils/sudoku'
-import { toFaDigits } from '#/modules/shell/utils/format'
+import { toLocalDigits } from '#/modules/shell/utils/format'
+import { t, type MessageKey } from '#/modules/shell/utils/i18n'
 
-const DIFFICULTIES: { value: SudokuDifficulty; label: string }[] = [
-  { value: 'easy', label: 'آسان' },
-  { value: 'medium', label: 'متوسط' },
-  { value: 'hard', label: 'سخت' },
+const DIFFICULTIES: { value: SudokuDifficulty; label: MessageKey }[] = [
+  { value: 'easy', label: 'games.easy' },
+  { value: 'medium', label: 'games.medium' },
+  { value: 'hard', label: 'games.hard' },
 ]
 
 const difficultySchema = z.enum(['easy', 'medium', 'hard'])
@@ -67,14 +68,14 @@ const useSudoku = () => {
   }
 
   return {
-    difficulties: DIFFICULTIES,
+    difficulties: DIFFICULTIES.map((d) => ({ ...d, label: t(d.label) })),
     difficulty,
     board,
     givens: puzzle.givens,
     solution: puzzle.solution,
     selected,
     isSolved,
-    levelLabel: `مرحلهٔ ${toFaDigits(game.level)} از ${toFaDigits(SUDOKU_LEVELS)}`,
+    levelLabel: t('games.sudoku.levelOf', { level: toLocalDigits(game.level), total: toLocalDigits(SUDOKU_LEVELS) }),
     hasPrev: game.level > 1,
     hasNext: game.level < unlocked,
     canGoNext: game.level < SUDOKU_LEVELS,

@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react'
 import type { GameOverlay, GameStatus } from '#/modules/games/types'
 import { useScores } from '#/modules/games/hooks/scores.hook'
 import { sfx } from '#/modules/games/utils/sfx'
-import { toFaDigits } from '#/modules/shell/utils/format'
+import { toLocalDigits } from '#/modules/shell/utils/format'
+import { t } from '#/modules/shell/utils/i18n'
 
 /** Status, score, leaderboard and start/game-over overlay shared by the real-time games. */
 const useArcade = (key: string, intro: { title: string; detail: string }) => {
@@ -46,14 +47,18 @@ const useArcade = (key: string, intro: { title: string; detail: string }) => {
     status === 'playing'
       ? null
       : status === 'paused'
-        ? { title: 'مکث', action: 'ادامه', onAction: resume, restart: true }
+        ? { title: t('games.paused'), action: t('games.resume'), onAction: resume, restart: true }
         : status === 'ready'
-          ? { ...intro, action: 'شروع' }
-          : { title: record ? 'رکورد تازه!' : 'بازی تمام شد', detail: `امتیاز: ${toFaDigits(score)}`, action: 'دوباره' }
+          ? { ...intro, action: t('games.start') }
+          : {
+              title: t(record ? 'games.newRecord' : 'games.gameOver'),
+              detail: t('games.scoreDetail', { score: toLocalDigits(score) }),
+              action: t('games.playAgain'),
+            }
 
   const stats = [
-    { label: 'امتیاز', value: toFaDigits(score) },
-    { label: 'بهترین', value: best === null ? '—' : toFaDigits(best) },
+    { label: t('games.score'), value: toLocalDigits(score) },
+    { label: t('games.best'), value: best === null ? '—' : toLocalDigits(best) },
   ]
 
   return {

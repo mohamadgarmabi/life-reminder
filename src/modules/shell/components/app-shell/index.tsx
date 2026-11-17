@@ -3,7 +3,7 @@ import type { ReactNode } from 'react'
 import { useAppShell } from '#/modules/shell/hooks/app-shell.hook'
 
 const AppShell = ({ children }: { children: ReactNode }) => {
-  const { navItems, contentStyle, immersive, drop } = useAppShell()
+  const { navItems, navLabel, contentStyle, immersive, drop } = useAppShell()
 
   return (
     <>
@@ -22,7 +22,7 @@ const AppShell = ({ children }: { children: ReactNode }) => {
       )}
       {!immersive && (
         <nav
-          aria-label="منوی اصلی"
+          aria-label={navLabel}
           className="vt-tab-bar fixed inset-x-4 bottom-[max(1rem,env(safe-area-inset-bottom))] z-10 mx-auto grid max-w-sm grid-cols-6 rounded-full bg-card p-1 shadow-[var(--material-shadow)]"
         >
           {/* Water-drop indicator: slides to the active tab, stretching on the way and wobbling as it lands. */}

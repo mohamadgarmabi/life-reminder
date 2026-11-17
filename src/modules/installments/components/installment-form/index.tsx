@@ -1,3 +1,4 @@
+import { t } from '#/modules/shell/utils/i18n'
 import { Field, FieldDescription, FieldLegend, FieldSet } from '#/components/field'
 import { Button } from '#/components/button'
 import { TagInput } from '#/modules/shell/components/tag-input'
@@ -12,31 +13,41 @@ const InstallmentForm = ({ initial, onSubmit }: InstallmentFormProps) => {
 
   return (
     <form noValidate className="space-y-5" onSubmit={handleSubmit}>
-      <form.AppField name="title">{(f) => <f.TextField label="عنوان" placeholder="مثلاً وام مسکن" />}</form.AppField>
-      <form.AppField name="amount">{(f) => <f.NumberField label="مبلغ هر قسط" suffix="تومان" />}</form.AppField>
+      <form.AppField name="title">
+        {(f) => (
+          <f.TextField label={t('installments.form.title')} placeholder={t('installments.form.titlePlaceholder')} />
+        )}
+      </form.AppField>
+      <form.AppField name="amount">
+        {(f) => <f.NumberField label={t('installments.form.amount')} suffix={t('common.toman')} />}
+      </form.AppField>
       <div className="grid grid-cols-2 gap-4">
-        <form.AppField name="dueDay">{(f) => <f.SelectField label="روز سررسید" options={dayOptions} />}</form.AppField>
-        <form.AppField name="totalPayments">{(f) => <f.NumberField label="تعداد کل اقساط" />}</form.AppField>
+        <form.AppField name="dueDay">
+          {(f) => <f.SelectField label={t('installments.form.dueDay')} options={dayOptions} />}
+        </form.AppField>
+        <form.AppField name="totalPayments">
+          {(f) => <f.NumberField label={t('installments.form.totalPayments')} />}
+        </form.AppField>
       </div>
       <form.AppField name="startDate">
         {(f) => (
-          <f.DateField
-            label="تاریخ شروع"
-            description="اولین قسط، نخستین روز سررسید از این تاریخ به بعد است. در ماه‌های کوتاه‌تر، آخرین روز ماه در نظر گرفته می‌شود."
-          />
+          <f.DateField label={t('installments.form.startDate')} description={t('installments.form.startDateHint')} />
         )}
       </form.AppField>
       {isCreate && (
         <form.AppField name="paidPayments">
           {(f) => (
-            <f.NumberField label="اقساط پرداخت‌شده تا امروز" description="اگر قبلاً بخشی از اقساط را پرداخته‌اید." />
+            <f.NumberField
+              label={t('installments.form.paidPayments')}
+              description={t('installments.form.paidPaymentsHint')}
+            />
           )}
         </form.AppField>
       )}
       <form.Field name="reminderDaysBefore">
         {(field) => (
           <FieldSet>
-            <FieldLegend variant="label">زمان یادآوری</FieldLegend>
+            <FieldLegend variant="label">{t('installments.form.reminder')}</FieldLegend>
             <div className="flex flex-wrap gap-2">
               {getLeadOptions(field.state.value, field.handleChange).map((o) => (
                 <Button
@@ -52,7 +63,7 @@ const InstallmentForm = ({ initial, onSubmit }: InstallmentFormProps) => {
                 </Button>
               ))}
             </div>
-            <FieldDescription>اعلان در ساعت پیش‌فرض یادآوری (تنظیمات) نمایش داده می‌شود.</FieldDescription>
+            <FieldDescription>{t('installments.form.reminderHint')}</FieldDescription>
           </FieldSet>
         )}
       </form.Field>
@@ -62,14 +73,16 @@ const InstallmentForm = ({ initial, onSubmit }: InstallmentFormProps) => {
             value={field.state.value}
             onChange={field.handleChange}
             knownTags={knownTags}
-            placeholder="تگ جدید، مثلاً بانک ملت"
+            placeholder={t('installments.form.tagPlaceholder')}
           />
         )}
       </form.Field>
       <form.AppField name="isActive">
-        {(f) => <f.SwitchField label="فعال" description="اقساط غیرفعال یادآوری نمی‌شوند." />}
+        {(f) => <f.SwitchField label={t('installments.form.active')} description={t('installments.form.activeHint')} />}
       </form.AppField>
-      <form.AppField name="notes">{(f) => <f.TextareaField label="یادداشت" placeholder="اختیاری" />}</form.AppField>
+      <form.AppField name="notes">
+        {(f) => <f.TextareaField label={t('installments.form.notes')} placeholder={t('installments.form.optional')} />}
+      </form.AppField>
       <Field>
         <form.AppForm>
           <form.SubmitButton>{submitLabel}</form.SubmitButton>

@@ -1,20 +1,26 @@
+import { t } from '#/modules/shell/utils/i18n'
 import { revalidateLogic } from '@tanstack/react-form'
 import type { FormEvent } from 'react'
 import { useLiveQuery } from '#/modules/database/hooks/database.hook'
 import { installmentRepo } from '#/modules/installments/apis/installments.api'
 import { useAppForm } from '#/modules/shell/components/form-fields'
 import { todayIso } from '#/modules/shell/utils/dates'
-import { toFaDigits } from '#/modules/shell/utils/format'
+import { toLocalDigits } from '#/modules/shell/utils/format'
 import { installmentFormSchema } from '#/modules/installments/utils/installments.schema'
 import type { Installment, InstallmentFormProps, InstallmentFormValues } from '#/modules/installments/types'
 
-const DAY_OPTIONS = Array.from({ length: 31 }, (_, i) => ({ value: i + 1, label: `${toFaDigits(i + 1)}ام هر ماه` }))
 const LEAD_OPTIONS = [
-  { value: 0, label: 'روز سررسید' },
-  { value: 1, label: '۱ روز قبل' },
-  { value: 3, label: '۳ روز قبل' },
-  { value: 7, label: '۷ روز قبل' },
-]
+  { value: 0, label: 'installments.form.lead0' },
+  { value: 1, label: 'installments.form.lead1' },
+  { value: 3, label: 'installments.form.lead3' },
+  { value: 7, label: 'installments.form.lead7' },
+] as const
+
+const getDayOptions = () =>
+  Array.from({ length: 31 }, (_, i) => ({
+    value: i + 1,
+    label: t('installments.form.dueDayOption', { n: toLocalDigits(i + 1) }),
+  }))
 
 const toValues = (i: Installment): InstallmentFormValues => ({
   title: i.title,
@@ -34,7 +40,8 @@ const getLeadOptions = (selected: number[], onChange: (value: number[]) => void)
   LEAD_OPTIONS.map((o) => {
     const on = selected.includes(o.value)
     return {
-      ...o,
+      value: o.value,
+      label: t(o.label),
       pressed: on,
       variant: on ? ('default' as const) : ('outline' as const),
       onToggle: () => onChange(on ? selected.filter((v) => v !== o.value) : [...selected, o.value]),
@@ -72,11 +79,11 @@ const useInstallmentForm = ({ initial, onSubmit }: InstallmentFormProps) => {
 
   return {
     form,
-    dayOptions: DAY_OPTIONS,
+    dayOptions: getDayOptions(),
     getLeadOptions,
     knownTags,
     isCreate: !initial,
-    submitLabel: initial ? 'ذخیرهٔ تغییرات' : 'افزودن قسط',
+    submitLabel: t(initial ? 'installments.saveChanges' : 'installments.add'),
     handleSubmit,
   }
 }

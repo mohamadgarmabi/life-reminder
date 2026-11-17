@@ -1,4 +1,5 @@
 import { useGoogleAccount } from '#/modules/account/hooks/google-account.hook'
+import { t } from '#/modules/shell/utils/i18n'
 
 const useAccountCard = () => {
   const { isAvailable, isSignedIn, isWaiting, account, error, signIn, signOut, cancelSignIn } = useGoogleAccount()
@@ -7,12 +8,12 @@ const useAccountCard = () => {
     isSignedIn,
     isWaiting,
     picture: account?.picture || null,
-    title: isSignedIn ? account?.name || 'حساب گوگل' : 'ورود با گوگل',
+    title: isSignedIn ? account?.name || t('account.googleAccount') : t('account.signInWithGoogle'),
     description: isSignedIn
-      ? account?.email || 'وارد شده‌اید'
+      ? account?.email || t('account.signedIn')
       : isWaiting
-        ? 'در انتظار ورود به حساب گوگل…'
-        : (error?.message ?? 'برای نمایش تقویم گوگل در یادآورها؛ بدون حساب هم کار می‌کند.'),
+        ? t('account.waiting')
+        : (error?.message ?? t('account.hint')),
     handleSignIn: signIn,
     handleSignOut: signOut,
     handleCancel: cancelSignIn,

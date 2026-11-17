@@ -1,4 +1,5 @@
 import type { LucideIcon } from 'lucide-react'
+import type { MessageKey } from '#/modules/shell/utils/i18n'
 
 type DbStatus =
   { state: 'opening' } | { state: 'ready'; persisted: boolean | null } | { state: 'error'; message: string }
@@ -13,7 +14,7 @@ type IsoDate = string
 
 interface NavItem {
   to: '/' | '/installments' | '/plans' | '/plants' | '/reminders' | '/settings'
-  label: string
+  label: MessageKey
   icon: LucideIcon
 }
 

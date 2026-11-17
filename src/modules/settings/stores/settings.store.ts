@@ -4,6 +4,8 @@ import type { Settings } from '#/modules/settings/types'
 
 const settingsSchema = z.object({
   theme: z.enum(['system', 'light', 'dark']),
+  /** UI language; also sets the document direction (fa = rtl, en = ltr). */
+  language: z.enum(['fa', 'en']),
   notificationsEnabled: z.boolean(),
   defaultReminderTime: z.string().regex(/^\d{2}:\d{2}$/),
   /** Animated page changes (View Transitions); read by the router on every navigation. */
@@ -38,6 +40,7 @@ const SETTINGS_KEY = 'life-reminder:settings'
 
 const DEFAULT_SETTINGS: Settings = {
   theme: 'system',
+  language: 'fa',
   notificationsEnabled: true,
   defaultReminderTime: '09:00',
   pageTransitions: true,

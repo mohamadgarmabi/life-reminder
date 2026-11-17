@@ -4,14 +4,14 @@ import { SettingsRow } from '#/modules/settings/components/settings-row'
 import { useThemeCard } from '#/modules/settings/hooks/theme-card.hook'
 
 const ThemeCard = () => {
-  const { ariaLabel, sunClassName, moonClassName, handleToggle } = useThemeCard()
+  const { t, ariaLabel, sunClassName, moonClassName, handleToggle } = useThemeCard()
 
   return (
     <SettingsRow
       icon={Palette}
       tone="bg-indigo-500"
-      title="پوسته"
-      description="روشن یا تیره"
+      title={t('settings.theme')}
+      description={t('settings.themeHint')}
       trailing={
         <Button variant="secondary" size="icon" onClick={handleToggle} aria-label={ariaLabel}>
           <Sun className={sunClassName} aria-hidden />

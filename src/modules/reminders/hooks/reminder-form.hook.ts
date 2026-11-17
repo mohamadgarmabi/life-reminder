@@ -5,8 +5,9 @@ import { useAppForm } from '#/modules/shell/components/form-fields'
 import { toIsoDate, todayIso } from '#/modules/shell/utils/dates'
 import { settingsStore } from '#/modules/settings/stores/settings.store'
 import { reminderFormSchema } from '#/modules/reminders/utils/reminders.schema'
-import { RECURRENCE_OPTIONS } from '#/modules/reminders/utils/reminders.constants'
-import type { ReminderFormProps, ReminderFormValues } from '#/modules/reminders/types'
+import { t } from '#/modules/shell/utils/i18n'
+import { RECURRENCE_LABEL } from '#/modules/reminders/utils/reminders.constants'
+import type { Recurrence, ReminderFormProps, ReminderFormValues } from '#/modules/reminders/types'
 
 const pad = (n: number) => String(n).padStart(2, '0')
 
@@ -35,8 +36,11 @@ const useReminderForm = ({ initial, onSubmit }: ReminderFormProps) => {
     form,
     handleSubmit,
     isEdit: !!initial,
-    recurrenceOptions: RECURRENCE_OPTIONS,
-    submitLabel: initial ? 'ذخیرهٔ تغییرات' : 'افزودن یادآور',
+    recurrenceOptions: (Object.keys(RECURRENCE_LABEL) as Recurrence[]).map((value) => ({
+      value,
+      label: t(RECURRENCE_LABEL[value]),
+    })),
+    submitLabel: t(initial ? 'reminders.form.save' : 'reminders.form.add'),
   }
 }
 

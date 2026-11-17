@@ -7,6 +7,7 @@ import { ActionSheet } from '#/modules/shell/components/action-sheet'
 import { cn } from '#/modules/shell/utils/cn'
 import { usePlanCard } from '#/modules/plans/hooks/plan-card.hook'
 import type { PlanCardProps } from '#/modules/plans/types'
+import { t } from '#/modules/shell/utils/i18n'
 
 const ICONS = { done: Check, skip: Redo2, reset: Undo2, delete: Trash2 } as const
 
@@ -44,7 +45,7 @@ const PlanCard = ({ plan, onEdit, onTutor }: PlanCardProps) => {
                 </h3>
                 <Badge variant={statusVariant}>{statusLabel}</Badge>
               </div>
-              <p className="mt-0.5 text-xs text-muted-foreground">سال {yearLabel}</p>
+              <p className="mt-0.5 text-xs text-muted-foreground">{yearLabel}</p>
             </div>
             <ActionSheet
               title={plan.title}
@@ -56,10 +57,8 @@ const PlanCard = ({ plan, onEdit, onTutor }: PlanCardProps) => {
               groups={[
                 {
                   items: [
-                    { label: 'ویرایش', icon: <Pencil />, onSelect: onEdit },
-                    ...(onTutor
-                      ? [{ label: 'یادگیری با هوش مصنوعی', icon: <GraduationCap />, onSelect: onTutor }]
-                      : []),
+                    { label: t('plans.editAction'), icon: <Pencil />, onSelect: onEdit },
+                    ...(onTutor ? [{ label: t('plans.learnWithAi'), icon: <GraduationCap />, onSelect: onTutor }] : []),
                     ...statusActions.map((a) => {
                       const Icon = ICONS[a.id]
                       return { label: a.label, icon: <Icon />, onSelect: a.onSelect }

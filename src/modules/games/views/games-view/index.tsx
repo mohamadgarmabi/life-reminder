@@ -7,22 +7,24 @@ import { GAMES, GAME_CATEGORIES } from '#/modules/games/utils/catalog'
 import { PageHeader } from '#/modules/shell/components/states'
 import { Button } from '#/components/button'
 import { Input } from '#/components/input'
+import { t } from '#/modules/shell/utils/i18n'
 
 const GamesView = () => {
   const [query, setQuery] = useState('')
   const [category, setCategory] = useState<GameCategory | 'all'>('all')
   const q = query.trim()
   const games = GAMES.filter(
-    (g) => (category === 'all' || g.category === category) && (!q || g.title.includes(q) || g.description.includes(q)),
+    (g) =>
+      (category === 'all' || g.category === category) && (!q || t(g.title).includes(q) || t(g.description).includes(q)),
   )
 
   return (
     <>
       <PageHeader
-        title="بازی‌ها"
+        title={t('games.title')}
         leading={
           <Button variant="outline" size="icon" asChild>
-            <Link to="/settings" aria-label="بازگشت به تنظیمات">
+            <Link to="/settings" aria-label={t('games.backToSettings')}>
               <ChevronRight />
             </Link>
           </Button>
@@ -37,12 +39,12 @@ const GamesView = () => {
             type="search"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="جست‌وجوی بازی"
-            aria-label="جست‌وجوی بازی"
+            placeholder={t('games.search')}
+            aria-label={t('games.search')}
             className="ps-9"
           />
         </div>
-        <div className="mt-3 flex gap-2 overflow-x-auto" role="group" aria-label="دسته‌بندی">
+        <div className="mt-3 flex gap-2 overflow-x-auto" role="group" aria-label={t('games.categories')}>
           {GAME_CATEGORIES.map((c) => (
             <Button
               key={c.value}
@@ -51,7 +53,7 @@ const GamesView = () => {
               aria-pressed={category === c.value}
               onClick={() => setCategory(c.value)}
             >
-              {c.label}
+              {t(c.label)}
             </Button>
           ))}
         </div>
@@ -63,7 +65,7 @@ const GamesView = () => {
           ))}
         </div>
       ) : (
-        <p className="py-10 text-center text-sm text-muted-foreground">بازی‌ای پیدا نشد.</p>
+        <p className="py-10 text-center text-sm text-muted-foreground">{t('games.empty')}</p>
       )}
     </>
   )

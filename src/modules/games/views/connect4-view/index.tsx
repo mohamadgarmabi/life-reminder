@@ -15,13 +15,14 @@ import {
 import { loadGameData, saveGameData } from '#/modules/games/utils/game-db'
 import { sfx } from '#/modules/games/utils/sfx'
 import { cn } from '#/modules/shell/utils/cn'
-import { toFaDigits } from '#/modules/shell/utils/format'
+import { toLocalDigits } from '#/modules/shell/utils/format'
 import { Button } from '#/components/button'
+import { t } from '#/modules/shell/utils/i18n'
 
 const LEVELS = {
-  easy: { label: 'آسان', depth: 2 },
-  medium: { label: 'متوسط', depth: 4 },
-  hard: { label: 'سخت', depth: 7 },
+  easy: { label: 'games.easy' as const, depth: 2 },
+  medium: { label: 'games.medium' as const, depth: 4 },
+  hard: { label: 'games.hard' as const, depth: 7 },
 }
 type Level = keyof typeof LEVELS
 
@@ -94,11 +95,11 @@ const Connect4View = () => {
 
   return (
     <GameShell
-      title="چهار در یک ردیف"
+      title={t('games.connect4.title')}
       stats={[
-        { label: 'برد', value: toFaDigits(record.win) },
-        { label: 'باخت', value: toFaDigits(record.loss) },
-        { label: 'مساوی', value: toFaDigits(record.draw) },
+        { label: t('games.connect4.wins'), value: toLocalDigits(record.win) },
+        { label: t('games.connect4.losses'), value: toLocalDigits(record.loss) },
+        { label: t('games.connect4.draws'), value: toLocalDigits(record.draw) },
       ]}
       before={
         <div className="flex items-center gap-2">
@@ -110,25 +111,27 @@ const Connect4View = () => {
               aria-pressed={level === l}
               onClick={() => restart(l)}
             >
-              {LEVELS[l].label}
+              {t(LEVELS[l].label)}
             </Button>
           ))}
           <span className="ms-auto text-sm text-muted-foreground" role="status">
-            {result === 1
-              ? 'بردی! 🎉'
-              : result === 2
-                ? 'رایانه برد'
-                : result === 3
-                  ? 'مساوی'
-                  : thinking
-                    ? 'رایانه فکر می‌کند…'
-                    : 'نوبت توست'}
+            {t(
+              result === 1
+                ? 'games.connect4.youWon'
+                : result === 2
+                  ? 'games.connect4.cpuWon'
+                  : result === 3
+                    ? 'games.connect4.draw'
+                    : thinking
+                      ? 'games.connect4.thinking'
+                      : 'games.connect4.yourTurn',
+            )}
           </span>
         </div>
       }
       after={
         <Button variant="outline" onClick={() => restart()}>
-          <RotateCcw /> بازی تازه
+          <RotateCcw /> {t('games.newGame')}
         </Button>
       }
     >
@@ -136,13 +139,13 @@ const Connect4View = () => {
         dir="ltr"
         className="grid w-[min(100cqw,calc(100cqh*1.1))] grid-cols-7 gap-1 rounded-3xl bg-blue-600 p-2"
         role="group"
-        aria-label="صفحهٔ بازی"
+        aria-label={t('games.gameBoard')}
       >
         {Array.from({ length: C4_COLS }, (_, col) => (
           <button
             key={col}
             type="button"
-            aria-label={`ستون ${toFaDigits(col + 1)}`}
+            aria-label={t('games.connect4.column', { n: toLocalDigits(col + 1) })}
             disabled={thinking || !!result || landingRow(board, col) < 0}
             className="flex flex-col gap-1 rounded-lg outline-none hover:bg-white/10 focus-visible:ring-2 focus-visible:ring-white disabled:cursor-default"
             onClick={() => play(col)}

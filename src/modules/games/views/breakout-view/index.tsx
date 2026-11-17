@@ -4,7 +4,8 @@ import { useArcade } from '#/modules/games/hooks/arcade.hook'
 import { useCanvasGame, useKeys } from '#/modules/games/hooks/canvas-game.hook'
 import { sfx } from '#/modules/games/utils/sfx'
 import { hashSeed, mulberry32 } from '#/modules/games/utils/sudoku'
-import { toFaDigits } from '#/modules/shell/utils/format'
+import { toLocalDigits } from '#/modules/shell/utils/format'
+import { t } from '#/modules/shell/utils/i18n'
 
 const W = 360
 const H = 540
@@ -51,8 +52,8 @@ const speedFor = (level: number) => Math.min(290 + level * 25, 500)
 
 const BreakoutView = () => {
   const arcade = useArcade('breakout', {
-    title: 'آجرشکن',
-    detail: 'پارو را با انگشت یا کلیدهای جهت حرکت بده؛ لمس یا فاصله توپ را پرتاب می‌کند.',
+    title: t('games.breakout.title'),
+    detail: t('games.breakout.intro'),
   })
   const game = useRef(newGame())
   const held = useRef({ left: false, right: false })
@@ -187,7 +188,7 @@ const BreakoutView = () => {
     ctx.fillStyle = pal.muted
     ctx.font = '600 13px Vazirmatn Variable, system-ui'
     ctx.textAlign = 'right'
-    ctx.fillText(`مرحله ${toFaDigits(g.level)}`, W - 12, 32)
+    ctx.fillText(t('games.breakout.level', { level: toLocalDigits(g.level) }), W - 12, 32)
     ctx.fillStyle = '#ef4444'
     for (let i = 0; i < g.lives; i++) {
       ctx.beginPath()
@@ -215,7 +216,7 @@ const BreakoutView = () => {
 
   return (
     <GameShell
-      title="آجرشکن"
+      title={t('games.breakout.title')}
       stats={arcade.stats}
       overlay={arcade.overlay}
       onRestart={start}
@@ -226,7 +227,7 @@ const BreakoutView = () => {
         ref={canvasRef}
         width={W}
         height={H}
-        label="صفحهٔ آجرشکن"
+        label={t('games.boardLabel', { name: t('games.breakout.title') })}
         onPointerDown={(e) => {
           follow(e)
           launch()

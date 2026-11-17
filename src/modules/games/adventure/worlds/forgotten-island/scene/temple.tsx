@@ -7,10 +7,11 @@ import { Interactable } from '#/modules/games/adventure/components/interactable'
 import { ObjectiveZone } from '#/modules/games/adventure/components/zones'
 import { useCompleted, usePuzzle, useTier } from '#/modules/games/adventure/hooks/world.hook'
 import { useEngine, useGame, patchGame } from '#/modules/games/adventure/stores/session.store'
-import { toFaDigits } from '#/modules/shell/utils/format'
+import { toLocalDigits } from '#/modules/shell/utils/format'
 import { site } from '#/modules/games/adventure/worlds/forgotten-island/layout'
 import { ARTIFACTS } from '#/modules/games/adventure/worlds/forgotten-island/puzzles'
 import { darkStone, ember, feather, gold, mossStone, shell, stone } from './materials'
+import { t } from '#/modules/shell/utils/i18n'
 
 const SLOT_MATERIAL = [gold, shell, feather]
 
@@ -27,11 +28,17 @@ const Temple = () => {
   const place = () => {
     const next = dispatch('place')
     if (next.slots.every(Boolean)) {
-      patchGame(store, { notice: 'زمین لرزید… دروازهٔ قله باز شد' })
+      patchGame(store, { notice: t('adventure.island.summitOpen') })
       return
     }
-    const missing = ARTIFACTS.filter((_, i) => !next.slots[i]).map((a) => world.items[a].name)
-    patchGame(store, { notice: `${toFaDigits(3 - missing.length)} از ۳ — ${missing.join('، ')} کم است` })
+    const missing = ARTIFACTS.filter((_, i) => !next.slots[i]).map((a) => t(world.items[a].name))
+    patchGame(store, {
+      notice: t('adventure.island.altarMissing', {
+        placed: toLocalDigits(3 - missing.length),
+        total: toLocalDigits(3),
+        missing: missing.join(t('adventure.island.listSeparator')),
+      }),
+    })
   }
   const [x, y, z] = site('temple')
   return (
@@ -63,7 +70,7 @@ const Temple = () => {
       </RigidBody>
       <Interactable
         id="altar"
-        label={holding ? 'گذاشتن یادگارها' : 'محراب'}
+        label={t(holding ? 'adventure.island.placeArtifacts' : 'adventure.island.altar')}
         enabled={!solved}
         onUse={place}
         position={[0, 0.4, 0]}

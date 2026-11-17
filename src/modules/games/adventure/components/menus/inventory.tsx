@@ -3,6 +3,7 @@ import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle } f
 import { Button } from '#/components/button'
 import { useEngine, useGame, patchGame } from '#/modules/games/adventure/stores/session.store'
 import { resume } from '#/modules/games/adventure/stores/engine.actions'
+import { t } from '#/modules/shell/utils/i18n'
 
 /** Items in the order found; journal pages open in the reader. */
 const InventoryDrawer = ({ open, onOpenChange }: { open: boolean; onOpenChange: (v: boolean) => void }) => {
@@ -21,9 +22,13 @@ const InventoryDrawer = ({ open, onOpenChange }: { open: boolean; onOpenChange: 
     >
       <DrawerContent>
         <DrawerHeader>
-          <DrawerTitle>{page ? page.name : 'کوله‌پشتی'}</DrawerTitle>
+          <DrawerTitle>{page ? t(page.name) : t('adventure.backpack')}</DrawerTitle>
           <DrawerDescription>
-            {page ? page.description : inventory.length ? 'یادگارها و برگ‌های دفترچه' : 'هنوز چیزی پیدا نکرده‌ای.'}
+            {page
+              ? t(page.description)
+              : inventory.length
+                ? t('adventure.inventory.subtitle')
+                : t('adventure.inventory.empty')}
           </DrawerDescription>
         </DrawerHeader>
         <div
@@ -33,10 +38,10 @@ const InventoryDrawer = ({ open, onOpenChange }: { open: boolean; onOpenChange: 
           {page ? (
             <div className="flex flex-col gap-4">
               <p className="rounded-2xl bg-amber-100/80 p-4 text-start leading-8 text-amber-950 dark:bg-amber-200/15 dark:text-amber-50">
-                {page.text}
+                {page.text && t(page.text)}
               </p>
               <Button variant="secondary" onClick={() => setReading(null)}>
-                بازگشت به کوله‌پشتی
+                {t('adventure.inventory.backTo')}
               </Button>
             </div>
           ) : (
@@ -56,9 +61,9 @@ const InventoryDrawer = ({ open, onOpenChange }: { open: boolean; onOpenChange: 
                         {item.icon}
                       </span>
                       <span className="flex min-w-0 flex-col">
-                        <span className="font-bold">{item.name}</span>
+                        <span className="font-bold">{t(item.name)}</span>
                         <span className="text-sm text-muted-foreground">
-                          {journal ? 'برای خواندن لمس کن' : item.description}
+                          {journal ? t('adventure.inventory.tapToRead') : t(item.description)}
                         </span>
                       </span>
                     </button>
@@ -86,18 +91,18 @@ const JournalReader = () => {
     <Drawer open={!!page} onOpenChange={(v) => !v && close()}>
       <DrawerContent>
         <DrawerHeader>
-          <DrawerTitle>{page?.name}</DrawerTitle>
-          <DrawerDescription>{page?.description}</DrawerDescription>
+          <DrawerTitle>{page && t(page.name)}</DrawerTitle>
+          <DrawerDescription>{page && t(page.description)}</DrawerDescription>
         </DrawerHeader>
         <div
           data-vaul-no-drag
           className="flex max-h-[60vh] flex-col gap-4 overflow-y-auto px-4 pb-[calc(env(safe-area-inset-bottom)+1rem)]"
         >
           <p className="rounded-2xl bg-amber-100/80 p-4 text-start leading-8 text-amber-950 dark:bg-amber-200/15 dark:text-amber-50">
-            {page?.text}
+            {page?.text && t(page.text)}
           </p>
           <Button size="lg" onClick={close}>
-            ادامه
+            {t('adventure.continue')}
           </Button>
         </div>
       </DrawerContent>

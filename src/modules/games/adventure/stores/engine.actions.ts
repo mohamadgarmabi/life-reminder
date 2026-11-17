@@ -4,8 +4,7 @@ import type { AdventureSettings, SaveGame, Vec3 } from '#/modules/games/adventur
 import { createSession, toSave } from '#/modules/games/adventure/utils/session'
 import { writeSave, writeSettings } from '#/modules/games/adventure/utils/save'
 import { resumeAudio, setVolumes, suspendAudio, unlockAudio } from '#/modules/games/adventure/utils/audio'
-
-const STORAGE_NOTICE = 'پیشرفت روی این دستگاه ذخیره نمی‌شود'
+import { t } from '#/modules/shell/utils/i18n'
 
 let writing: Promise<void> | null = null
 let queued = false
@@ -24,7 +23,7 @@ const saveNow = (engine: Engine): Promise<void> => {
     .then((ok) => {
       if (!ok && !warned) {
         warned = true
-        patchGame(store, { notice: STORAGE_NOTICE })
+        patchGame(store, { notice: t('adventure.storageNotice') })
       }
     })
     .finally(() => {

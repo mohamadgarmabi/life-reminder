@@ -1,15 +1,17 @@
 import { CircleCheckIcon, InfoIcon, Loader2Icon, OctagonXIcon, TriangleAlertIcon } from 'lucide-react'
 import { Toaster as Sonner, type ToasterProps } from 'sonner'
+import { useDirection } from '#/components/direction'
 import { useToaster } from './sonner.hook'
 import { toasterVariants, toastIconVariants, toastStyle, toasterStyle } from './sonner.styles'
 
 const Toaster = ({ ...props }: ToasterProps) => {
   const { theme } = useToaster()
+  const dir = useDirection()
 
   return (
     <Sonner
       theme={theme}
-      dir="rtl"
+      dir={dir}
       position="top-center"
       className={toasterVariants()}
       toastOptions={{ style: toastStyle }}

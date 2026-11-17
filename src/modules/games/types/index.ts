@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import type { MessageKey } from '#/modules/shell/utils/i18n'
 
 type SudokuDifficulty = 'easy' | 'medium' | 'hard'
 
@@ -63,8 +64,8 @@ type GameCategory = 'arcade' | '3d' | 'puzzle' | 'board'
 
 type GameEntry = {
   id: string
-  title: string
-  description: string
+  title: MessageKey
+  description: MessageKey
   category: GameCategory
   /** Emoji badge; tint is a Tailwind background class. */
   emoji: string

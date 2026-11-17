@@ -7,6 +7,7 @@ import { SwipeHint } from '#/modules/shell/components/swipe-hint'
 import { ReminderForm } from '#/modules/reminders/components/reminder-form'
 import { ReminderHistory } from '#/modules/reminders/components/reminder-history'
 import { TimelineCard } from '#/modules/reminders/components/timeline-card'
+import { t } from '#/modules/shell/utils/i18n'
 import { useReminders } from '#/modules/reminders/hooks/reminders.hook'
 
 const RemindersView = () => {
@@ -48,19 +49,19 @@ const RemindersView = () => {
   return (
     <>
       <PageHeader
-        title="یادآورها"
+        title={t('reminders.title')}
         action={
           <div className="flex items-center gap-2">
             {canSync && !isConnected && (
-              <Button variant="secondary" size="icon" aria-label="اتصال به تقویم گوگل" onClick={handleConnect}>
+              <Button variant="secondary" size="icon" aria-label={t('reminders.connectGoogle')} onClick={handleConnect}>
                 <CalendarSync />
               </Button>
             )}
             {canSync && isConnected && (
               <ActionSheet
-                title="تقویم گوگل"
+                title={t('reminders.googleCalendar')}
                 trigger={
-                  <Button variant="secondary" size="icon" aria-label="تقویم گوگل">
+                  <Button variant="secondary" size="icon" aria-label={t('reminders.googleCalendar')}>
                     <CalendarCheck />
                   </Button>
                 }
@@ -68,33 +69,33 @@ const RemindersView = () => {
               />
             )}
             <Button onClick={handleOpenCreate}>
-              <Plus /> یادآور جدید
+              <Plus /> {t('reminders.new')}
             </Button>
           </div>
         }
       />
 
-      <section aria-label="تقویم" className="space-y-3">
+      <section aria-label={t('reminders.calendar')} className="space-y-3">
         <div className="flex items-center justify-between">
-          <Button variant="ghost" size="icon" aria-label="ماه قبل" onClick={handlePrevMonth}>
-            <ChevronRight />
+          <Button variant="ghost" size="icon" aria-label={t('reminders.prevMonth')} onClick={handlePrevMonth}>
+            <ChevronRight className="ltr:rotate-180" />
           </Button>
           <div className="text-center">
             <h2 className="text-lg font-bold">{monthLabel}</h2>
             {!isTodaySelected && (
               <button type="button" className="text-xs font-medium text-primary" onClick={handleToday}>
-                برو به امروز
+                {t('reminders.goToday')}
               </button>
             )}
           </div>
-          <Button variant="ghost" size="icon" aria-label="ماه بعد" onClick={handleNextMonth}>
-            <ChevronLeft />
+          <Button variant="ghost" size="icon" aria-label={t('reminders.nextMonth')} onClick={handleNextMonth}>
+            <ChevronLeft className="ltr:rotate-180" />
           </Button>
         </div>
 
         <div
           role="listbox"
-          aria-label="روزهای ماه"
+          aria-label={t('reminders.monthDays')}
           className="-mx-4 flex snap-x gap-2 overflow-x-auto px-4 pb-1 [scrollbar-width:none]"
         >
           {days.map((d) => (
@@ -121,11 +122,11 @@ const RemindersView = () => {
             </p>
             {isWaitingForSignIn && (
               <Button variant="ghost" size="sm" onClick={handleDisconnect}>
-                لغو
+                {t('reminders.cancel')}
               </Button>
             )}
             {!isWaitingForSignIn && (
-              <Button variant="ghost" size="icon-sm" aria-label="همگام‌سازی دوباره" onClick={handleRefresh}>
+              <Button variant="ghost" size="icon-sm" aria-label={t('reminders.resync')} onClick={handleRefresh}>
                 <RefreshCw />
               </Button>
             )}
@@ -139,7 +140,7 @@ const RemindersView = () => {
         {isLoading && <ListSkeleton />}
         {error && <ErrorState error={error} />}
         {!isLoading && !hasRows && (
-          <p className="py-10 text-center text-sm text-muted-foreground">برای این روز چیزی ثبت نشده.</p>
+          <p className="py-10 text-center text-sm text-muted-foreground">{t('reminders.emptyDay')}</p>
         )}
         <ol className="relative space-y-3 before:absolute before:inset-y-2 before:start-[3.25rem] before:border-s before:border-dashed before:border-border">
           {rows.map((row) => (
@@ -159,7 +160,7 @@ const RemindersView = () => {
       <FormDialog
         open={isHistory}
         onOpenChange={handleOpenChange}
-        title="سابقهٔ یادآور"
+        title={t('reminders.history')}
         description={historyDescription}
       >
         {isHistory && <ReminderHistory reminderId={historyReminderId} />}

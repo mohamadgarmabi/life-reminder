@@ -1,7 +1,7 @@
-import { addDays } from 'date-fns'
-import { addMonths, endOfMonth, format, startOfMonth } from 'date-fns-jalali'
-import { faIR } from 'date-fns-jalali/locale/fa-IR'
-import { toFaDigits } from '#/modules/shell/utils/format'
+import * as gregorian from 'date-fns'
+import * as jalali from 'date-fns-jalali'
+import { formatLocal } from '#/modules/shell/utils/format'
+import { getLanguage } from '#/modules/shell/utils/i18n'
 import { parseIsoDate, toIsoDate } from '#/modules/shell/utils/dates'
 import type { IsoDate } from '#/modules/shell/types'
 import type { CalendarEvent, Reminder } from '#/modules/reminders/types'
@@ -12,28 +12,29 @@ type TimelineEntry =
   | { kind: 'reminder'; key: string; at: Date; allDay: false; reminder: Reminder; occurrence: Occurrence }
   | { kind: 'google'; key: string; at: Date; allDay: boolean; event: CalendarEvent }
 
-/** Jalali month around `day`: [start, end) as Dates plus every day in it. */
+const { addDays } = gregorian
+
+/** Month grid follows the display calendar: Jalali in Persian, Gregorian in English. */
+const cal = () => (getLanguage() === 'fa' ? jalali : gregorian)
+
+/** Month around `day`: [start, end) as Dates plus every day in it. */
 const monthOf = (day: IsoDate) => {
+  const { startOfMonth, endOfMonth } = cal()
   const start = startOfMonth(parseIsoDate(day))
   const end = addDays(endOfMonth(start), 1)
   const days: IsoDate[] = []
   for (let d = start; d < end; d = addDays(d, 1)) days.push(toIsoDate(d))
-  return { start, end, days, label: toFaDigits(format(start, 'MMMM yyyy', { locale: faIR })) }
+  return { start, end, days, label: formatLocal(start, 'MMMM yyyy') }
 }
 
 /** First day of the month `delta` months away, or today when that month contains it. */
 const shiftMonth = (day: IsoDate, delta: number, today: IsoDate): IsoDate => {
+  const { addMonths, startOfMonth } = cal()
   const first = toIsoDate(addMonths(startOfMonth(parseIsoDate(day)), delta))
   return monthOf(first).days.includes(today) ? today : first
 }
 
-const dayLabels = (day: IsoDate) => {
-  const d = parseIsoDate(day)
-  return {
-    number: toFaDigits(format(d, 'd', { locale: faIR })),
-    weekday: format(d, 'EEEEEE', { locale: faIR }),
-  }
-}
+const dayLabels = (day: IsoDate) => ({ number: formatLocal(day, 'd'), weekday: formatLocal(day, 'EEEEEE') })
 
 /** Local reminder occurrences and Google events in [start, end), grouped by day; all-day first, then by time. */
 const timelineByDay = (reminders: Reminder[], events: CalendarEvent[], start: Date, end: Date) => {

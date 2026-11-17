@@ -13,14 +13,22 @@ const lever: PuzzleDef<{ pulled: boolean }, 'pull'> = {
 
 const TEST_ROOM_DATA: Omit<AdventureWorld, 'Scene'> = {
   id: 'test-room',
-  title: 'اتاق آزمایش',
-  description: 'کلید را بردار، اهرم را بکش و از در خارج شو.',
-  items: { key: { id: 'key', kind: 'tool', name: 'کلید', description: 'کلیدی زنگ‌زده.', icon: '🗝️' } },
+  title: 'adventure.testRoom.title',
+  description: 'adventure.testRoom.description',
+  items: {
+    key: {
+      id: 'key',
+      kind: 'tool',
+      name: 'adventure.testRoom.key.name',
+      description: 'adventure.testRoom.key.description',
+      icon: '🗝️',
+    },
+  },
   puzzles: { lever },
   checkpoints: { start: { id: 'start', position: [0, 1.2, 6], yaw: 0 } },
   secrets: {},
   objective: { requires: ['lever'], trigger: 'reach' },
-  hints: { start: 'کلید روی میز است؛ با آن اهرم را بکش.' },
+  hints: { start: 'adventure.testRoom.hint.start' },
   killY: -10,
 }
 

@@ -1,5 +1,6 @@
 import type { ComponentType } from 'react'
 import type { z } from 'zod'
+import type { MessageKey } from '#/modules/shell/utils/i18n'
 
 type Vec3 = [number, number, number]
 
@@ -8,12 +9,12 @@ type ItemKind = 'artifact' | 'journal' | 'tool'
 type ItemDef = {
   id: string
   kind: ItemKind
-  name: string
-  description: string
+  name: MessageKey
+  description: MessageKey
   /** Emoji shown in the inventory (worlds are procedural, no image files). */
   icon: string
   /** Required when kind = journal. */
-  text?: string
+  text?: MessageKey
 }
 
 type PuzzleContext = { has: (itemId: string) => boolean }
@@ -38,8 +39,8 @@ type ObjectiveDef = { requires: string[]; trigger: 'reach' }
 type AdventureWorld = {
   /** Unique and URL-safe; used in the route and the save key. */
   id: string
-  title: string
-  description: string
+  title: MessageKey
+  description: MessageKey
   items: Record<string, ItemDef>
   // Each puzzle has its own state/action types; the engine only passes them through.
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -48,8 +49,8 @@ type AdventureWorld = {
   checkpoints: Record<string, Checkpoint>
   secrets: Record<string, SecretDef>
   objective: ObjectiveDef
-  /** Persian hint per area id. */
-  hints: Record<string, string>
+  /** Hint per area id. */
+  hints: Record<string, MessageKey>
   /** Below this height the player respawns at the nearest checkpoint (deep water, falls). */
   killY: number
   Scene: ComponentType

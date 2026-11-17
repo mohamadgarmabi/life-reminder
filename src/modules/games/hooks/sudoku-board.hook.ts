@@ -1,7 +1,8 @@
 import type { SudokuBoardProps } from '#/modules/games/types'
 import { isPeer } from '#/modules/games/utils/sudoku'
 import { cn } from '#/modules/shell/utils/cn'
-import { toFaDigits } from '#/modules/shell/utils/format'
+import { toLocalDigits } from '#/modules/shell/utils/format'
+import { t } from '#/modules/shell/utils/i18n'
 
 const useSudokuBoard = ({ board, givens, solution, selected }: SudokuBoardProps) => {
   const selectedDigit = selected === null ? 0 : board[selected]
@@ -13,8 +14,12 @@ const useSudokuBoard = ({ board, givens, solution, selected }: SudokuBoardProps)
     const wrong = !given && value !== 0 && value !== solution[i]
     return {
       index: i,
-      label: value ? toFaDigits(value) : '',
-      ariaLabel: `سطر ${toFaDigits(r + 1)}، ستون ${toFaDigits(c + 1)}${value ? `: ${toFaDigits(value)}` : ''}`,
+      label: value ? toLocalDigits(value) : '',
+      ariaLabel: t(value ? 'games.sudoku.cellValue' : 'games.sudoku.cell', {
+        row: toLocalDigits(r + 1),
+        col: toLocalDigits(c + 1),
+        value: toLocalDigits(value),
+      }),
       className: cn(
         'flex aspect-square items-center justify-center border-foreground/10 text-[clamp(0.8rem,4cqw,1.5rem)] transition-colors outline-none',
         c < 8 && 'border-e',

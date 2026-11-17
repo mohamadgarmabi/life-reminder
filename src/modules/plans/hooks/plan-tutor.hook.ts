@@ -3,12 +3,13 @@ import { useId, useState } from 'react'
 import { askAiText } from '#/modules/shell/apis/ai.api'
 import type { ChatMessage } from '#/modules/shell/apis/ai.api'
 import { cn } from '#/modules/shell/utils/cn'
+import { t } from '#/modules/shell/utils/i18n'
 import type { Plan } from '#/modules/plans/types'
 
 /** The worker accepts 40; older turns are dropped so long lessons keep working. */
 const HISTORY_LIMIT = 20
 
-const STARTERS = ['از کجا شروع کنم؟', 'یک برنامهٔ قدم‌به‌قدم بده', 'یک تمرین کوچک بده']
+const STARTERS = ['plans.tutorStarterBegin', 'plans.tutorStarterPlan', 'plans.tutorStarterExercise'] as const
 
 const usePlanTutor = (plan: Plan) => {
   const inputId = useId()
@@ -29,7 +30,7 @@ const usePlanTutor = (plan: Plan) => {
       const reply = await askAiText({ mode: 'tutor', topic, messages: next.slice(-HISTORY_LIMIT) })
       setMessages((m) => [...m, { role: 'assistant', content: reply }])
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'پاسخی نگرفتیم.')
+      setError(e instanceof Error ? e.message : t('plans.tutorNoReply'))
     } finally {
       setIsSending(false)
     }
@@ -42,7 +43,7 @@ const usePlanTutor = (plan: Plan) => {
     isSending,
     isEmpty: messages.length === 0,
     canSend: !!draft.trim() && !isSending,
-    intro: `من فقط دربارهٔ «${plan.title}» با شما صحبت می‌کنم و قدم‌به‌قدم یادتان می‌دهم.`,
+    intro: t('plans.tutorIntro', { title: plan.title }),
     messages: messages.map((m, i) => ({
       key: i,
       text: m.content,
@@ -51,7 +52,10 @@ const usePlanTutor = (plan: Plan) => {
         m.role === 'user' ? 'self-start bg-primary text-primary-foreground' : 'self-end bg-muted',
       ),
     })),
-    starters: STARTERS.map((label) => ({ label, onSelect: () => void send(label) })),
+    starters: STARTERS.map((key) => {
+      const label = t(key)
+      return { label, onSelect: () => void send(label) }
+    }),
     handleDraftChange: (e: ChangeEvent<HTMLInputElement>) => setDraft(e.target.value),
     handleSubmit: (e: FormEvent) => {
       e.preventDefault()

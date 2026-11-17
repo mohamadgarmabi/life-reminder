@@ -1,9 +1,8 @@
 import { useEffect, useRef } from 'react'
 import type { PointerEvent as ReactPointerEvent } from 'react'
 import type { WidgetId, WidgetProps } from '#/modules/dashboard/types'
-import { WIDGET_LABEL } from '#/modules/dashboard/utils/dashboard.constants'
-
-const SIZE_LABEL = { mini: 'خیلی کوچک', small: 'کوچک', large: 'بزرگ' } as const
+import { SIZE_LABEL, WIDGET_LABEL } from '#/modules/dashboard/utils/dashboard.constants'
+import { t } from '#/modules/shell/utils/i18n'
 
 const LONG_PRESS_MS = 500
 // After a swap the neighbours animate under the finger; without a pause they would swap straight back.
@@ -26,10 +25,9 @@ const useWidget = ({ config, editing, onMove, onToggleSize, onLongPress }: Widge
     onMove(config.id, target.dataset.widget as WidgetId)
   }
 
-  const label = WIDGET_LABEL[config.id]
   return {
     size: config.size,
-    sizeLabel: `تغییر اندازهٔ ${label} (اکنون ${SIZE_LABEL[config.size]})`,
+    sizeLabel: t('dashboard.size.toggle', { label: t(WIDGET_LABEL[config.id]), size: t(SIZE_LABEL[config.size]) }),
     handleDrag,
     handleToggleSize: () => onToggleSize(config.id),
     pressHandlers: {

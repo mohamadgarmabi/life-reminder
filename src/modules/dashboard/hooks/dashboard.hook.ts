@@ -9,9 +9,10 @@ import { planRepo } from '#/modules/plans/apis/plans.api'
 import { plantRepo } from '#/modules/plants/apis/plants.api'
 import { reminderRepo } from '#/modules/reminders/apis/reminders.api'
 import { settingsStore, updateSettings } from '#/modules/settings/stores/settings.store'
-import { formatDateLong, toFaDigits } from '#/modules/shell/utils/format'
+import { formatDateLong, toLocalDigits } from '#/modules/shell/utils/format'
 import { useNow } from '#/modules/shell/hooks/now.hook'
 import { usePrices } from '#/modules/dashboard/hooks/prices.hook'
+import { t } from '#/modules/shell/utils/i18n'
 
 const currentWidgets = () => withAllWidgets(settingsStore.state.widgets)
 
@@ -39,11 +40,15 @@ const useDashboard = () => {
     plants: q.data?.plants,
     plans: q.data?.plans,
     summary: agenda
-      ? `${toFaDigits(agenda.today.length)} کار امروز · ${toFaDigits(agenda.overdue.length)} معوق`
+      ? t('dashboard.summary', {
+          today: toLocalDigits(agenda.today.length),
+          overdue: toLocalDigits(agenda.overdue.length),
+        })
       : undefined,
     market,
     widgets,
     editing,
+    editLabel: t(editing ? 'dashboard.home.done' : 'dashboard.home.edit'),
     toggleEditing: () => setEditing((e) => !e),
     startEditing: () => setEditing(true),
     handleMove: (from: WidgetId, to: WidgetId) => updateSettings({ widgets: moveWidget(currentWidgets(), from, to) }),

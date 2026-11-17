@@ -4,6 +4,7 @@ import { NumberPad } from '#/modules/games/components/number-pad'
 import { SudokuBoard } from '#/modules/games/components/sudoku-board'
 import { useSudoku } from '#/modules/games/hooks/sudoku.hook'
 import { Button } from '#/components/button'
+import { t } from '#/modules/shell/utils/i18n'
 
 const SudokuView = () => {
   const {
@@ -28,7 +29,7 @@ const SudokuView = () => {
   } = useSudoku()
 
   return (
-    <GameShell title="سودوکو">
+    <GameShell title={t('games.sudoku.title')}>
       <div className="flex w-full max-w-3xl flex-col items-center gap-4 landscape:flex-row landscape:items-start">
         {/* Board fits the play area; portrait keeps ~17rem for the controls below it. */}
         <div className="w-[min(100%,calc(100cqh-17rem))] min-w-56 shrink-0 landscape:w-[min(55%,100cqh)] landscape:min-w-44">
@@ -36,7 +37,11 @@ const SudokuView = () => {
         </div>
 
         <div className="w-full min-w-0 space-y-3">
-          <div className="grid grid-cols-3 gap-1 rounded-full surface p-1" role="group" aria-label="سطح دشواری">
+          <div
+            className="grid grid-cols-3 gap-1 rounded-full surface p-1"
+            role="group"
+            aria-label={t('games.sudoku.difficulty')}
+          >
             {difficulties.map((d) => (
               <Button
                 key={d.value}
@@ -51,11 +56,23 @@ const SudokuView = () => {
           </div>
 
           <div className="flex items-center justify-between gap-2">
-            <Button variant="ghost" size="icon" disabled={!hasPrev} onClick={handlePrev} aria-label="مرحلهٔ قبل">
+            <Button
+              variant="ghost"
+              size="icon"
+              disabled={!hasPrev}
+              onClick={handlePrev}
+              aria-label={t('games.sudoku.prevLevel')}
+            >
               <ChevronRight />
             </Button>
             <span className="text-sm font-medium">{levelLabel}</span>
-            <Button variant="ghost" size="icon" disabled={!hasNext} onClick={handleNext} aria-label="مرحلهٔ بعد">
+            <Button
+              variant="ghost"
+              size="icon"
+              disabled={!hasNext}
+              onClick={handleNext}
+              aria-label={t('games.sudoku.nextLevel')}
+            >
               <ChevronLeft />
             </Button>
           </div>
@@ -63,8 +80,8 @@ const SudokuView = () => {
           {isSolved ? (
             <div className="flex flex-col items-center gap-3 rounded-2xl surface p-4 text-center" role="status">
               <PartyPopper className="size-6" aria-hidden />
-              <p className="font-semibold">آفرین! این مرحله را حل کردی.</p>
-              {canGoNext && <Button onClick={handleNext}>مرحله بعد</Button>}
+              <p className="font-semibold">{t('games.sudoku.solved')}</p>
+              {canGoNext && <Button onClick={handleNext}>{t('games.nextLevel')}</Button>}
             </div>
           ) : (
             <NumberPad
@@ -75,7 +92,7 @@ const SudokuView = () => {
           )}
 
           <Button variant="outline" className="w-full" onClick={handleReset}>
-            <RotateCcw /> ریست
+            <RotateCcw /> {t('games.sudoku.reset')}
           </Button>
         </div>
       </div>

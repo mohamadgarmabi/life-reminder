@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { toFaDigits } from '#/modules/shell/utils/format'
+import { toLocalDigits } from '#/modules/shell/utils/format'
+import { t } from '#/modules/shell/utils/i18n'
 
 const useFilterSheet = (activeCount: number) => {
   const [open, setOpen] = useState(false)
@@ -7,7 +8,8 @@ const useFilterSheet = (activeCount: number) => {
     open,
     setOpen,
     isActive: activeCount > 0,
-    triggerLabel: activeCount > 0 ? `فیلتر (${toFaDigits(activeCount)} فعال)` : 'فیلتر',
+    triggerLabel:
+      activeCount > 0 ? t('shell.filter.active', { n: toLocalDigits(activeCount) }) : t('shell.filter.label'),
   }
 }
 

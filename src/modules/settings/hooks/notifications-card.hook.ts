@@ -6,6 +6,7 @@ import type { PermissionStatus } from '#/modules/notifications/types'
 import { runReminderCheck } from '#/modules/notifications/utils/reminder-engine'
 import { settingsStore, updateSettings } from '#/modules/settings/stores/settings.store'
 import { PERMISSION_LABEL } from '#/modules/settings/utils/settings.constants'
+import { t } from '#/modules/shell/utils/i18n'
 
 const useNotificationsCard = () => {
   const { notificationsEnabled, defaultReminderTime } = useSelector(settingsStore, (s) => s)
@@ -17,7 +18,7 @@ const useNotificationsCard = () => {
     const result = permission === 'granted' ? permission : await requestPermission()
     setPermission(result)
     if (result !== 'granted') {
-      toast.error(result === 'denied' ? 'اجازهٔ اعلان در تنظیمات مرورگر مسدود شده است.' : 'اجازهٔ اعلان داده نشد.')
+      toast.error(t(result === 'denied' ? 'settings.notifications.blocked' : 'settings.notifications.notGranted'))
       return
     }
     updateSettings({ notificationsEnabled: true })
@@ -28,8 +29,8 @@ const useNotificationsCard = () => {
 
   const handleTestNotification = () =>
     void showNotification({
-      title: 'یادآور زندگی',
-      body: 'اعلان‌ها درست کار می‌کنند.',
+      title: t('settings.notifications.testTitle'),
+      body: t('settings.notifications.testBody'),
       tag: 'test',
       path: '/settings',
     })
@@ -38,7 +39,7 @@ const useNotificationsCard = () => {
 
   return {
     defaultReminderTime,
-    permissionLabel: PERMISSION_LABEL[permission],
+    permissionLabel: t(PERMISSION_LABEL[permission]),
     badgeVariant: permission === 'granted' ? ('default' as const) : ('secondary' as const),
     isChecked: isActive,
     isDisabled: permission === 'unsupported',

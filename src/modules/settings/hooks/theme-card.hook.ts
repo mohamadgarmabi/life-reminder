@@ -3,9 +3,11 @@ import type { MouseEvent } from 'react'
 import { flushSync } from 'react-dom'
 import { cn } from '#/modules/shell/utils/cn'
 import { settingsStore, updateSettings } from '#/modules/settings/stores/settings.store'
+import { useI18n } from '#/modules/shell/hooks/i18n.hook'
 
 const useThemeCard = () => {
   const theme = useSelector(settingsStore, (s) => s.theme)
+  const { t } = useI18n()
   // 'system' (the default until the first tap) resolves to whatever the OS uses.
   const dark = theme === 'dark' || (theme === 'system' && matchMedia('(prefers-color-scheme: dark)').matches)
 
@@ -32,7 +34,8 @@ const useThemeCard = () => {
   }
 
   return {
-    ariaLabel: dark ? 'پوستهٔ روشن' : 'پوستهٔ تیره',
+    t,
+    ariaLabel: t(dark ? 'settings.themeLight' : 'settings.themeDark'),
     sunClassName: cn('absolute transition-all duration-500', dark && '-rotate-90 scale-0 opacity-0'),
     moonClassName: cn('absolute transition-all duration-500', !dark && 'rotate-90 scale-0 opacity-0'),
     handleToggle,

@@ -1,5 +1,5 @@
-import { toFaDigits } from '#/modules/shell/utils/format'
+import { toLocalDigits } from '#/modules/shell/utils/format'
 
-const useSettings = () => ({ versionLabel: toFaDigits(__APP_VERSION__) })
+const useSettings = () => ({ versionLabel: toLocalDigits(__APP_VERSION__) })
 
 export { useSettings }

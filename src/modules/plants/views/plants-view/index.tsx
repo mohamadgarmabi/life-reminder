@@ -14,6 +14,7 @@ import { PlantDoctor } from '#/modules/plants/components/plant-doctor'
 import { PlantForm } from '#/modules/plants/components/plant-form'
 import { WateringHistory } from '#/modules/plants/components/watering-history'
 import { usePlants } from '#/modules/plants/hooks/plants.hook'
+import { t } from '#/modules/shell/utils/i18n'
 
 const PlantsView = () => {
   const {
@@ -47,24 +48,24 @@ const PlantsView = () => {
   return (
     <>
       <PageHeader
-        title="گل‌ها"
+        title={t('plants.title')}
         description={headerDescription}
         action={
           <div className="flex items-center gap-2">
             <ViewToggle page="plants" />
             {isPlantAiAvailable && (
-              <Button variant="secondary" size="icon" aria-label="تشخیص مشکل گیاه" onClick={openDoctor}>
+              <Button variant="secondary" size="icon" aria-label={t('plants.doctor')} onClick={openDoctor}>
                 <Stethoscope />
               </Button>
             )}
             <Button onClick={openCreate}>
-              <Plus /> گیاه جدید
+              <Plus /> {t('plants.new')}
             </Button>
           </div>
         }
       >
         {hasItems && (
-          <Tabs value={filter} onValueChange={handleFilterChange} dir="rtl">
+          <Tabs value={filter} onValueChange={handleFilterChange}>
             <FilterPill>
               {/* justify-start: centered overflow clips the leading tabs out of scroll reach */}
               <TabsList className="w-full justify-start overflow-x-auto scrollbar-none">
@@ -84,16 +85,16 @@ const PlantsView = () => {
       {isEmpty && (
         <EmptyState
           icon={Flower2}
-          title="گیاهی ثبت نشده"
-          description="گیاهانتان را با فاصلهٔ آبیاری اضافه کنید تا موعد آب دادن را یادآوری کنیم."
+          title={t('plants.emptyTitle')}
+          description={t('plants.emptyDescription')}
           action={
             <Button onClick={openCreate}>
-              <Plus /> افزودن گیاه
+              <Plus /> {t('plants.add')}
             </Button>
           }
         />
       )}
-      {isFilterEmpty && <p className="py-10 text-center text-sm text-muted-foreground">گیاهی در این دسته نیست.</p>}
+      {isFilterEmpty && <p className="py-10 text-center text-sm text-muted-foreground">{t('plants.filterEmpty')}</p>}
       {plants.length > 0 && <SwipeHint />}
       <AnimatedList view={view}>
         {plants.map((row) => (
@@ -116,7 +117,7 @@ const PlantsView = () => {
       <FormDialog
         open={isHistoryOpen}
         onOpenChange={handleOpenChange}
-        title="سابقهٔ آبیاری"
+        title={t('plants.history')}
         description={historyDescription}
       >
         {historyPlant && <WateringHistory plantId={historyPlant.id} />}
@@ -125,8 +126,8 @@ const PlantsView = () => {
       <FormDialog
         open={isDoctorOpen}
         onOpenChange={handleOpenChange}
-        title="تشخیص مشکل گیاه"
-        description="عکس گلتان را بدهید تا بگوییم چه مشکلی دارد و چه کم دارد."
+        title={t('plants.doctor')}
+        description={t('plants.doctorDescription')}
       >
         {isDoctorOpen && <PlantDoctor />}
       </FormDialog>

@@ -1,6 +1,7 @@
 import { openDB } from 'idb'
 import type { z } from 'zod'
 import { appStore } from '#/modules/shell/stores/shell.store'
+import { t } from '#/modules/shell/utils/i18n'
 import { DB_VERSION, runMigrations } from '#/modules/database/utils/migrations'
 import { DB_NAME } from '#/modules/database/utils/database.schema'
 import { type LifeDB } from '#/modules/database/types'
@@ -11,14 +12,14 @@ let dbPromise: Promise<Db> | null = null
 const getDb = (): Promise<Db> => {
   if (dbPromise) return dbPromise
   if (typeof indexedDB === 'undefined') {
-    return Promise.reject(new Error('مرورگر شما از IndexedDB پشتیبانی نمی‌کند یا دسترسی به آن مسدود است.'))
+    return Promise.reject(new Error(t('database.unsupported')))
   }
   const opening = openDB<LifeDB>(DB_NAME, DB_VERSION, {
     upgrade: (db, oldVersion, _newVersion, tx) => runMigrations(db, oldVersion, tx),
     blocked: () =>
       appStore.setState((s) => ({
         ...s,
-        db: { state: 'error', message: 'برنامه در تب دیگری باز است. آن تب را ببندید تا پایگاه داده به‌روز شود.' },
+        db: { state: 'error', message: t('database.blocked') },
       })),
     // A newer version opened in another tab: release our connection so its upgrade can proceed.
     blocking: () => {

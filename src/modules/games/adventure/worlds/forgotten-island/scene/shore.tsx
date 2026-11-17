@@ -10,6 +10,7 @@ import { playSfx } from '#/modules/games/adventure/utils/audio'
 import { ground, site } from '#/modules/games/adventure/worlds/forgotten-island/layout'
 import { GLYPHS, canvasCloth, darkStone, gold, glyphStrip, oldWood, stone, wood } from './materials'
 import { PILLAR_CODE } from '#/modules/games/adventure/worlds/forgotten-island/puzzles'
+import { t } from '#/modules/shell/utils/i18n'
 
 /** Abandoned keepers' camp at the landing beach: tent, crates, a cold fire ring and the cellar hatch. */
 const Camp = () => {
@@ -18,7 +19,7 @@ const Camp = () => {
   const [x, y, z] = site('start', 6, -4)
   const openHatch = () => {
     updateSession(store, (s) => recordSecret(s, 'buried-cellar'))
-    patchGame(store, { notice: 'یک راز پیدا کردی: سرداب زیر اردوگاه!' })
+    patchGame(store, { notice: t('adventure.island.cellarFound') })
     playSfx('open')
   }
   return (
@@ -49,7 +50,7 @@ const Camp = () => {
       {/* Cellar hatch, half hidden under the tent flap */}
       <Interactable
         id="cellar-hatch"
-        label="باز کردن دریچه"
+        label={t('adventure.island.openSluice')}
         enabled={!opened}
         onUse={openHatch}
         position={[-1.8, 0.05, -2.2]}
@@ -121,7 +122,7 @@ const Pillar = ({
   return (
     <Interactable
       id={`pillar-${index}`}
-      label="چرخاندن"
+      label={t('adventure.island.turn')}
       enabled={!solved}
       onUse={onTurn}
       position={[(index - 1) * 2.2, 0, 0]}

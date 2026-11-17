@@ -6,6 +6,7 @@ import { getDb } from '#/modules/database/apis/database.api'
 import { startReminderEngine } from '#/modules/notifications/utils/reminder-engine'
 import { initSettings, settingsStore } from '#/modules/settings/stores/settings.store'
 import { appStore } from '#/modules/shell/stores/shell.store'
+import { t } from '#/modules/shell/utils/i18n'
 
 const useClientBootstrap = () => {
   const { hideSplashScreen } = useSplashScreen()
@@ -59,7 +60,7 @@ const useRootApp = () => {
 
 const useStorageError = (message: string) => {
   return {
-    description: `${message} اطلاعات قبلی شما حذف نشده است. در حالت مرور خصوصی یا با حافظهٔ پر، مرورگر ممکن است اجازهٔ ذخیره‌سازی ندهد.`,
+    description: t('shell.storage.description', { message }),
     handleRetry: () => location.reload(),
   }
 }

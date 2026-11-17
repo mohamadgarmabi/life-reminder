@@ -8,6 +8,7 @@ import { useEngine, patchGame } from '#/modules/games/adventure/stores/session.s
 import { playSfx } from '#/modules/games/adventure/utils/audio'
 import { site } from '#/modules/games/adventure/worlds/forgotten-island/layout'
 import { GLYPHS, darkStone, glyphStrip, metal, mossStone, shell, stone, water } from './materials'
+import { t } from '#/modules/shell/utils/i18n'
 
 const HALF = 7
 const WALL_H = 3
@@ -59,7 +60,7 @@ const Sluice = ({
   return (
     <Interactable
       id={`sluice-${index}`}
-      label="باز کردن دریچه"
+      label={t('adventure.island.openSluice')}
       enabled={!open}
       onUse={onOpen}
       position={[-HALF - 1.2, 0, -5 + index * 1.6]}
@@ -95,7 +96,7 @@ const Ruins = () => {
     if (next.opened.length !== state.opened.length + 1) {
       setWrongCount((n) => n + 1)
       playSfx('wrong')
-      patchGame(store, { notice: 'دریچه‌ها دوباره بسته شدند' })
+      patchGame(store, { notice: t('adventure.island.sluicesReset') })
     } else {
       playSfx('water')
     }

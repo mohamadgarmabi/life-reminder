@@ -4,7 +4,8 @@ import { z } from 'zod'
 import { Button } from '#/components/button'
 import { DIFFICULTIES, VEHICLES } from '#/modules/games/utils/traffic'
 import { cn } from '#/modules/shell/utils/cn'
-import { toFaDigits } from '#/modules/shell/utils/format'
+import { toLocalDigits } from '#/modules/shell/utils/format'
+import { t, type MessageKey } from '#/modules/shell/utils/i18n'
 
 /** Paints with pre-rendered picker photos (cars/thumbs/<id>-<hex>.webp). */
 const PAINT_CHOICES = ['#a50f1c', '#f4f4f2', '#1c1d20', '#1f3a68', '#b9bcc0', '#2d4a3a', '#d98c00'] as const
@@ -38,24 +39,24 @@ const DEFAULT_SETUP: Setup = {
   view: 'chase',
 }
 
-const VEHICLE_LABEL: Record<(typeof VEHICLES)[number]['id'], string> = {
-  hatch: 'هاچ‌بک مدرن',
-  sedan: 'سدان',
-  classic: 'سدان کلاسیک',
-  pickup: 'وانت',
-  truck: 'کامیون',
+const VEHICLE_LABEL: Record<(typeof VEHICLES)[number]['id'], MessageKey> = {
+  hatch: 'games.traffic.hatch',
+  sedan: 'games.traffic.sedan',
+  classic: 'games.traffic.classic',
+  pickup: 'games.traffic.pickup',
+  truck: 'games.traffic.truck',
 }
 const WEATHER = [
-  { value: 'normal', label: 'آفتابی', icon: Sun },
-  { value: 'cloudy', label: 'ابری', icon: Cloud },
-  { value: 'rain', label: 'بارانی', icon: CloudRain },
-  { value: 'snow', label: 'برفی', icon: CloudSnow },
+  { value: 'normal', label: 'games.traffic.sunny', icon: Sun },
+  { value: 'cloudy', label: 'games.traffic.cloudy', icon: Cloud },
+  { value: 'rain', label: 'games.traffic.rainy', icon: CloudRain },
+  { value: 'snow', label: 'games.traffic.snowy', icon: CloudSnow },
 ] as const
-const DIFFICULTY_LABEL: Record<Setup['difficulty'], string> = {
-  easy: 'آسان',
-  medium: 'متوسط',
-  hard: 'سخت',
-  legendary: 'افسانه‌ای',
+const DIFFICULTY_LABEL: Record<Setup['difficulty'], MessageKey> = {
+  easy: 'games.easy',
+  medium: 'games.medium',
+  hard: 'games.hard',
+  legendary: 'games.traffic.legendary',
 }
 
 /** The device has a motion sensor API at all (actual readings are checked once the game runs). */
@@ -112,15 +113,15 @@ const TrafficSetup = ({
   return (
     <div className="absolute inset-0 overflow-y-auto bg-linear-to-b from-slate-900 via-slate-950 to-black text-white">
       <div className="mx-auto flex max-w-md flex-col gap-5 px-4 pt-[calc(env(safe-area-inset-top)+4.5rem)] pb-[calc(env(safe-area-inset-bottom)+1.5rem)]">
-        <Section title="ماشین">
-          <div className="flex flex-wrap gap-2 pb-1" role="radiogroup" aria-label="رنگ ماشین">
+        <Section title={t('games.traffic.car')}>
+          <div className="flex flex-wrap gap-2 pb-1" role="radiogroup" aria-label={t('games.traffic.carColor')}>
             {PAINT_CHOICES.map((c) => (
               <button
                 key={c}
                 type="button"
                 role="radio"
                 aria-checked={value.paint === c}
-                aria-label={`رنگ ${c}`}
+                aria-label={t('games.traffic.color', { color: c })}
                 onClick={() => set('paint', c)}
                 className={cn(
                   'size-9 rounded-full border-2 outline-none focus-visible:ring-[3px] focus-visible:ring-white/50',
@@ -140,15 +141,15 @@ const TrafficSetup = ({
               >
                 <img
                   src={thumb(v.id, value.paint)}
-                  alt={VEHICLE_LABEL[v.id]}
+                  alt={t(VEHICLE_LABEL[v.id])}
                   className="aspect-[16/10] w-full object-contain"
                   draggable={false}
                 />
-                <span className="text-start font-semibold">{VEHICLE_LABEL[v.id]}</span>
+                <span className="text-start font-semibold">{t(VEHICLE_LABEL[v.id])}</span>
                 <span className="flex items-center gap-1.5 text-xs">
                   <Gauge className="size-3.5 shrink-0 opacity-70" aria-hidden />
-                  <span className="opacity-70">حداکثر</span>
-                  <span className="font-bold tabular-nums">{toFaDigits(v.topSpeed)}</span>
+                  <span className="opacity-70">{t('games.traffic.topSpeed')}</span>
+                  <span className="font-bold tabular-nums">{toLocalDigits(v.topSpeed)}</span>
                   <span className="opacity-70">km/h</span>
                 </span>
                 {/* Top speed against the fastest car. */}
@@ -159,41 +160,42 @@ const TrafficSetup = ({
                   />
                 </span>
                 <span className="text-start text-[11px] opacity-60">
-                  {toFaDigits(v.length.toFixed(1))} متر{v.id === 'truck' && ' · سنگین و پهن'}
+                  {t('games.traffic.length', { n: toLocalDigits(v.length.toFixed(1)) })}
+                  {v.id === 'truck' && ` · ${t('games.traffic.heavy')}`}
                 </span>
               </Choice>
             ))}
           </div>
         </Section>
 
-        <Section title="زمان">
+        <Section title={t('games.traffic.time')}>
           <div className="grid grid-cols-2 gap-2">
             <Choice selected={!value.night} onClick={() => set('night', false)}>
-              <SunMedium className="size-4" aria-hidden /> روز
+              <SunMedium className="size-4" aria-hidden /> {t('games.traffic.day')}
             </Choice>
             <Choice selected={value.night} onClick={() => set('night', true)}>
-              <Moon className="size-4" aria-hidden /> شب
+              <Moon className="size-4" aria-hidden /> {t('games.traffic.night')}
             </Choice>
           </div>
         </Section>
 
-        <Section title="آب‌وهوا">
+        <Section title={t('games.traffic.weather')}>
           <div className="grid grid-cols-4 gap-2">
             {WEATHER.map(({ value: w, label, icon: Icon }) => (
               <Choice key={w} selected={value.weather === w} onClick={() => set('weather', w)} className="flex-col">
                 <Icon className="size-5" aria-hidden />
-                <span className="text-xs">{label}</span>
+                <span className="text-xs">{t(label)}</span>
               </Choice>
             ))}
           </div>
           {(value.weather === 'rain' || value.weather === 'snow') && (
             <p className="text-xs text-amber-200/80">
-              جادهٔ {value.weather === 'rain' ? 'خیس' : 'برفی'} لیز است: فرمان و ترمز کندتر جواب می‌دهند.
+              {t(value.weather === 'rain' ? 'games.traffic.slipperyRain' : 'games.traffic.slipperySnow')}
             </p>
           )}
         </Section>
 
-        <Section title="سختی">
+        <Section title={t('games.traffic.difficulty')}>
           <div className="grid grid-cols-2 gap-2">
             {(Object.keys(DIFFICULTIES) as Setup['difficulty'][]).map((d) => (
               <Choice
@@ -202,18 +204,20 @@ const TrafficSetup = ({
                 onClick={() => set('difficulty', d)}
                 className="justify-between"
               >
-                <span>{DIFFICULTY_LABEL[d]}</span>
-                <span className="text-xs opacity-60">×{toFaDigits(DIFFICULTIES[d].multiplier)} امتیاز</span>
+                <span>{t(DIFFICULTY_LABEL[d])}</span>
+                <span className="text-xs opacity-60">
+                  {t('games.traffic.multiplier', { n: toLocalDigits(DIFFICULTIES[d].multiplier) })}
+                </span>
               </Choice>
             ))}
           </div>
         </Section>
 
-        <Section title="کنترل فرمان">
+        <Section title={t('games.traffic.steering')}>
           <div className="grid grid-cols-2 gap-2">
             <Choice selected={value.control === 'touch'} onClick={() => set('control', 'touch')} className="flex-col">
               <Hand className="size-5" aria-hidden />
-              <span>دکمهٔ چپ و راست</span>
+              <span>{t('games.traffic.buttons')}</span>
             </Choice>
             <Choice
               selected={value.control === 'tilt'}
@@ -222,19 +226,17 @@ const TrafficSetup = ({
               className="flex-col"
             >
               <Smartphone className="size-5" aria-hidden />
-              <span>حسگر (کج کردن گوشی)</span>
+              <span>{t('games.traffic.tilt')}</span>
             </Choice>
           </div>
           <p className="text-xs text-white/60">
-            {value.control === 'tilt'
-              ? 'گوشی را مثل فرمان به چپ و راست کج کن. حالتی که هنگام شروع نگه می‌داری «صاف» حساب می‌شود.'
-              : 'انگشتت را روی نیمهٔ چپ یا راست صفحه نگه دار.'}
-            {!tilt && ' این دستگاه حسگر حرکت ندارد.'}
+            {t(value.control === 'tilt' ? 'games.traffic.tiltHelp' : 'games.traffic.touchHelp')}
+            {!tilt && ` ${t('games.traffic.noSensor')}`}
           </p>
         </Section>
 
         <Button size="lg" className="h-14 bg-white text-base text-black hover:bg-white/90" onClick={onStart}>
-          شروع رانندگی
+          {t('games.traffic.startDriving')}
         </Button>
       </div>
     </div>

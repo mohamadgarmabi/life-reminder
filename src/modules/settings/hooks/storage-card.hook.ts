@@ -1,7 +1,8 @@
 import { useSelector } from '@tanstack/react-store'
 import { useEffect, useState } from 'react'
 import { appStore } from '#/modules/shell/stores/shell.store'
-import { formatNumber, toFaDigits } from '#/modules/shell/utils/format'
+import { formatNumber, toLocalDigits } from '#/modules/shell/utils/format'
+import { t } from '#/modules/shell/utils/i18n'
 
 const useStorageCard = () => {
   const db = useSelector(appStore, (s) => s.db)
@@ -10,19 +11,21 @@ const useStorageCard = () => {
   useEffect(() => {
     void navigator.storage
       ?.estimate?.()
-      .then(({ usage: used = 0 }) => setUsage(`${formatNumber(Math.round(used / 1024))} کیلوبایت`))
+      .then(({ usage: used = 0 }) => setUsage(t('settings.storage.kb', { n: formatNumber(Math.round(used / 1024)) })))
   }, [])
 
   return {
     dbStatusLabel:
-      db.state === 'ready' ? 'آماده (IndexedDB)' : db.state === 'opening' ? 'در حال باز شدن…' : `خطا: ${db.message}`,
+      db.state === 'ready'
+        ? t('settings.storage.ready')
+        : db.state === 'opening'
+          ? t('settings.storage.opening')
+          : t('settings.storage.error', { message: db.message }),
     persistenceLabel:
-      db.state === 'ready' && db.persisted
-        ? 'فعال — مرورگر اطلاعات را خودکار پاک نمی‌کند'
-        : 'تضمین نشده — مرتب پشتیبان بگیرید',
+      db.state === 'ready' && db.persisted ? t('settings.storage.persisted') : t('settings.storage.notPersisted'),
     usage,
     hasInvalid: invalid > 0,
-    invalidTitle: `${toFaDigits(invalid)} رکورد نامعتبر`,
+    invalidTitle: t('settings.storage.invalidTitle', { n: toLocalDigits(invalid) }),
   }
 }
 
