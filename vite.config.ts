@@ -44,9 +44,9 @@ const pwa = VitePWA({
   manifest: {
     name: 'Life Reminder',
     short_name: 'Life Reminder',
-    description: 'مدیریت اقساط، آبیاری گل‌ها و یادآورهای شخصی',
-    lang: 'fa',
-    dir: 'rtl',
+    // One static manifest serves both languages, so the description carries both.
+    description: 'Installments, plant watering & personal reminders · مدیریت اقساط، آبیاری گل‌ها و یادآورهای شخصی',
+    lang: 'en', // no `dir`: the manifest default is auto, right for the mixed description
     start_url: base,
     scope: base,
     display: 'standalone',
@@ -121,7 +121,13 @@ const injectSplash = (html: string) => {
   const hook = splash.transformIndexHtml
   const fn = typeof hook === 'function' ? hook : hook && 'handler' in hook ? hook.handler : undefined
   if (!fn) throw new Error('vite-plugin-react-splash: transformIndexHtml not found')
-  return fn.call(undefined as never, html, undefined as never) as string
+  const out = fn.call(undefined as never, html, undefined as never) as string
+  // The splash is static HTML built in Persian; swap its title before first paint when the saved language is English.
+  // Key = SETTINGS_KEY in settings.store.ts (not imported: the config must not pull in app code).
+  const swap = `<script>try{if((JSON.parse(localStorage.getItem('life-reminder:settings'))||{}).language==='en'){var e=document.currentScript.previousElementSibling;e.textContent='Life Reminder';e.dir='ltr'}}catch(e){}</script>`
+  const withSwap = out.replace(/(<div class="splash-text[^"]*">[^<]*<\/div>)/, `$1${swap}`)
+  if (withSwap === out) throw new Error('vite-plugin-react-splash: splash text element not found')
+  return withSwap
 }
 
 const staticSpaOutput: Plugin = {

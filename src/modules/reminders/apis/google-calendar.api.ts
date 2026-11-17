@@ -33,6 +33,7 @@ const fetchGoogleEvents = async (session: string, from: Date, to: Date, signal: 
     connected,
     events: events.map((e): CalendarEvent => ({
       ...e,
+      title: e.title || t('reminders.untitled'),
       start: toDate(e.start, e.allDay),
       end: toDate(e.end, e.allDay),
     })),

@@ -1,5 +1,6 @@
 // Keys are prefixed with 'reminders.' (or 'common.' / 'nav.' in shell) so module dictionaries never collide.
 const fa = {
+  'reminders.untitled': 'بدون عنوان',
   'reminders.title': 'یادآورها',
   'reminders.new': 'یادآور جدید',
   'reminders.edit': 'ویرایش یادآور',
@@ -65,6 +66,7 @@ const fa = {
 }
 
 const en: Record<keyof typeof fa, string> = {
+  'reminders.untitled': 'Untitled',
   'reminders.title': 'Reminders',
   'reminders.new': 'New reminder',
   'reminders.edit': 'Edit reminder',

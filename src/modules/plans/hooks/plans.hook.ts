@@ -18,6 +18,10 @@ const SORT_OPTIONS = [
   { value: 'title', labelKey: 'plans.sortTitle' },
 ] as const
 
+// AI tutoring is offered only for work plans: tagged "کار" or "work" (either language).
+const WORK_TAGS = new Set(['کار', 'work'])
+const isWorkPlan = (plan: Plan) => plan.tags.some((tag) => WORK_TAGS.has(tag.trim().toLowerCase()))
+
 const byStatus = (a: Plan, b: Plan) => STATUS_ORDER.indexOf(a.status) - STATUS_ORDER.indexOf(b.status)
 const SORTS: Record<string, (a: Plan, b: Plan) => number> = {
   status: byStatus,
@@ -67,7 +71,7 @@ const usePlans = () => {
     plans: visible.map((plan) => ({
       plan,
       onEdit: () => setDialog({ type: 'edit', item: plan }),
-      onTutor: isAiAvailable ? () => setDialog({ type: 'tutor', item: plan }) : undefined,
+      onTutor: isAiAvailable && isWorkPlan(plan) ? () => setDialog({ type: 'tutor', item: plan }) : undefined,
     })),
     isLoading: q.status === 'loading',
     error: q.status === 'error' ? q.error : undefined,

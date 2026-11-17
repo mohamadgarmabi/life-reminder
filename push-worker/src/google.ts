@@ -48,15 +48,37 @@ const profileFromIdToken = (idToken: string | undefined) => {
 
 const redirectUri = (request: Request) => `${new URL(request.url).origin}/google/callback`
 
+type Lang = 'fa' | 'en'
+// The app's language; it rides through Google's round trip in `state` as "<session>:<lang>".
+const langOf = (v: string | null | undefined): Lang => (v === 'en' ? 'en' : 'fa')
+
+const PAGES = {
+  invalid: {
+    fa: ['درخواست نامعتبر', 'دوباره از داخل برنامه تلاش کنید.'],
+    en: ['Invalid request', 'Please try again from the app.'],
+  },
+  failed: {
+    fa: ['ورود انجام نشد', 'دوباره از داخل برنامه تلاش کنید.'],
+    en: ['Sign-in failed', 'Please try again from the app.'],
+  },
+  done: {
+    fa: ['با حساب گوگل وارد شدید', 'به برنامه برگردید؛ تقویم گوگل خودکار همگام می‌شود.'],
+    en: ['Signed in with Google', 'Go back to the app; Google Calendar syncs automatically.'],
+  },
+} as const
+
 /** Tiny standalone page shown in the sign-in tab; it closes itself after a success. */
-const page = (title: string, body: string, ok: boolean) =>
-  new Response(
-    `<!doctype html><html lang="fa" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${title}</title></head>
+const page = (kind: keyof typeof PAGES, lang: Lang) => {
+  const [title, body] = PAGES[kind][lang]
+  const ok = kind === 'done'
+  return new Response(
+    `<!doctype html><html lang="${lang}" dir="${lang === 'fa' ? 'rtl' : 'ltr'}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${title}</title></head>
 <body style="margin:0;min-height:100vh;display:grid;place-items:center;text-align:center;font-family:system-ui,sans-serif;background:#f2f2f7;color:#000;padding:24px">
 <div><p style="font-size:3rem;margin:0">${ok ? '✓' : '✕'}</p><h1 style="font-size:1.25rem">${title}</h1><p style="color:#6e6e73">${body}</p></div>
 ${ok ? '<script>setTimeout(() => window.close(), 1500)</script>' : ''}</body></html>`,
     { status: ok ? 200 : 400, headers: { 'Content-Type': 'text/html; charset=utf-8' } },
   )
+}
 
 const tokenSchema = z.object({
   access_token: z.string(),
@@ -94,8 +116,10 @@ const deleteRow = (env: GoogleEnv, hash: string) =>
 
 /** GET /google/auth?session=… — the app opens this; it forwards to Google's account picker. */
 const handleGoogleAuth = (request: Request, env: GoogleEnv) => {
-  const id = session.safeParse(new URL(request.url).searchParams.get('session'))
-  if (!id.success || !env.GOOGLE_CLIENT_ID) return page('درخواست نامعتبر', 'دوباره از داخل برنامه تلاش کنید.', false)
+  const search = new URL(request.url).searchParams
+  const id = session.safeParse(search.get('session'))
+  const lang = langOf(search.get('lang'))
+  if (!id.success || !env.GOOGLE_CLIENT_ID) return page('invalid', lang)
   const url = new URL('https://accounts.google.com/o/oauth2/v2/auth')
   url.search = new URLSearchParams({
     client_id: env.GOOGLE_CLIENT_ID,
@@ -105,7 +129,7 @@ const handleGoogleAuth = (request: Request, env: GoogleEnv) => {
     access_type: 'offline',
     // Always ask, so Google returns a refresh token even for a returning account.
     prompt: 'consent select_account',
-    state: id.data,
+    state: `${id.data}:${lang}`,
   }).toString()
   return Response.redirect(url.toString(), 302)
 }
@@ -113,12 +137,13 @@ const handleGoogleAuth = (request: Request, env: GoogleEnv) => {
 /** GET /google/callback — Google sends the user back here; the code becomes a stored refresh token. */
 const handleGoogleCallback = async (request: Request, env: GoogleEnv) => {
   const params = new URL(request.url).searchParams
-  const id = session.safeParse(params.get('state'))
+  const [state, stateLang] = (params.get('state') ?? '').split(':')
+  const id = session.safeParse(state)
+  const lang = langOf(stateLang)
   const code = params.get('code')
-  if (!id.success || !code) return page('ورود انجام نشد', 'دوباره از داخل برنامه تلاش کنید.', false)
+  if (!id.success || !code) return page('failed', lang)
   const result = await tokenRequest(env, { code, redirect_uri: redirectUri(request), grant_type: 'authorization_code' })
-  if (!result.ok || !result.token.refresh_token)
-    return page('ورود انجام نشد', 'دوباره از داخل برنامه تلاش کنید.', false)
+  if (!result.ok || !result.token.refresh_token) return page('failed', lang)
   const { access_token, expires_in, refresh_token, id_token } = result.token
   const profile = profileFromIdToken(id_token)
   await env.DB.prepare(
@@ -138,7 +163,7 @@ const handleGoogleCallback = async (request: Request, env: GoogleEnv) => {
       profile.picture,
     )
     .all()
-  return page('با حساب گوگل وارد شدید', 'به برنامه برگردید؛ تقویم گوگل خودکار همگام می‌شود.', true)
+  return page('done', lang)
 }
 
 /** POST /google/account — who is signed in; the app polls it while the sign-in tab is open. */
@@ -228,7 +253,8 @@ const handleGoogleEvents = async (request: Request, env: GoogleEnv, headers: Rec
         .items.filter((e) => e.status !== 'cancelled' && (e.start.dateTime || e.start.date))
         .map((e) => ({
           id: `${c.id}:${e.id}`,
-          title: e.summary || 'بدون عنوان',
+          // Empty when untitled; the app shows its own "Untitled" in the user's language.
+          title: e.summary ?? '',
           start: e.start.dateTime ?? e.start.date,
           end: e.end.dateTime ?? e.end.date ?? e.start.dateTime ?? e.start.date,
           allDay: !e.start.dateTime,

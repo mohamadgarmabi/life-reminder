@@ -1,7 +1,7 @@
 import { createFetch } from 'tanstack-fetch'
 import { z } from 'zod'
 import { AI_URL } from '#/modules/shell/apis/ai.api'
-import { t } from '#/modules/shell/utils/i18n'
+import { getLanguage, t } from '#/modules/shell/utils/i18n'
 
 // The push/AI worker (push-worker/src/google.ts) holds the Google sign-in; the app keeps only a random session id.
 // Off unless VITE_GOOGLE_SIGN_IN=true: hides the welcome screen, account card and calendar sync, and sends nothing.
@@ -11,7 +11,7 @@ const newGoogleSession = () =>
   [...crypto.getRandomValues(new Uint8Array(32))].map((b) => b.toString(16).padStart(2, '0')).join('')
 
 /** Google's account picker; the page closes itself after signing in. */
-const googleSignInUrl = (session: string) => `${AI_URL}/google/auth?session=${session}`
+const googleSignInUrl = (session: string) => `${AI_URL}/google/auth?session=${session}&lang=${getLanguage()}`
 
 const googleAccountSchema = z.object({ name: z.string(), email: z.string(), picture: z.string() })
 

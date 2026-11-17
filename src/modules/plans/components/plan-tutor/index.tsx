@@ -70,7 +70,7 @@ const PlanTutor = ({ plan }: { plan: Plan }) => {
           autoComplete="off"
         />
         <Button type="submit" size="icon" aria-label={t('plans.send')} disabled={!canSend}>
-          <SendHorizontal className="rotate-180" />
+          <SendHorizontal className="rtl:rotate-180" />
         </Button>
       </form>
       <p className="text-xs text-muted-foreground">{t('plans.aiDisclaimer')}</p>
