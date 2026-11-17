@@ -2,6 +2,8 @@ import { Flower2, Plus, Stethoscope } from 'lucide-react'
 import { FormDialog } from '#/modules/shell/components/dialogs'
 import { EmptyState, ErrorState, ListSkeleton, PageHeader } from '#/modules/shell/components/states'
 import { Button } from '#/components/button'
+import { Tabs, TabsList, TabsTrigger } from '#/components/tabs'
+import { FilterPill } from '#/modules/shell/components/filter-pill'
 import { SwipeHint } from '#/modules/shell/components/swipe-hint'
 import { AnimatedList } from '#/modules/shell/components/animated-list'
 import { ViewToggle } from '#/modules/shell/components/view-toggle'
@@ -34,6 +36,11 @@ const PlantsView = () => {
     historyPlant,
     isHistoryOpen,
     historyDescription,
+    hasItems,
+    isFilterEmpty,
+    filter,
+    filters,
+    handleFilterChange,
   } = usePlants()
   const { view } = useViewMode('plants')
 
@@ -55,7 +62,22 @@ const PlantsView = () => {
             </Button>
           </div>
         }
-      />
+      >
+        {hasItems && (
+          <Tabs value={filter} onValueChange={handleFilterChange} dir="rtl">
+            <FilterPill>
+              {/* justify-start: centered overflow clips the leading tabs out of scroll reach */}
+              <TabsList className="w-full justify-start overflow-x-auto scrollbar-none">
+                {filters.map((f) => (
+                  <TabsTrigger key={f.value} value={f.value}>
+                    {f.label}
+                  </TabsTrigger>
+                ))}
+              </TabsList>
+            </FilterPill>
+          </Tabs>
+        )}
+      </PageHeader>
 
       {isLoading && <ListSkeleton />}
       {error && <ErrorState error={error} />}
@@ -71,6 +93,7 @@ const PlantsView = () => {
           }
         />
       )}
+      {isFilterEmpty && <p className="py-10 text-center text-sm text-muted-foreground">گیاهی در این دسته نیست.</p>}
       {plants.length > 0 && <SwipeHint />}
       <AnimatedList view={view}>
         {plants.map((row) => (

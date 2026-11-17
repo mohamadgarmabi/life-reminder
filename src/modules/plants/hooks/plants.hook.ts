@@ -4,7 +4,7 @@ import { toast } from '#/components/sonner'
 import { useLiveQuery } from '#/modules/database/hooks/database.hook'
 import { plantRepo } from '#/modules/plants/apis/plants.api'
 import type { PlantFormValues, PlantsDialog } from '#/modules/plants/types'
-import { nextWateringDate } from '#/modules/plants/utils/schedule'
+import { daysUntilWatering, nextWateringDate } from '#/modules/plants/utils/schedule'
 import { toIsoDate } from '#/modules/shell/utils/dates'
 import { toFaDigits } from '#/modules/shell/utils/format'
 import { useNow } from '#/modules/shell/hooks/now.hook'
@@ -12,6 +12,7 @@ import { useNow } from '#/modules/shell/hooks/now.hook'
 const usePlants = () => {
   const search = useSearch({ from: '/plants' })
   const navigate = useNavigate({ from: '/plants' })
+  const [filter, setFilter] = useState('all')
   const [dialog, setDialog] = useState<PlantsDialog>(search.new ? { type: 'create' } : null)
   const today = toIsoDate(useNow())
   const q = useLiveQuery(() => plantRepo.list())
@@ -32,7 +33,15 @@ const usePlants = () => {
 
   const sorted = [...(q.data ?? [])].sort((a, b) => nextWateringDate(a).localeCompare(nextWateringDate(b)))
   const thirsty = sorted.filter((p) => nextWateringDate(p) <= today).length
-  const plants = sorted.map((plant) => ({
+  // Bucket by days until next watering: overdue counts as today.
+  const visible = sorted.filter((p) => {
+    const days = daysUntilWatering(p, today)
+    if (filter === 'today') return days <= 0
+    if (filter === 'week') return days > 0 && days <= 7
+    if (filter === 'later') return days > 7
+    return true
+  })
+  const plants = visible.map((plant) => ({
     plant,
     onEdit: () => setDialog({ type: 'edit', item: plant }),
     onHistory: () => setDialog({ type: 'history', item: plant }),
@@ -52,6 +61,16 @@ const usePlants = () => {
     isLoading: q.status === 'loading',
     error: q.status === 'error' ? q.error : undefined,
     isEmpty: q.status === 'success' && !sorted.length,
+    hasItems: sorted.length > 0,
+    isFilterEmpty: sorted.length > 0 && !visible.length,
+    filter,
+    filters: [
+      { value: 'all', label: 'همه' },
+      { value: 'today', label: 'امروز' },
+      { value: 'week', label: 'این هفته' },
+      { value: 'later', label: 'بعداً' },
+    ],
+    handleFilterChange: setFilter,
     openCreate: () => setDialog({ type: 'create' }),
     openDoctor: () => setDialog({ type: 'doctor' }),
     isDoctorOpen: dialog?.type === 'doctor',

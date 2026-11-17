@@ -25,6 +25,7 @@ const PlantCard = ({ plant, today, onEdit, onHistory, onDelete }: PlantCardProps
     <SwipeRow
       direction="right"
       label={plant.name}
+      className="*:first:h-full"
       actionWidth={64}
       actions={[
         { id: 'delete', label: 'حذف', onSelect: onDelete },
@@ -42,11 +43,16 @@ const PlantCard = ({ plant, today, onEdit, onHistory, onDelete }: PlantCardProps
       ]}
     >
       {/* Wide (list view): photo beside the details instead of above. */}
-      <Card className="gap-0 overflow-hidden py-0 @xs:flex-row">
-        <div className="relative aspect-4/3 bg-accent @xs:aspect-auto @xs:w-36 @xs:shrink-0">
-          {image && <Image src={image} alt={plant.name} className="size-full object-cover" loading="lazy" />}
+      <Card className="h-full gap-0 overflow-hidden py-0 @xs:flex-row">
+        {/* List view: stretches to the card's full height; absolute children keep the photo from sizing it. */}
+        <div className="relative h-32 w-full shrink-0 overflow-hidden bg-accent @xs:h-auto @xs:w-36 @xs:self-stretch">
+          {image && (
+            <div className="absolute inset-0">
+              <Image src={image} alt={plant.name} className="size-full object-cover" loading="lazy" />
+            </div>
+          )}
           {!image && (
-            <div className="flex size-full items-center justify-center text-primary/60">
+            <div className="absolute inset-0 flex items-center justify-center text-primary/60">
               <Sprout className="size-12" aria-hidden />
             </div>
           )}
@@ -73,7 +79,7 @@ const PlantCard = ({ plant, today, onEdit, onHistory, onDelete }: PlantCardProps
           />
         </div>
         {/* Narrow (mobile grid) cell: smaller type and padding; long labels wrap to two lines. */}
-        <CardContent className="min-w-0 space-y-2 p-3 @xs:flex-1 @xs:space-y-3 @xs:p-4">
+        <CardContent className="flex min-w-0 flex-1 flex-col space-y-2 p-4 @xs:space-y-3 @xs:p-4">
           <div className="min-w-0">
             <h3 className="truncate text-sm font-semibold @xs:text-base">{plant.name}</h3>
             <p className="truncate text-[11px] text-muted-foreground @xs:text-xs">هر {intervalLabel} روز</p>

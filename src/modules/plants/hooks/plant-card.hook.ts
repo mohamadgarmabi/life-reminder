@@ -38,7 +38,7 @@ const usePlantCard = ({ plant, today }: Pick<PlantCardProps, 'plant' | 'today'>)
         ? `آبیاری عقب افتاده (${relativeDay(next)})`
         : `آبیاری بعدی: ${relativeDay(next)} · ${formatDayMonth(next)}`,
     waterClassName: cn(
-      'w-full min-w-0 text-xs @xs:h-9 @xs:text-sm',
+      'mt-auto w-full min-w-0 text-xs @xs:h-9 @xs:text-sm',
       (days > 0 || wateredToday) && 'bg-primary/10 text-primary hover:bg-primary/15',
     ),
     wateredToday,
