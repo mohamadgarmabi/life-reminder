@@ -1,8 +1,9 @@
 # یادآور زندگی (life-reminder)
 
 A personal, local-first PWA (Persian, RTL, Jalali calendar) for installments, plant watering and
-recurring reminders, with a customizable home dashboard and a built-in games corner. All data lives in
-IndexedDB on your device; an optional push relay only receives the texts of upcoming notifications.
+recurring reminders, with a customizable home dashboard and a built-in games corner. With Google sign-in on, data
+syncs to your account and can be shared with your family (IndexedDB keeps this device's copy); with it off, all
+data stays in IndexedDB on your device.
 
 **Live app:** <https://mohamadgarmabi.github.io/life-reminder/>
 
@@ -45,9 +46,9 @@ IndexedDB on your device; an optional push relay only receives the texts of upco
 | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | Dashboard     | Widgets for date, quick add, overdue, today, upcoming and games; reorder, hide and resize (mini / small / large).                                                                                                                                      |
 | Installments  | Amount, Jalali due day, total and paid counts, reminders N days before, tags, notes, payment history.                                                                                                                                                  |
-| Plants        | Photo (downscaled JPEG stored as a data URL), watering interval, one-tap watering, watering history.                                                                                                                                                   |
+| Plants        | Photo (downscaled JPEG stored as a data URL), watering and optional misting schedules, one-tap logging, back-dated entries, care history.                                                                                                              |
 | Reminders     | One-off, daily, weekly or monthly; snooze (15 min, 1 h, tomorrow); completion and snooze history.                                                                                                                                                      |
-| Notifications | In-app checks while open; optional Web Push relay for on-time delivery while closed.                                                                                                                                                                   |
+| Notifications | In-app checks while open; optional Web Push relay for on-time delivery while closed; bell on Home with notification history and clear badge.                                                                                                           |
 | Games         | 14 offline games (The Forgotten Island 3D adventure, 3D runner, snake, blocks, breakout, firefly, meteor, match-3 with 100 levels, merge, sudoku with 3 × 1000 levels, minesweeper, memory, water sort, connect four), full-screen, local high scores. |
 | Appearance    | System / light / dark theme, list or grid views, adjustable Liquid Glass effect, optional page transitions.                                                                                                                                            |
 | Data          | JSON export / import, persistent-storage request, storage usage card.                                                                                                                                                                                  |
@@ -102,7 +103,8 @@ Modules:
 | `installments`  | Installments, payments and their Jalali schedule                                                       |
 | `plants`        | Plants, watering log and schedule                                                                      |
 | `reminders`     | Reminders, recurrence, snooze and history                                                              |
-| `notifications` | Reminder engine, notification ledger, push sync                                                        |
+| `notifications` | Reminder engine, notification ledger and history, push sync                                            |
+| `account`       | Google sign-in, account sync engine, family sharing                                                    |
 | `settings`      | Settings store, backup import/export, theme, glass, transitions, storage cards                         |
 | `games`         | Game catalog, game views, boards, scores and sound effects                                             |
 
@@ -154,11 +156,22 @@ VITE_PUSH_URL=https://life-reminder-push.<you>.workers.dev
 VITE_VAPID_PUBLIC_KEY=<public key>
 ```
 
-### Google Calendar sync
+### Account, family sharing and Google Calendar
 
-On first launch the app offers **Sign in with Google** or **Continue without an account** (also in Settings →
-Account, and the calendar button on Reminders). Signing in shows the user's name and photo and lets the reminders
-calendar show their Google Calendar events (read-only); the worker keeps the sign-in and refreshes it on its own.
+With sign-in turned on, the app requires a Google account: the first screen is **Sign in with Google**, and there
+is no local-only mode. The account (push-worker D1) holds the data; IndexedDB is this device's copy of it.
+Changes upload about 1.5 s after an edit, and other devices' changes arrive every minute and whenever the app is
+opened. The first sign-in uploads whatever was already on the device. Signing out uploads unsaved changes first
+(it refuses while offline), then deletes the data from the device.
+
+**Settings → Family**: invite someone by their Google email. No email is sent: the app opens the share sheet (or
+copies the text) so you send them the app link yourself. They sign in with that same email and accept the invite
+in Settings → Family. Accepting merges their data into the family's, and from then on everyone edits the same data
+(last write wins). Leaving keeps a copy of the current data in a new family of your own. Members can only leave;
+nobody can remove another member.
+
+Signing in also lets the reminders calendar show the user's Google Calendar events (read-only); the worker keeps the
+sign-in and refreshes it on its own.
 
 Setup (once):
 
@@ -169,24 +182,32 @@ Setup (once):
    tap "Advanced → continue".
 3. **Credentials → Create credentials → OAuth client ID → Web application**, authorized redirect URI:
    `https://life-reminder-push.<you>.workers.dev/google/callback`.
-4. Then:
-
-   The feature is **off by default**. Turn it on with `VITE_GOOGLE_SIGN_IN=true` (`.env.local`, and the
-   GitHub Actions build env) once the steps below are done.
+4. Deploy the worker:
 
 ```bash
 cd push-worker
-npx wrangler d1 execute life-reminder-push --remote --file=schema.sql   # adds the google_tokens table
+npx wrangler d1 execute life-reminder-push --remote --file=schema.sql   # google_tokens, members, invites, records
 # wrangler.toml [vars]: GOOGLE_CLIENT_ID = "<client id>"
+# optional, wrangler.toml [vars]: ALLOWED_EMAILS = "me@gmail.com,partner@gmail.com" (invited emails are always allowed)
 npx wrangler secret put GOOGLE_CLIENT_SECRET
 npx wrangler deploy
 ```
 
+`schema.sql` only creates missing tables. A `google_tokens` table made by an older version lacks the `name`,
+`email` and `picture` columns; add them with `ALTER TABLE google_tokens ADD COLUMN <name> TEXT`.
+
+5. Turn it on in the app **only after the worker is deployed** (with it on, the app can't be used without signing
+   in): the repo variable `GOOGLE_SIGN_IN=true` (Settings → Secrets and variables → Actions → Variables), and
+   `VITE_GOOGLE_SIGN_IN=true` in `.env.local` for local dev. The worker answers only `ALLOWED_ORIGIN`
+   (the Pages site), so signing in from `localhost` is blocked by CORS.
+
 ### Privacy
 
-Installments, plants, reminders, photos and settings never leave the device. With push enabled, the relay
-stores only the push subscription and the title, body and time of upcoming notifications. With Google
-Calendar connected, it also stores that Google sign-in (a refresh token), keyed by a hash of the app's random id.
+With sign-in on, installments, plants, reminders, plans and photos are stored in the worker's D1 database, scoped to
+the signed-in user's family; Cloudflare encrypts them at rest, but not end-to-end. Only a Google-verified email is
+accepted as an identity. The app keeps a random session id; the worker stores only its hash, next to the Google
+sign-in (a refresh token). With sign-in off, all data stays on the device. With push enabled, the relay also stores
+the push subscription and the title, body and time of upcoming notifications.
 
 ## Deployment
 
