@@ -7,6 +7,15 @@ import {
   handleGoogleDisconnect,
   handleGoogleEvents,
 } from './google'
+import {
+  handleAccept,
+  handleCancelInvite,
+  handleFamily,
+  handleInvite,
+  handleLeave,
+  handlePull,
+  handlePush,
+} from './data'
 import { sha256Hex } from './hash'
 import { sendPush, type Vapid } from './web-push'
 
@@ -35,6 +44,8 @@ interface Env {
   GOOGLE_CLIENT_SECRET?: string
   /** Origin of the app (e.g. https://user.github.io); "*" when unset. */
   ALLOWED_ORIGIN?: string
+  /** Optional comma-separated emails allowed to sign in to data sync; unset = any verified Google account. */
+  ALLOWED_EMAILS?: string
 }
 
 const text = z.string().max(500)
@@ -277,6 +288,14 @@ const worker = {
     if (request.method === 'POST' && path === '/google/events') return handleGoogleEvents(request, env, cors(env))
     if (request.method === 'POST' && path === '/google/disconnect')
       return handleGoogleDisconnect(request, env, cors(env))
+    const ctx = { env, headers: cors(env) }
+    if (request.method === 'POST' && path === '/data/pull') return handlePull(request, ctx)
+    if (request.method === 'POST' && path === '/data/push') return handlePush(request, ctx)
+    if (request.method === 'POST' && path === '/family') return handleFamily(request, ctx)
+    if (request.method === 'POST' && path === '/family/invite') return handleInvite(request, ctx)
+    if (request.method === 'POST' && path === '/family/cancel') return handleCancelInvite(request, ctx)
+    if (request.method === 'POST' && path === '/family/accept') return handleAccept(request, ctx)
+    if (request.method === 'POST' && path === '/family/leave') return handleLeave(request, ctx)
     return new Response('not found', { status: 404, headers: cors(env) })
   },
   scheduled: (_event: unknown, env: Env) => sendDue(env),

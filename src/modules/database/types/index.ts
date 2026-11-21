@@ -11,6 +11,15 @@ interface LedgerEntry {
   firedAt: string
 }
 
+/** A notification that was shown — kept after it leaves the tray. Written by the app and the service worker. */
+interface NotificationHistoryEntry {
+  id: string
+  title: string
+  body: string
+  url: string
+  at: string
+}
+
 interface LifeDB extends DBSchema {
   installments: { key: string; value: Installment }
   payments: {
@@ -22,12 +31,20 @@ interface LifeDB extends DBSchema {
   waterings: {
     key: string
     value: Watering
-    indexes: { byPlant: string; byPlantDate: [string, string] }
+    indexes: {
+      byPlant: string
+      /** Removed in v4 — named here only so the v1 migration that created it still type-checks. */
+      byPlantDate: [string, string]
+      byPlantKindDate: [string, string, string]
+    }
   }
   reminders: { key: string; value: Reminder }
   reminderEvents: { key: string; value: ReminderEvent; indexes: { byReminder: string } }
   plans: { key: string; value: Plan }
   notificationLedger: { key: string; value: LedgerEntry; indexes: { byFiredAt: string } }
+  notificationHistory: { key: string; value: NotificationHistoryEntry; indexes: { byAt: string } }
+  /** "<store>:<id>" → hash of the record as last synced with the account; absent = never synced. */
+  syncState: { key: string; value: { key: string; hash: string } }
 }
 
 type DataStore = (typeof DATA_STORES)[number]
@@ -39,4 +56,4 @@ type LiveQuery<T> =
   | { status: 'success'; data: T; error: undefined }
   | { status: 'error'; data: undefined; error: Error }
 
-export type { LedgerEntry, LifeDB, DataStore, Db, LiveQuery }
+export type { LedgerEntry, NotificationHistoryEntry, LifeDB, DataStore, Db, LiveQuery }

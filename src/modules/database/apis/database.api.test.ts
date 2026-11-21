@@ -74,13 +74,38 @@ describe('plants', () => {
       image: null,
       wateringIntervalDays: 3,
       lastWateredAt: '2026-10-20',
+      misting: true,
+      mistingIntervalDays: 2,
+      lastMistedAt: '2026-10-20',
       notes: '',
     })
     const now = new Date(2026, 9, 31, 10)
-    expect(await plantRepo.markWatered(plant.id, now)).toBe(true)
-    expect(await plantRepo.markWatered(plant.id, now)).toBe(false)
-    expect(await plantRepo.waterings(plant.id)).toHaveLength(1)
-    expect((await plantRepo.list())[0].lastWateredAt).toBe('2026-10-31')
+    expect(await plantRepo.logCare(plant.id, 'water', '2026-10-31', now)).toBe(true)
+    expect(await plantRepo.logCare(plant.id, 'water', '2026-10-31', now)).toBe(false)
+    // Same day, other kind: separate entry.
+    expect(await plantRepo.logCare(plant.id, 'mist', '2026-10-31', now)).toBe(true)
+    // Back-dated entry older than the last one: recorded, but doesn't move the schedule back.
+    expect(await plantRepo.logCare(plant.id, 'water', '2026-10-25', now)).toBe(true)
+    expect(await plantRepo.waterings(plant.id)).toHaveLength(3)
+    const [saved] = await plantRepo.list()
+    expect(saved.lastWateredAt).toBe('2026-10-31')
+    expect(saved.lastMistedAt).toBe('2026-10-31')
+  })
+
+  it('moves the schedule to a back-dated entry newer than the stored date', async () => {
+    const plant = await plantRepo.create({
+      name: 'فیکوس',
+      image: null,
+      wateringIntervalDays: 7,
+      lastWateredAt: '2026-10-01',
+      misting: false,
+      mistingIntervalDays: 3,
+      lastMistedAt: '2026-10-01',
+      notes: '',
+    })
+    expect(plant.mistingIntervalDays).toBeNull()
+    expect(await plantRepo.logCare(plant.id, 'water', '2026-10-10')).toBe(true)
+    expect((await plantRepo.list()).find((p) => p.id === plant.id)?.lastWateredAt).toBe('2026-10-10')
   })
 })
 

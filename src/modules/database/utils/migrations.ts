@@ -33,6 +33,28 @@ const migrations: Migration[] = [
   (db) => {
     db.createObjectStore('plans', { keyPath: 'id' })
   },
+  // v2 → v3: notification history (public/sw-notifications.js writes it too)
+  (db) => {
+    db.createObjectStore('notificationHistory', { keyPath: 'id' }).createIndex('byAt', 'at')
+  },
+  // v3 → v4: waterings also hold mistings — one entry per plant, kind and day
+  (_db, tx) => {
+    const store = tx.objectStore('waterings')
+    store.deleteIndex('byPlantDate')
+    store.createIndex('byPlantKindDate', ['plantId', 'kind', 'date'], { unique: true })
+    // Runs inside the upgrade transaction: a failure rolls the whole upgrade back.
+    void (async () => {
+      let cursor = await store.openCursor()
+      while (cursor) {
+        if (!cursor.value.kind) await cursor.update({ ...cursor.value, kind: 'water' })
+        cursor = await cursor.continue()
+      }
+    })()
+  },
+  // v4 → v5: account sync bookkeeping
+  (db) => {
+    db.createObjectStore('syncState', { keyPath: 'key' })
+  },
 ]
 
 const DB_VERSION = migrations.length

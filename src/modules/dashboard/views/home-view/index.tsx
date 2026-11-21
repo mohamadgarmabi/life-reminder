@@ -11,6 +11,7 @@ import { Widget } from '#/modules/dashboard/components/widget'
 import { useDashboard } from '#/modules/dashboard/hooks/dashboard.hook'
 import type { WidgetConfig } from '#/modules/dashboard/types'
 import { AGENDA_WIDGETS } from '#/modules/dashboard/utils/dashboard.constants'
+import { NotificationCenter } from '#/modules/notifications/components/notification-center'
 import { ErrorState, PageHeader } from '#/modules/shell/components/states'
 import { t } from '#/modules/shell/utils/i18n'
 
@@ -66,9 +67,12 @@ const HomeView = () => {
         title={t('dashboard.home.title')}
         description={dateLabel}
         action={
-          <Button variant={editing ? 'default' : 'secondary'} size="sm" onClick={toggleEditing}>
-            {editLabel}
-          </Button>
+          <div className="flex items-center gap-2">
+            <NotificationCenter />
+            <Button variant={editing ? 'default' : 'secondary'} size="sm" onClick={toggleEditing}>
+              {editLabel}
+            </Button>
+          </div>
         }
       />
 

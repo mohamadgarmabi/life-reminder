@@ -4,7 +4,7 @@ import type { Installment } from '#/modules/installments/types'
 import { nextPayment } from '#/modules/installments/utils/schedule'
 import { plantRepo } from '#/modules/plants/apis/plants.api'
 import type { Plant } from '#/modules/plants/types'
-import { nextWateringDate, wateringEveryLabel } from '#/modules/plants/utils/schedule'
+import { nextMistingDate, nextWateringDate, wateringEveryLabel } from '#/modules/plants/utils/schedule'
 import { reminderRepo } from '#/modules/reminders/apis/reminders.api'
 import type { Reminder } from '#/modules/reminders/types'
 import { dueAt } from '#/modules/reminders/utils/schedule'
@@ -66,6 +66,24 @@ const collectCandidates = (data: Data, defaultTime: string, now: Date): Candidat
     })
   }
 
+  for (const plant of data.plants) {
+    const next = nextMistingDate(plant)
+    if (!next || !plant.mistingIntervalDays) continue
+    const fireAt = atTime(next, defaultTime)
+    if (fireAt > now) continue
+    out.push({
+      keys: [`plant-mist:${plant.id}:${next}`],
+      fireAt,
+      tag: `plant-mist:${plant.id}`,
+      path: '/plants',
+      title: t('notifications.mistTitle', { name: plant.name }),
+      body: t('notifications.mistBody', {
+        every: wateringEveryLabel(plant.mistingIntervalDays),
+        when: relativeDay(next, now),
+      }),
+    })
+  }
+
   for (const r of data.reminders) {
     const at = dueAt(r)
     if (!at || at > now) continue
@@ -90,6 +108,10 @@ const upcomingCandidates = (data: Data, defaultTime: string, now: Date): Candida
       return next ? [...inst.reminderDaysBefore, 0].map((d) => atTime(addDaysIso(next.dueDate, -d), defaultTime)) : []
     }),
     ...data.plants.map((p) => atTime(nextWateringDate(p), defaultTime)),
+    ...data.plants.flatMap((p) => {
+      const mist = nextMistingDate(p)
+      return mist ? [atTime(mist, defaultTime)] : []
+    }),
     ...data.reminders.flatMap((r) => dueAt(r) ?? []),
   ]
   const future = [...new Set(times.map((t) => t.getTime()))].filter((t) => t > now.getTime()).sort((a, b) => a - b)

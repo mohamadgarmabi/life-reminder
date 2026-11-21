@@ -29,11 +29,15 @@ const session = z.string().regex(/^[a-f0-9]{64}$/)
 /** Selected calendars read per request; keeps one request well under the Workers subrequest limit. */
 const MAX_CALENDARS = 10
 
-const profileSchema = z.object({
-  name: z.string().catch(''),
-  email: z.string().catch(''),
-  picture: z.string().startsWith('https://').catch(''),
-})
+// Email is the account identity for data sync and family invites, so an unverified one is dropped.
+const profileSchema = z
+  .object({
+    name: z.string().catch(''),
+    email: z.string().catch(''),
+    email_verified: z.boolean().catch(false),
+    picture: z.string().startsWith('https://').catch(''),
+  })
+  .transform(({ email, email_verified, ...p }) => ({ ...p, email: email_verified ? email.toLowerCase() : '' }))
 
 /** The id_token comes straight from Google's token endpoint over TLS, so its payload is read without verifying. */
 const profileFromIdToken = (idToken: string | undefined) => {

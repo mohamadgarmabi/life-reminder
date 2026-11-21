@@ -1,5 +1,6 @@
 import { PageHeader } from '#/modules/shell/components/states'
 import { AccountCard } from '#/modules/account/components/account-card'
+import { FamilyCard } from '#/modules/account/components/family-card'
 import { AnalysisCard } from '#/modules/settings/components/analysis-card'
 import { DataCard } from '#/modules/settings/components/data-card'
 import { LanguageCard } from '#/modules/settings/components/language-card'
@@ -21,6 +22,7 @@ const SettingsView = () => {
       <PageHeader title={t('settings.title')} />
       <div className="space-y-6">
         <AccountCard />
+        <FamilyCard />
         <NotificationsCard />
         <AnalysisCard />
         <SettingsSection title={t('settings.appearance')}>

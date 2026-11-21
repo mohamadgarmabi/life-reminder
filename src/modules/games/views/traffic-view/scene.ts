@@ -48,11 +48,11 @@ type CameraView = 'chase' | 'cockpit'
 
 /** Driver's eye in each vehicle, as fractions of (width, height, length); x < 0 = left seat, z < 0 = towards the front. */
 const COCKPIT: Record<(typeof VEHICLES)[number]['id'], [number, number, number]> = {
-  hatch: [-0.21, 0.74, 0.06],
-  sedan: [-0.21, 0.74, 0.08],
-  classic: [-0.21, 0.74, 0.08],
-  pickup: [-0.21, 0.72, -0.05],
-  truck: [-0.22, 0.66, -0.36],
+  hatch: [-0.21, 0.82, 0.06],
+  sedan: [-0.21, 0.82, 0.08],
+  classic: [-0.21, 0.82, 0.08],
+  pickup: [-0.21, 0.8, -0.05],
+  truck: [-0.22, 0.74, -0.36],
 }
 
 type TrafficScene = {
@@ -102,7 +102,10 @@ const readSky = (sky: THREE.DataTexture) => {
       n++
     }
   horizon.multiplyScalar(1 / n)
-  for (let i = 0; i < data.length; i++) if (data[i] > SKY_CAP) data[i] = SKY_CAP
+  // Loaded as float32 so it can be read here; uploaded as half float because float32 textures can't be linearly
+  // filtered without OES_texture_float_linear (missing on iOS) and then sample black: sky and lighting go dark.
+  sky.image = { data: Uint16Array.from(data, (v) => THREE.DataUtils.toHalfFloat(Math.min(v, SKY_CAP))), width, height }
+  sky.type = THREE.HalfFloatType
   sky.needsUpdate = true
   return { sun, horizon }
 }
@@ -650,6 +653,11 @@ const createTrafficScene = async (
   )
   const eyeWorld = new THREE.Vector3()
   let view: CameraView = 'chase'
+  // Some models fill the cabin with a black "void" box behind tinted glass; from the driver's seat both block the view.
+  const cabinBlockers: THREE.Object3D[] = []
+  playerCar.holder.traverse((o) => {
+    if (o instanceof THREE.Mesh && /void|glass/i.test((o.material as THREE.Material).name)) cabinBlockers.push(o)
+  })
 
   // Traffic: each vehicle type baked once (a handful of draw calls), then cloned into every pool slot.
   const templates = VEHICLES.map((spec, i) => {
@@ -766,10 +774,10 @@ const createTrafficScene = async (
     camX += (r.x * 0.8 - camX) * Math.min(1, dt * 4)
     const buzz = r.alive ? Math.sin(t * 53) * 0.008 * pace : Math.sin(crashTime * 40) * 0.05 * Math.exp(-crashTime * 4)
     if (view === 'cockpit') {
-      // Driver's seat: turns and leans with the car, eyes slightly down the road.
+      // Driver's seat: turns and leans with the car, tilted down enough that the road shows past the hood.
       eyeWorld.copy(eye).applyEuler(player.rotation).add(player.position)
       camera.position.set(eyeWorld.x, eyeWorld.y + buzz * 0.6, eyeWorld.z)
-      camera.rotation.set(-0.05, player.rotation.y, player.rotation.z * 1.4)
+      camera.rotation.set(-0.13, player.rotation.y, player.rotation.z * 1.4)
       camera.near = 0.03
       camera.fov = 64 + pace * 10
     } else {
@@ -810,6 +818,7 @@ const createTrafficScene = async (
   return {
     setView: (next) => {
       view = next
+      for (const o of cabinBlockers) o.visible = next !== 'cockpit'
       draw(0)
     },
     setPlaying: (on) => {

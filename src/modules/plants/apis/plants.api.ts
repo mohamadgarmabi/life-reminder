@@ -2,7 +2,16 @@ import { abortTx, getDb, newId, validRecords } from '#/modules/database/apis/dat
 import { notifyDbChange } from '#/modules/database/utils/live'
 import { nowIso, todayIso } from '#/modules/shell/utils/dates'
 import { plantSchema, wateringSchema } from '#/modules/plants/utils/plants.schema'
-import { type Plant, type PlantFormValues, type Watering } from '#/modules/plants/types'
+import { type CareKind, type Plant, type PlantFormValues, type Watering } from '#/modules/plants/types'
+import type { IsoDate } from '#/modules/shell/types'
+
+/** Form values → stored fields: misting settings are kept only while misting is on. */
+const fromForm = ({ misting, mistingIntervalDays, lastMistedAt, notes, ...rest }: PlantFormValues) => ({
+  ...rest,
+  notes: notes.trim() || null,
+  mistingIntervalDays: misting ? mistingIntervalDays : null,
+  lastMistedAt: misting ? lastMistedAt : null,
+})
 
 const plantRepo = {
   list: async (): Promise<Plant[]> => {
@@ -13,9 +22,8 @@ const plantRepo = {
   create: async (values: PlantFormValues): Promise<Plant> => {
     const now = nowIso()
     const record = plantSchema.parse({
-      ...values,
+      ...fromForm(values),
       id: newId(),
-      notes: values.notes.trim() || null,
       createdAt: now,
       updatedAt: now,
     })
@@ -30,8 +38,7 @@ const plantRepo = {
     const current = plantSchema.parse(await tx.store.get(id))
     const record = plantSchema.parse({
       ...current,
-      ...values,
-      notes: values.notes.trim() || null,
+      ...fromForm(values),
       updatedAt: nowIso(),
     })
     await tx.store.put(record)
@@ -56,20 +63,21 @@ const plantRepo = {
     return validRecords(wateringSchema, rows, 'waterings').sort((a, b) => b.date.localeCompare(a.date))
   },
 
-  markWatered: async (id: string, now: Date = new Date()): Promise<boolean> => {
-    const date = todayIso(now)
+  /** Records a watering or misting on `date` (default today). False if that day is already recorded. */
+  logCare: async (id: string, kind: CareKind, date: IsoDate = todayIso(), now: Date = new Date()): Promise<boolean> => {
     const db = await getDb()
     const tx = db.transaction(['plants', 'waterings'], 'readwrite')
-    const waterings = tx.objectStore('waterings')
-    if (await waterings.index('byPlantDate').getKey([id, date])) {
+    const logs = tx.objectStore('waterings')
+    if (await logs.index('byPlantKindDate').getKey([id, kind, date])) {
       abortTx(tx)
       return false
     }
     const plant = plantSchema.parse(await tx.objectStore('plants').get(id))
-    await waterings.add({ id: newId(), plantId: id, date, wateredAt: now.toISOString() })
-    if (date > plant.lastWateredAt) {
-      await tx.objectStore('plants').put({ ...plant, lastWateredAt: date, updatedAt: nowIso() })
-    }
+    await logs.add({ id: newId(), plantId: id, kind, date, wateredAt: now.toISOString() })
+    const field = kind === 'water' ? 'lastWateredAt' : 'lastMistedAt'
+    // A back-dated entry only moves the schedule if it is newer than what is stored.
+    const last = plant[field]
+    if (!last || date > last) await tx.objectStore('plants').put({ ...plant, [field]: date, updatedAt: nowIso() })
     await tx.done
     notifyDbChange()
     return true

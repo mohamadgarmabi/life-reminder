@@ -1,5 +1,6 @@
 import { createFetch } from 'tanstack-fetch'
 import type { PermissionStatus, AppNotification } from '#/modules/notifications/types'
+import { addHistory } from '#/modules/notifications/utils/notification-history'
 
 const permissionStatus = (): PermissionStatus => {
   return typeof window !== 'undefined' && 'Notification' in window ? Notification.permission : 'unsupported'
@@ -21,6 +22,8 @@ const showNotification = async (n: AppNotification) => {
     dir: 'rtl',
     data: { url: `${import.meta.env.BASE_URL}${n.path.replace(/^\//, '')}` },
   }
+  // History is a convenience; failing to record it must not block the notification.
+  void addHistory({ title: n.title, body: n.body, url: options.data.url }).catch(() => {})
   // Android Chrome only allows notifications through a service worker registration.
   const registration = await navigator.serviceWorker?.getRegistration()
   if (registration) {
@@ -37,6 +40,19 @@ const syncBadge = async () => {
   if (!registration?.getNotifications || !('setAppBadge' in navigator)) return
   const count = (await registration.getNotifications()).length
   await (count ? navigator.setAppBadge(count) : navigator.clearAppBadge())
+}
+
+/** Notifications still in the tray (what the badge counts). 0 where the tray can't be read. */
+const trayCount = async () => {
+  const registration = await navigator.serviceWorker?.getRegistration()
+  return registration?.getNotifications ? (await registration.getNotifications()).length : 0
+}
+
+/** Removes every notification from the tray and the app icon badge. History is kept. */
+const clearTray = async () => {
+  const registration = await navigator.serviceWorker?.getRegistration()
+  for (const n of (await registration?.getNotifications?.()) ?? []) n.close()
+  if ('clearAppBadge' in navigator) await navigator.clearAppBadge()
 }
 
 const PUSH_URL = import.meta.env.VITE_PUSH_URL
@@ -74,4 +90,4 @@ const syncPush = async (items: (AppNotification & { fireAt: Date; keys: string[]
   })
 }
 
-export { permissionStatus, requestPermission, showNotification, syncBadge, syncPush }
+export { permissionStatus, requestPermission, showNotification, syncBadge, syncPush, trayCount, clearTray }

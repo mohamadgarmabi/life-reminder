@@ -11,6 +11,7 @@ const PlantForm = ({ initial, onSubmit }: PlantFormProps) => {
     form,
     fileId,
     image,
+    misting,
     analysis,
     analysisInterval,
     canAnalyze,
@@ -96,6 +97,17 @@ const PlantForm = ({ initial, onSubmit }: PlantFormProps) => {
         {(f) => <f.NumberField label={t('plants.interval')} suffix={t('plants.days')} />}
       </form.AppField>
       <form.AppField name="lastWateredAt">{(f) => <f.DateField label={t('plants.lastWatered')} />}</form.AppField>
+      <form.AppField name="misting">
+        {(f) => <f.SwitchField label={t('plants.misting')} description={t('plants.mistingHint')} />}
+      </form.AppField>
+      {misting && (
+        <>
+          <form.AppField name="mistingIntervalDays">
+            {(f) => <f.NumberField label={t('plants.mistingInterval')} suffix={t('plants.days')} />}
+          </form.AppField>
+          <form.AppField name="lastMistedAt">{(f) => <f.DateField label={t('plants.lastMisted')} />}</form.AppField>
+        </>
+      )}
       <form.AppField name="notes">
         {(f) => <f.TextareaField label={t('plants.notes')} placeholder={t('plants.notesPlaceholder')} />}
       </form.AppField>

@@ -34,7 +34,6 @@ const useWelcome = () => {
     iconSrc: `${import.meta.env.BASE_URL}pwa-192x192.png`,
     handleSignIn: signIn,
     handleCancel: cancelSignIn,
-    handleSkip: finish,
   }
 }
 

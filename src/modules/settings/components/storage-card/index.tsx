@@ -17,13 +17,13 @@ const StorageCard = () => {
         icon={Database}
         tone="bg-slate-500"
         title={t('settings.storage.database')}
-        trailing={value(dbStatusLabel)}
+        description={<bdi>{dbStatusLabel}</bdi>}
       />
       <SettingsRow
         icon={ShieldCheck}
         tone="bg-teal-500"
         title={t('settings.storage.persistence')}
-        trailing={value(persistenceLabel)}
+        description={persistenceLabel}
       />
       {usage && (
         <SettingsRow icon={HardDrive} tone="bg-gray-500" title={t('settings.storage.usage')} trailing={value(usage)} />

@@ -22,6 +22,9 @@ const usePlantForm = ({ initial, onSubmit }: PlantFormProps) => {
       image: initial?.image ?? null,
       wateringIntervalDays: initial?.wateringIntervalDays ?? 7,
       lastWateredAt: initial?.lastWateredAt ?? todayIso(),
+      misting: !!initial?.mistingIntervalDays,
+      mistingIntervalDays: initial?.mistingIntervalDays ?? 3,
+      lastMistedAt: initial?.lastMistedAt ?? todayIso(),
       notes: initial?.notes ?? '',
     } satisfies PlantFormValues as PlantFormValues,
     validationLogic: revalidateLogic(),
@@ -30,6 +33,7 @@ const usePlantForm = ({ initial, onSubmit }: PlantFormProps) => {
   })
   const imageField = useField({ form, name: 'image' })
   const image = useStore(imageField.store, (s) => s.value)
+  const misting = useStore(form.store, (s) => s.values.misting)
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -79,6 +83,7 @@ const usePlantForm = ({ initial, onSubmit }: PlantFormProps) => {
     form,
     fileId,
     image,
+    misting,
     analysis,
     analysisInterval: analysis ? wateringEveryLabel(analysis.wateringIntervalDays) : '',
     canAnalyze: isPlantAiAvailable && !!image && !isAnalyzing && !analysis,

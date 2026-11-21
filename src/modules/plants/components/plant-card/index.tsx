@@ -1,4 +1,4 @@
-import { Check, Droplets, History, MoreVertical, Pencil, Sprout } from 'lucide-react'
+import { Check, Droplets, History, MoreVertical, Pencil, SprayCan, Sprout } from 'lucide-react'
 import { SwipeRow } from '#/modules/shell/components/swipe-row'
 import { Button } from '#/components/button'
 import { Card, CardContent } from '#/components/card'
@@ -20,6 +20,12 @@ const PlantCard = ({ plant, today, onEdit, onHistory, onDelete }: PlantCardProps
     waterDisabled,
     waterLabel,
     water,
+    hasMisting,
+    mistLabel,
+    mistStatusLabel,
+    mistClassName,
+    mistDisabled,
+    mist,
   } = usePlantCard({ plant, today })
 
   return (
@@ -89,10 +95,30 @@ const PlantCard = ({ plant, today, onEdit, onHistory, onDelete }: PlantCardProps
             <Droplets className="me-1 inline size-3.5 align-[-2px] @xs:size-4" aria-hidden />
             {statusLabel}
           </p>
-          <Button size="sm" variant={'default'} className={waterClassName} onClick={water} disabled={waterDisabled}>
-            {wateredToday ? <Check /> : <Droplets />}
-            <span className="truncate">{waterLabel}</span>
-          </Button>
+          {hasMisting && (
+            <p className="truncate text-[11px] text-muted-foreground @xs:text-xs">
+              <SprayCan className="me-1 inline size-3.5 align-[-2px]" aria-hidden />
+              {mistStatusLabel}
+            </p>
+          )}
+          <div className="mt-auto flex gap-2">
+            <Button size="sm" variant={'default'} className={waterClassName} onClick={water} disabled={waterDisabled}>
+              {wateredToday ? <Check /> : <Droplets />}
+              <span className="truncate">{waterLabel}</span>
+            </Button>
+            {hasMisting && (
+              <Button
+                size="icon-sm"
+                className={mistClassName}
+                onClick={mist}
+                disabled={mistDisabled}
+                aria-label={mistLabel}
+                title={mistLabel}
+              >
+                <SprayCan />
+              </Button>
+            )}
+          </div>
         </CardContent>
       </Card>
     </SwipeRow>

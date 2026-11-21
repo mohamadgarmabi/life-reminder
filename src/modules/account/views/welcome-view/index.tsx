@@ -5,7 +5,7 @@ import { useWelcome } from '#/modules/account/hooks/welcome.hook'
 import { useI18n } from '#/modules/shell/hooks/i18n.hook'
 
 const WelcomeView = () => {
-  const { features, canSignIn, isWaiting, signInLabel, iconSrc, handleSignIn, handleCancel, handleSkip } = useWelcome()
+  const { features, canSignIn, isWaiting, signInLabel, iconSrc, handleSignIn, handleCancel } = useWelcome()
   const { t } = useI18n()
 
   return (
@@ -41,9 +41,6 @@ const WelcomeView = () => {
             {t('account.welcome.cancel')}
           </Button>
         )}
-        <Button size="lg" variant="outline" className="w-full" onClick={handleSkip}>
-          {t('account.welcome.skip')}
-        </Button>
         {canSignIn && <p className="text-center text-xs text-muted-foreground">{t('account.welcome.calendarHint')}</p>}
       </div>
     </main>

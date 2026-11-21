@@ -1,6 +1,8 @@
 import type { z } from 'zod'
 import type { IsoDate } from '#/modules/shell/types'
 import type {
+  careKindSchema,
+  careLogSchema,
   plantDiagnosisSchema,
   plantFormSchema,
   plantIdentifySchema,
@@ -11,6 +13,10 @@ import type {
 type Plant = z.infer<typeof plantSchema>
 
 type Watering = z.infer<typeof wateringSchema>
+
+type CareKind = z.infer<typeof careKindSchema>
+
+type CareLogValues = z.infer<typeof careLogSchema>
 
 type PlantFormValues = z.infer<typeof plantFormSchema>
 
@@ -27,7 +33,7 @@ type PlantFormProps = {
   onSubmit: (values: PlantFormValues) => Promise<void>
 }
 
-type WateringHistoryProps = { plantId: string }
+type WateringHistoryProps = { plant: Plant }
 
 type PlantIdentify = z.infer<typeof plantIdentifySchema>
 
@@ -38,6 +44,8 @@ type PlantsDialog = { type: 'create' | 'doctor' } | { type: 'edit' | 'history'; 
 export type {
   Plant,
   Watering,
+  CareKind,
+  CareLogValues,
   PlantFormValues,
   PlantCardProps,
   PlantFormProps,

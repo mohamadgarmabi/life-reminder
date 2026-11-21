@@ -120,7 +120,7 @@ const PlantsView = () => {
         title={t('plants.history')}
         description={historyDescription}
       >
-        {historyPlant && <WateringHistory plantId={historyPlant.id} />}
+        {historyPlant && <WateringHistory plant={historyPlant} />}
       </FormDialog>
 
       <FormDialog

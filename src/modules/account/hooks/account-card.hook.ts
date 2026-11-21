@@ -15,7 +15,7 @@ const useAccountCard = () => {
         ? t('account.waiting')
         : (error?.message ?? t('account.hint')),
     handleSignIn: signIn,
-    handleSignOut: signOut,
+    handleSignOut: () => void signOut(),
     handleCancel: cancelSignIn,
   }
 }

@@ -8,6 +8,7 @@ import {
   newGoogleSession,
   signOutGoogle,
 } from '#/modules/account/apis/google-account.api'
+import { signOutDevice } from '#/modules/account/utils/sync-engine'
 import { settingsStore, updateSettings } from '#/modules/settings/stores/settings.store'
 import { t } from '#/modules/shell/utils/i18n'
 
@@ -36,9 +37,18 @@ const useGoogleAccount = () => {
     window.open(googleSignInUrl(next), '_blank')
   }
 
-  const signOut = () => {
+  // The account's data is removed from this device, so unsaved changes are uploaded first.
+  const signOut = async () => {
+    // An expired/revoked sign-in can't upload anything; signing out must still be possible then.
+    const expired = q.data?.connected === false
+    try {
+      await signOutDevice(expired)
+    } catch {
+      toast.error(t('account.syncFailed'))
+      return
+    }
     if (session) void signOutGoogle(session)
-    updateSettings({ googleSession: null })
+    updateSettings({ googleSession: null, welcomeSeen: false })
     toast.success(t('account.signedOut'))
   }
 
