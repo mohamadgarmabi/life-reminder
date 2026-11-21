@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { profileFromIdToken } from './google'
+import { plainText, profileFromIdToken } from './google'
 
 const b64url = (obj: object) =>
   btoa(String.fromCharCode(...new TextEncoder().encode(JSON.stringify(obj))))
@@ -22,5 +22,12 @@ describe('profileFromIdToken', () => {
     expect(profileFromIdToken(undefined)).toEqual({ name: '', email: '', picture: '' })
     expect(profileFromIdToken('h.%%%.s')).toEqual({ name: '', email: '', picture: '' })
     expect(profileFromIdToken(`h.${b64url({ picture: 'javascript:alert(1)' })}.s`).picture).toBe('')
+  })
+})
+
+describe('plainText', () => {
+  it('turns an HTML event description into plain text', () => {
+    expect(plainText('<p>Room <b>3</b> &amp; Zoom</p><br>link&nbsp;here')).toBe('Room 3 & Zoom\n\nlink here')
+    expect(plainText(undefined)).toBe('')
   })
 })

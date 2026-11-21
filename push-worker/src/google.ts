@@ -188,6 +188,21 @@ const calendarListSchema = z.object({
   items: z.array(z.object({ id: z.string(), selected: z.boolean().optional() })).catch([]),
 })
 
+/** Google event descriptions may be HTML; the app shows plain text (rendered as text, never as HTML). */
+const plainText = (html = '') =>
+  html
+    .replace(/<br\s*\/?>|<\/(p|div|li)>/gi, '\n')
+    .replace(/<[^>]*>/g, '')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&amp;/g, '&')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim()
+    .slice(0, 500)
+
 const when = z.object({ dateTime: z.string().optional(), date: z.string().optional() })
 const eventsSchema = z.object({
   items: z
@@ -195,6 +210,7 @@ const eventsSchema = z.object({
       z.object({
         id: z.string(),
         summary: z.string().optional(),
+        description: z.string().optional(),
         status: z.string().optional(),
         start: when,
         end: when,
@@ -249,7 +265,7 @@ const handleGoogleEvents = async (request: Request, env: GoogleEnv, headers: Rec
         timeMin: body.data.timeMin,
         timeMax: body.data.timeMax,
         maxResults: '2500',
-        fields: 'items(id,summary,status,start,end)',
+        fields: 'items(id,summary,description,status,start,end)',
       }).catch(() => null)
       if (!res?.ok) return []
       return eventsSchema
@@ -259,6 +275,7 @@ const handleGoogleEvents = async (request: Request, env: GoogleEnv, headers: Rec
           id: `${c.id}:${e.id}`,
           // Empty when untitled; the app shows its own "Untitled" in the user's language.
           title: e.summary ?? '',
+          description: plainText(e.description),
           start: e.start.dateTime ?? e.start.date,
           end: e.end.dateTime ?? e.end.date ?? e.start.dateTime ?? e.start.date,
           allDay: !e.start.dateTime,
@@ -283,6 +300,7 @@ const handleGoogleDisconnect = async (request: Request, env: GoogleEnv, headers:
 }
 
 export {
+  plainText,
   handleGoogleAuth,
   handleGoogleCallback,
   handleGoogleAccount,

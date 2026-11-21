@@ -144,7 +144,7 @@ const RemindersView = () => {
         )}
         <ol className="relative space-y-3 before:absolute before:inset-y-2 before:start-[3.25rem] before:border-s before:border-dashed before:border-border">
           {rows.map((row) => (
-            <li key={row.key} className="grid grid-cols-[3.25rem_1fr] items-center gap-3">
+            <li key={row.key} className="grid grid-cols-[3.25rem_minmax(0,1fr)] items-center gap-3">
               <time className="text-center text-xs font-medium text-muted-foreground">{row.timeLabel}</time>
               <TimelineCard {...row} />
             </li>

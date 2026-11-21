@@ -174,10 +174,11 @@ const useReminders = () => {
       key: entry.key,
       title: isReminder ? entry.reminder.title : entry.event.title,
       subtitle: isReminder
-        ? [t(RECURRENCE_LABEL[entry.reminder.recurrence]), entry.reminder.description].filter(Boolean).join(' · ')
+        ? t(RECURRENCE_LABEL[entry.reminder.recurrence])
         : entry.allDay
           ? t('reminders.allDay')
           : t('reminders.until', { time: formatTime(entry.event.end) }),
+      description: (isReminder ? entry.reminder.description : entry.event.description) ?? '',
       timeLabel: entry.allDay ? t('reminders.allDay') : formatTime(entry.at),
       badge: t(BADGE[status]),
       badgeClassName: cn(
@@ -185,7 +186,7 @@ const useReminders = () => {
         status === 'overdue' ? 'bg-destructive text-destructive-foreground' : 'bg-secondary text-secondary-foreground',
       ),
       cardClassName: cn('relative flex items-center gap-3 rounded-3xl p-3 text-card-foreground', TONE[status]),
-      titleClassName: cn('truncate font-semibold', status === 'done' && 'line-through opacity-70'),
+      titleClassName: cn('line-clamp-2 font-semibold break-words', status === 'done' && 'line-through opacity-70'),
       Icon: isReminder ? (status === 'done' ? Check : Bell) : CalendarDays,
       menu: isReminder ? menuFor(entry) : null,
       swipe: isReminder ? swipeFor(entry) : null,

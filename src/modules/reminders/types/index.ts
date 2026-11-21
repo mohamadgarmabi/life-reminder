@@ -30,6 +30,8 @@ type RemindersDialog = { type: 'create' } | { type: 'edit' | 'history'; item: Re
 type CalendarEvent = {
   id: string
   title: string
+  /** Plain text; empty when the event has none. */
+  description: string
   start: Date
   end: Date
   allDay: boolean
@@ -38,6 +40,7 @@ type CalendarEvent = {
 type TimelineCardProps = {
   title: string
   subtitle: string
+  description: string
   badge: string
   badgeClassName: string
   cardClassName: string

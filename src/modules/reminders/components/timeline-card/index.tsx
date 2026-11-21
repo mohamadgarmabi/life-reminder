@@ -8,6 +8,7 @@ import type { TimelineCardProps } from '#/modules/reminders/types'
 const TimelineCard = ({
   title,
   subtitle,
+  description,
   badge,
   badgeClassName,
   cardClassName,
@@ -25,6 +26,9 @@ const TimelineCard = ({
       <div className="min-w-0 flex-1 space-y-1">
         <span className={badgeClassName}>{badge}</span>
         <p className={titleClassName}>{title}</p>
+        {description && (
+          <p className="line-clamp-3 text-xs break-words whitespace-pre-line opacity-80">{description}</p>
+        )}
         {subtitle && <p className="truncate text-xs opacity-70">{subtitle}</p>}
       </div>
       {menu && (

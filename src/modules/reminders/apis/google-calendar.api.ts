@@ -9,7 +9,17 @@ import type { CalendarEvent } from '#/modules/reminders/types'
 const responseSchema = z.object({
   connected: z.boolean(),
   events: z
-    .array(z.object({ id: z.string(), title: z.string(), start: z.string(), end: z.string(), allDay: z.boolean() }))
+    .array(
+      z.object({
+        id: z.string(),
+        title: z.string(),
+        // default: a worker deployed before descriptions were fetched
+        description: z.string().default(''),
+        start: z.string(),
+        end: z.string(),
+        allDay: z.boolean(),
+      }),
+    )
     .default([]),
 })
 
