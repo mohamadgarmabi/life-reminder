@@ -1,4 +1,4 @@
-import { LogOut, Mail, UserPlus, Users, X } from 'lucide-react'
+import { LogOut, Mail, Share2, UserPlus, Users, X } from 'lucide-react'
 import { Button } from '#/components/button'
 import { Input } from '#/components/input'
 import { useFamilyCard } from '#/modules/account/hooks/family-card.hook'
@@ -60,15 +60,20 @@ const FamilyCard = () => {
           title={s.email}
           description={t('account.family.pending')}
           trailing={
-            <Button
-              size="icon-sm"
-              variant="ghost"
-              onClick={s.onCancel}
-              disabled={busy}
-              aria-label={t('account.family.cancelInvite')}
-            >
-              <X />
-            </Button>
+            <>
+              <Button size="icon-sm" variant="ghost" onClick={s.onShare} aria-label={t('account.family.sendLink')}>
+                <Share2 />
+              </Button>
+              <Button
+                size="icon-sm"
+                variant="ghost"
+                onClick={s.onCancel}
+                disabled={busy}
+                aria-label={t('account.family.cancelInvite')}
+              >
+                <X />
+              </Button>
+            </>
           }
         />
       ))}

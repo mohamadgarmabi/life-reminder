@@ -12,6 +12,26 @@ type Confirm = { type: 'accept'; familyId: string; from: string } | { type: 'lea
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
+/**
+ * Invites aren't emailed (no mail service): the inviter sends the app link themselves.
+ * Share sheet where available, otherwise the message is copied.
+ */
+const shareInvite = async (email: string) => {
+  const url = new URL(import.meta.env.BASE_URL, location.origin).href
+  const text = t('account.family.shareText', { email })
+  if (navigator.share) {
+    // Rejects when the user closes the sheet; nothing to do then.
+    await navigator.share({ title: t('account.welcome.appName'), text, url }).catch(() => {})
+    return
+  }
+  try {
+    await navigator.clipboard.writeText(`${text}\n${url}`)
+    toast.success(t('account.family.copied'))
+  } catch {
+    toast.info(`${text}\n${url}`)
+  }
+}
+
 const useFamilyCard = () => {
   const session = useSelector(settingsStore, (s) => (s.welcomeSeen ? s.googleSession : null))
   const queryClient = useQueryClient()
@@ -25,8 +45,9 @@ const useFamilyCard = () => {
   const [busy, setBusy] = useState(false)
   const [confirm, setConfirm] = useState<Confirm>(null)
 
+  /** True when the task succeeded. */
   const run = async (task: () => Promise<unknown>, success: string, resync = false) => {
-    if (!session) return
+    if (!session) return false
     setBusy(true)
     try {
       await task()
@@ -34,8 +55,10 @@ const useFamilyCard = () => {
       if (resync) await syncNow()
       await queryClient.invalidateQueries({ queryKey: ['family'] })
       toast.success(success)
+      return true
     } catch {
       toast.error(t('account.family.failed'))
+      return false
     } finally {
       setBusy(false)
     }
@@ -46,9 +69,11 @@ const useFamilyCard = () => {
     const target = email.trim().toLowerCase()
     if (!EMAIL.test(target)) return toast.error(t('account.family.invalidEmail'))
     if (target === q.data?.me) return toast.error(t('account.family.self'))
-    void run(() => inviteToFamily(session ?? '', target), t('account.family.invited', { email: target })).then(() =>
-      setEmail(''),
-    )
+    void run(() => inviteToFamily(session ?? '', target), t('account.family.invited', { email: target })).then((ok) => {
+      if (!ok) return
+      setEmail('')
+      void shareInvite(target)
+    })
   }
 
   const handleConfirm = () => {
@@ -73,6 +98,7 @@ const useFamilyCard = () => {
     })),
     sent: (data?.sent ?? []).map((s) => ({
       email: s,
+      onShare: () => void shareInvite(s),
       onCancel: () => void run(() => cancelInvite(session ?? '', s), t('account.family.cancelled')),
     })),
     canLeave: (data?.members.length ?? 0) > 1,
