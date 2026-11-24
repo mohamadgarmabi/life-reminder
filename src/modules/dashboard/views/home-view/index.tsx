@@ -62,7 +62,7 @@ const HomeView = () => {
   )
 
   return (
-    <>
+    <div className="relative isolate">
       <PageHeader
         title={t('dashboard.home.title')}
         description={dateLabel}
@@ -85,7 +85,7 @@ const HomeView = () => {
           {widgets.map(widget)}
         </div>
       </div>
-    </>
+    </div>
   )
 }
 

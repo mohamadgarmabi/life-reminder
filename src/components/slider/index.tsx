@@ -1,19 +1,23 @@
 import { cn } from '#/modules/shell/utils/cn'
-import { Slider as SliderPrimitive } from 'radix-ui'
-import { sliderVariants, sliderTrackVariants, sliderRangeVariants, sliderThumbVariants } from './slider.styles'
+import { RangeSlider } from '#/components/liquid-glass/controls/RangeSlider'
 import type { SliderProps } from './slider.types'
 
-// Direction (RTL) comes from the app's DirectionProvider, which Radix reads itself.
-const Slider = ({ className, label, ...props }: SliderProps) => {
+const Slider = ({ className, label, value, defaultValue, onValueChange, disabled, min, max, step, name }: SliderProps) => {
+  const initial = value?.[0] ?? defaultValue?.[0] ?? min ?? 0
+
   return (
-    <SliderPrimitive.Root data-slot="slider" className={cn(sliderVariants(), className)} {...props}>
-      <SliderPrimitive.Track data-slot="slider-track" className={sliderTrackVariants()}>
-        <SliderPrimitive.Range data-slot="slider-range" className={sliderRangeVariants()} />
-      </SliderPrimitive.Track>
-      {(props.value ?? props.defaultValue ?? [0]).map((_, i) => (
-        <SliderPrimitive.Thumb key={i} data-slot="slider-thumb" aria-label={label} className={sliderThumbVariants()} />
-      ))}
-    </SliderPrimitive.Root>
+    <div data-slot="slider" className={cn(disabled && 'pointer-events-none opacity-50', className)}>
+      <RangeSlider
+        label={label}
+        value={initial}
+        onChange={(next) => onValueChange?.([next])}
+        min={min}
+        max={max}
+        step={step}
+        name={name}
+        showValue={false}
+      />
+    </div>
   )
 }
 

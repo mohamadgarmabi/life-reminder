@@ -12,7 +12,7 @@ const Button = ({
   ...props
 }: ButtonProps) => {
   const Comp = asChild ? Slot.Root : 'button'
-  // Outline/secondary buttons are plain card pills; asChild ones keep their variant look.
+  // Outline/secondary buttons use a flat card surface.
   const pill = !asChild && (variant === 'outline' || variant === 'secondary')
 
   return (

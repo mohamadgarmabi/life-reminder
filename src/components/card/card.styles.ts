@@ -1,7 +1,7 @@
 import { cva } from 'class-variance-authority'
 
 const cardVariants = cva(
-  'flex flex-col gap-3 relative rounded-2xl bg-card bg-clip-padding border border-transparent py-4 text-card-foreground',
+  'relative flex flex-col gap-3 rounded-2xl border border-border/60 bg-card py-4 text-card-foreground',
 )
 
 const cardHeaderVariants = cva([

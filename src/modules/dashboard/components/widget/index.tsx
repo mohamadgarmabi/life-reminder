@@ -1,5 +1,6 @@
 import { Maximize2, Minimize2 } from 'lucide-react'
 import { motion } from 'motion/react'
+import { GlassCard } from '#/components/liquid-glass'
 import { useWidget } from '#/modules/dashboard/hooks/widget.hook'
 import type { WidgetProps } from '#/modules/dashboard/types'
 import { cn } from '#/modules/shell/utils/cn'
@@ -32,17 +33,20 @@ const Widget = (props: WidgetProps) => {
         editing && 'touch-none cursor-grab active:cursor-grabbing',
       )}
     >
-      <div
+      <GlassCard
+        live
+        tint={0.48}
+        blur={10}
         // Edit mode: links inside stop reacting so a press always grabs the tile.
         inert={editing}
         className={cn(
-          'relative flex h-full flex-col rounded-3xl bg-card',
+          'relative flex h-full flex-col rounded-3xl',
           size === 'mini' ? 'p-2.5' : 'p-4',
           editing && 'widget-wiggle',
         )}
       >
         {children}
-      </div>
+      </GlassCard>
       {editing && (
         <button
           type="button"

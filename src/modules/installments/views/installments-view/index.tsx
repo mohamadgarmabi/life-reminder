@@ -2,7 +2,6 @@ import { t } from '#/modules/shell/utils/i18n'
 import { Plus, Wallet } from 'lucide-react'
 import { FormDialog } from '#/modules/shell/components/dialogs'
 import { EmptyState, ErrorState, ListSkeleton, PageHeader } from '#/modules/shell/components/states'
-import { FilterPill } from '#/modules/shell/components/filter-pill'
 import { Button } from '#/components/button'
 import { AnimatedList } from '#/modules/shell/components/animated-list'
 import { ViewToggle } from '#/modules/shell/components/view-toggle'
@@ -10,7 +9,7 @@ import { useViewMode } from '#/modules/shell/hooks/view-toggle.hook'
 import { Select } from '#/components/select'
 import { FilterSheet } from '#/modules/shell/components/filter-sheet'
 import { SwipeHint } from '#/modules/shell/components/swipe-hint'
-import { Tabs, TabsList, TabsTrigger } from '#/components/tabs'
+import { GlassTabs } from '#/components/liquid-glass'
 import { InstallmentCard } from '#/modules/installments/components/installment-card'
 import { InstallmentForm } from '#/modules/installments/components/installment-form'
 import { PaymentHistory } from '#/modules/installments/components/payment-history'
@@ -75,17 +74,14 @@ const InstallmentsView = () => {
         }
       >
         {hasItems && (
-          <Tabs value={filter} onValueChange={handleFilterChange}>
-            <FilterPill>
-              <TabsList className="w-full">
-                {filters.map((f) => (
-                  <TabsTrigger key={f.value} value={f.value}>
-                    {f.label}
-                  </TabsTrigger>
-                ))}
-              </TabsList>
-            </FilterPill>
-          </Tabs>
+          <GlassTabs
+            aria-label={t('installments.title')}
+            size="sm"
+            value={filter}
+            onValueChange={handleFilterChange}
+            options={filters}
+            className="w-full"
+          />
         )}
       </PageHeader>
 

@@ -66,54 +66,55 @@
   box-shadow: 0 0 0 0.5px var(--border);
 }
 
-/* Tab bar water drop: one pill shared by all tabs. The outer span slides (overshooting ease = spring), the inner
-   one squashes and stretches like a drop of water each time the active tab changes (restarted via React key). */
-.nav-drop {
+/* Soft moving colour behind the dashboard's glass widgets. */
+.dashboard-ambient {
   position: absolute;
-  inset-block: 0.25rem;
-  inset-inline-start: 0.25rem;
-  /* --n: tab count, set from NAV in app-shell.hook.ts */
-  width: calc((100% - 0.5rem) / var(--n));
+  z-index: -1;
+  inset: -1.5rem -1rem 0;
+  overflow: hidden;
   pointer-events: none;
-  /* RTL: tab 0 is on the right, later tabs move left. */
-  transform: translateX(calc(var(--i) * -100%));
-  transition: transform 520ms cubic-bezier(0.34, 1.45, 0.5, 1);
 }
-[dir='ltr'] .nav-drop {
-  transform: translateX(calc(var(--i) * 100%));
+.dashboard-ambient__orb {
+  position: absolute;
+  width: clamp(13rem, 58vw, 25rem);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  filter: blur(56px);
+  opacity: 0.34;
+  will-change: transform;
 }
-.nav-drop__body {
-  display: block;
-  height: 100%;
-  border-radius: 9999px;
-  background: var(--accent);
-  box-shadow: inset 0 1px 1px rgb(255 255 255 / 0.5);
-  animation: nav-drop 520ms cubic-bezier(0.3, 0.7, 0.4, 1);
+.dashboard-ambient__orb--one {
+  top: 2rem;
+  inset-inline-start: -4rem;
+  background: radial-gradient(circle, #60a5fa 0%, #818cf8 42%, transparent 72%);
+  animation: dashboard-aurora-one 19s ease-in-out infinite alternate;
 }
-@keyframes nav-drop {
-  0% {
-    transform: scale(1, 1);
-  }
-  30% {
-    transform: scale(1.35, 0.78);
-  }
-  55% {
-    transform: scale(0.9, 1.1);
-  }
-  75% {
-    transform: scale(1.05, 0.96);
-  }
-  100% {
-    transform: scale(1, 1);
-  }
+.dashboard-ambient__orb--two {
+  top: 15rem;
+  inset-inline-end: -5rem;
+  background: radial-gradient(circle, #f472b6 0%, #c084fc 44%, transparent 72%);
+  animation: dashboard-aurora-two 23s ease-in-out infinite alternate;
+}
+.dashboard-ambient__orb--three {
+  top: 34rem;
+  inset-inline-start: 18%;
+  background: radial-gradient(circle, #34d399 0%, #22d3ee 44%, transparent 72%);
+  animation: dashboard-aurora-three 27s ease-in-out infinite alternate;
+}
+.dark .dashboard-ambient__orb {
+  opacity: 0.3;
+}
+@keyframes dashboard-aurora-one {
+  to { transform: translate3d(5rem, 3rem, 0) scale(1.13); }
+}
+@keyframes dashboard-aurora-two {
+  to { transform: translate3d(-4rem, 5rem, 0) scale(0.9); }
+}
+@keyframes dashboard-aurora-three {
+  to { transform: translate3d(3rem, -4rem, 0) scale(1.18); }
 }
 @media (prefers-reduced-motion: reduce) {
-  .nav-drop {
-    transition: none;
-  }
-  .nav-drop__body {
-    animation: none;
-  }
+  .dashboard-ambient__orb { animation: none; }
 }
 
 /* SwipeRow surfaces: no grey flash on tap. */
@@ -160,6 +161,16 @@
   * {
     @apply border-border outline-ring/50;
     touch-action: pan-y pan-x;
+  }
+  /* Keep scroll gestures while hiding scrollbars consistently across every scroll container. */
+  * {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  *::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
   }
   html {
     -webkit-tap-highlight-color: transparent;

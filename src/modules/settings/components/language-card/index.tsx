@@ -1,5 +1,5 @@
 import { Languages } from 'lucide-react'
-import { Tabs, TabsList, TabsTrigger } from '#/components/tabs'
+import { GlassTabs } from '#/components/liquid-glass'
 import { SettingsRow } from '#/modules/settings/components/settings-row'
 import { useLanguageCard } from '#/modules/settings/hooks/language-card.hook'
 
@@ -13,16 +13,16 @@ const LanguageCard = () => {
       title={t('settings.language')}
       description={t('settings.languageHint')}
       trailing={
-        <Tabs value={lang} onValueChange={handleChange}>
-          <TabsList aria-label={t('settings.language')}>
-            <TabsTrigger value="fa" lang="fa">
-              فارسی
-            </TabsTrigger>
-            <TabsTrigger value="en" lang="en">
-              English
-            </TabsTrigger>
-          </TabsList>
-        </Tabs>
+        <GlassTabs
+          aria-label={t('settings.language')}
+          size="sm"
+          value={lang}
+          onValueChange={handleChange}
+          options={[
+            { value: 'fa', label: 'فارسی', 'aria-label': 'فارسی' },
+            { value: 'en', label: 'English', 'aria-label': 'English' },
+          ]}
+        />
       }
     />
   )

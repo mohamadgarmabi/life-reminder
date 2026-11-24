@@ -1,7 +1,6 @@
 import { Plus, Target } from 'lucide-react'
 import { FormDialog } from '#/modules/shell/components/dialogs'
 import { EmptyState, ErrorState, ListSkeleton, PageHeader } from '#/modules/shell/components/states'
-import { FilterPill } from '#/modules/shell/components/filter-pill'
 import { FilterSheet } from '#/modules/shell/components/filter-sheet'
 import { SwipeHint } from '#/modules/shell/components/swipe-hint'
 import { AnimatedList } from '#/modules/shell/components/animated-list'
@@ -9,7 +8,7 @@ import { Button } from '#/components/button'
 import { Card, CardContent } from '#/components/card'
 import { Progress } from '#/components/progress'
 import { Select } from '#/components/select'
-import { Tabs, TabsList, TabsTrigger } from '#/components/tabs'
+import { GlassTabs } from '#/components/liquid-glass'
 import { PlanCard } from '#/modules/plans/components/plan-card'
 import { PlanForm } from '#/modules/plans/components/plan-form'
 import { PlanTutor } from '#/modules/plans/components/plan-tutor'
@@ -64,18 +63,14 @@ const PlansView = () => {
         }
       >
         {hasItems && (
-          <Tabs value={filter} onValueChange={handleFilterChange}>
-            <FilterPill>
-              {/* justify-start: centered overflow clips the leading tabs out of scroll reach */}
-              <TabsList className="w-full justify-start overflow-x-auto [scrollbar-width:none]">
-                {filters.map((f) => (
-                  <TabsTrigger key={f.value} value={f.value}>
-                    {f.label}
-                  </TabsTrigger>
-                ))}
-              </TabsList>
-            </FilterPill>
-          </Tabs>
+          <GlassTabs
+            aria-label={t('plans.title')}
+            size="sm"
+            value={filter}
+            onValueChange={handleFilterChange}
+            options={filters}
+            className="w-full max-w-full overflow-x-auto"
+          />
         )}
       </PageHeader>
 

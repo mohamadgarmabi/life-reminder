@@ -1,9 +1,11 @@
-import { Link } from '@tanstack/react-router'
+import { useNavigate } from '@tanstack/react-router'
 import type { ReactNode } from 'react'
+import { GlassTabs } from '#/components/liquid-glass'
 import { useAppShell } from '#/modules/shell/hooks/app-shell.hook'
 
 const AppShell = ({ children }: { children: ReactNode }) => {
-  const { navItems, navLabel, contentStyle, immersive, drop } = useAppShell()
+  const { navItems, navLabel, contentStyle, immersive, activeValue } = useAppShell()
+  const navigate = useNavigate()
 
   return (
     <>
@@ -21,25 +23,20 @@ const AppShell = ({ children }: { children: ReactNode }) => {
         />
       )}
       {!immersive && (
-        <nav
-          aria-label={navLabel}
-          className="vt-tab-bar fixed inset-x-4 bottom-[max(1rem,env(safe-area-inset-bottom))] z-10 mx-auto grid max-w-sm grid-cols-6 rounded-full bg-card p-1 shadow-[var(--material-shadow)]"
-        >
-          {/* Water-drop indicator: slides to the active tab, stretching on the way and wobbling as it lands. */}
-          <span aria-hidden hidden={drop.hidden} style={drop.style} className="nav-drop">
-            <span key={drop.key} className="nav-drop__body" />
-          </span>
-          {navItems.map(({ to, label, icon: Icon, activeOptions }) => (
-            <Link
-              key={to}
-              to={to}
-              activeOptions={activeOptions}
-              className="relative flex h-12 flex-col items-center justify-center gap-0.5 rounded-full text-[10px] font-medium text-muted-foreground transition-[color,background-color,transform] duration-200 outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 active:scale-95 data-[status=active]:text-foreground"
-            >
-              <Icon className="size-5" strokeWidth={1.75} aria-hidden />
-              {label}
-            </Link>
-          ))}
+        <nav aria-label={navLabel} className="fixed inset-x-4 bottom-[max(1rem,env(safe-area-inset-bottom))] z-10 mx-auto max-w-sm">
+          <GlassTabs
+            aria-label={navLabel}
+            size="lg"
+            value={activeValue}
+            onValueChange={(to) => void navigate({ to })}
+            options={navItems.map(({ to, label, icon: Icon }) => ({
+              value: to,
+              label,
+              icon: <Icon strokeWidth={1.75} aria-hidden />,
+              'aria-label': label,
+            }))}
+            className="vt-tab-bar w-full justify-between border border-foreground/10 !bg-transparent backdrop-blur-sm shadow-[var(--material-shadow)] [&_[role=radio]]:min-w-0 [&_[role=radio]]:flex-1 [&_[role=radio]]:flex-col [&_[role=radio]]:gap-0.5 [&_[role=radio]]:px-0 [&_[role=radio]]:text-[9px] [&_[role=radio]_svg]:size-4"
+          />
         </nav>
       )}
     </>

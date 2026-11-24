@@ -1,6 +1,7 @@
 'use client'
 
 import { cn } from '#/modules/shell/utils/cn'
+import { GlassLayer } from '#/components/liquid-glass/glass-layer'
 import { Popover as PopoverPrimitive } from 'radix-ui'
 import {
   popoverContentVariants,
@@ -30,12 +31,14 @@ const PopoverContent = ({ className, align = 'center', sideOffset = 4, children,
   return (
     <PopoverPrimitive.Portal>
       <PopoverPrimitive.Content
+        data-glass-host=""
         data-slot="popover-content"
         align={align}
         sideOffset={sideOffset}
         className={cn(popoverContentVariants(), className)}
         {...props}
       >
+        <GlassLayer tint={0.72} blur={8} swell={false} />
         {children}
       </PopoverPrimitive.Content>
     </PopoverPrimitive.Portal>
