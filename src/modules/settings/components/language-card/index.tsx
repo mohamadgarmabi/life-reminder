@@ -16,6 +16,7 @@ const LanguageCard = () => {
         <GlassTabs
           aria-label={t('settings.language')}
           size="sm"
+          className="w-fit!"
           value={lang}
           onValueChange={handleChange}
           options={[

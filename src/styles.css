@@ -7,14 +7,14 @@
 
 :root {
   --radius: 0.75rem;
-  /* iOS neutral: grouped grey background, white cards, black accent (white in dark). */
+  /* iOS neutral: grouped grey background, white cards, blue brand accent. */
   --background: oklch(0.966 0.003 286); /* #F2F2F7 */
   --foreground: oklch(0 0 0);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0 0 0);
-  --primary: oklch(0 0 0);
+  --primary: #3291ff;
   --primary-foreground: oklch(1 0 0);
   --secondary: oklch(0.47 0.01 286 / 0.12); /* iOS tertiary fill */
   --secondary-foreground: oklch(0 0 0);
@@ -41,8 +41,8 @@
   --card-foreground: oklch(1 0 0);
   --popover: oklch(0.27 0.004 286); /* #2C2C2E */
   --popover-foreground: oklch(1 0 0);
-  --primary: oklch(1 0 0);
-  --primary-foreground: oklch(0 0 0);
+  --primary: #3291ff;
+  --primary-foreground: oklch(1 0 0);
   --secondary: oklch(0.6 0.01 286 / 0.24);
   --secondary-foreground: oklch(1 0 0);
   --muted: oklch(0.6 0.01 286 / 0.16);
@@ -54,7 +54,7 @@
   --warning: oklch(0.8 0.15 70);
   --border: oklch(1 0 0 / 0.1);
   --input: oklch(1 0 0 / 0.1);
-  --ring: oklch(0.75 0 0);
+  --ring: #3291ff;
 
   --material-shadow: 0 0 0 0.5px oklch(1 0 0 / 0.08), 0 8px 28px -6px oklch(0 0 0 / 0.6);
   --field: oklch(0.6 0.01 286 / 0.16);
