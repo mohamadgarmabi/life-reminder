@@ -65,7 +65,9 @@ export function Icon({ name = 'sparkle', size = 15, strokeWidth = 2, className }
       aria-hidden="true"
       className={className}
     >
-      {shape.circles?.map(([cx, cy, r]) => <circle key={`${cx}-${cy}-${r}`} cx={cx} cy={cy} r={r} />)}
+      {shape.circles?.map(([cx, cy, r]) => (
+        <circle key={`${cx}-${cy}-${r}`} cx={cx} cy={cy} r={r} />
+      ))}
       {shape.paths.map((d) => (
         <path key={d} d={d} />
       ))}

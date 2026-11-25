@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import { Button } from '#/components/button'
-import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle } from '#/components/drawer'
+import { Drawer, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle } from '#/components/drawer'
+import type { DrawerSize } from '#/components/drawer'
 import { useFormDialog } from '#/modules/shell/hooks/dialogs.hook'
 import { t } from '#/modules/shell/utils/i18n'
 
@@ -10,22 +11,24 @@ const FormDialog = ({
   title,
   description,
   children,
+  size = 'auto',
 }: {
   open: boolean
   onOpenChange: (open: boolean) => void
   title: string
   description?: string
   children: ReactNode
+  size?: DrawerSize
 }) => {
   const { descriptionClassName, descriptionText } = useFormDialog({ title, description })
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent>
+      <DrawerContent size={size}>
         <DrawerHeader>
           <DrawerTitle>{title}</DrawerTitle>
           <DrawerDescription className={descriptionClassName}>{descriptionText}</DrawerDescription>
         </DrawerHeader>
-        <div className="overflow-y-auto px-4 pb-[max(1.25rem,env(safe-area-inset-bottom))]">{children}</div>
+        <div className="min-h-0 min-w-0 w-full max-w-full flex-1 overflow-x-hidden overflow-y-auto overscroll-contain px-4 pb-28">{children}</div>
       </DrawerContent>
     </Drawer>
   )
@@ -53,20 +56,23 @@ const ConfirmDialog = ({
           <DrawerTitle>{title}</DrawerTitle>
           <DrawerDescription>{description}</DrawerDescription>
         </DrawerHeader>
-        <div className="grid gap-2 px-4 pt-2 pb-[max(1.25rem,env(safe-area-inset-bottom))]">
+        <DrawerFooter className="grid gap-2">
           <Button
             variant="destructive"
             onClick={() => {
               onConfirm()
               onOpenChange(false)
             }}
+            glass={true}
+            glassMaterial='clear'
           >
             {confirmLabel ?? t('common.delete')}
           </Button>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
+          <Button variant="outline" glass={true}
+            glassMaterial='clear' onClick={() => onOpenChange(false)}>
             {t('common.cancel')}
           </Button>
-        </div>
+        </DrawerFooter>
       </DrawerContent>
     </Drawer>
   )

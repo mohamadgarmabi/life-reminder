@@ -37,9 +37,29 @@
 
 import { createContext, useEffect, useMemo, useRef } from 'react'
 
-import { drawAround, drawDom } from './dom-snapshot'
-import { GLOW, GLOW_SMALL, GOOEY, MORPH, MORPH_GLOW, MORPH_GLOW_SMALL, SPRINGS, clamp, getGlassEngine, lerp, rgbCss, smooth, stepSpring, surfaceColorOf, type GlassEngine, type GlassLens, type GlassView, type Rgb, type Spring } from './engine'
-import { GlassStyles } from './glass-layer'
+import { drawAround, drawDom } from '../shared/dom-snapshot'
+import {
+  GLOW,
+  GLOW_SMALL,
+  GOOEY,
+  MORPH,
+  MORPH_GLOW,
+  MORPH_GLOW_SMALL,
+  SPRINGS,
+  clamp,
+  getGlassEngine,
+  lerp,
+  rgbCss,
+  smooth,
+  stepSpring,
+  surfaceColorOf,
+  type GlassEngine,
+  type GlassLens,
+  type GlassView,
+  type Rgb,
+  type Spring,
+} from '../shared/engine'
+import { GlassStyles } from '../glass-layer/index'
 
 const DESIGN_HEIGHT = 120
 /** The control is GlassButton's glass: its tint, no frost, its light and shadow. */
@@ -104,9 +124,23 @@ const CSS = `
 `
 
 type Box = { L: number; T: number; W: number; H: number }
-type Page = { canvas: HTMLCanvasElement; ctx: CanvasRenderingContext2D | null; key: string; at: number; stale: boolean; fill: string }
+type Page = {
+  canvas: HTMLCanvasElement
+  ctx: CanvasRenderingContext2D | null
+  key: string
+  at: number
+  stale: boolean
+  fill: string
+}
 
-const newPage = (): Page => ({ canvas: document.createElement('canvas'), ctx: null, key: '', at: 0, stale: true, fill: '' })
+const newPage = (): Page => ({
+  canvas: document.createElement('canvas'),
+  ctx: null,
+  key: '',
+  at: 0,
+  stale: true,
+  fill: '',
+})
 
 /** The shared physics and shape of one popup: the anchor's canvas and the surface's both draw it. */
 function createMorph(matchWidth: boolean, morphs: boolean) {
@@ -155,7 +189,8 @@ function createMorph(matchWidth: boolean, morphs: boolean) {
     if (glowSmall <= 0) return wideSet
     if (glowSmall >= 1) return smallSet
     const mixed = { ...wideSet }
-    for (const key of Object.keys(mixed) as (keyof typeof GLOW)[]) mixed[key] = lerp(wideSet[key], smallSet[key], glowSmall)
+    for (const key of Object.keys(mixed) as (keyof typeof GLOW)[])
+      mixed[key] = lerp(wideSet[key], smallSet[key], glowSmall)
     return mixed
   }
   /** How many presses' worth of light is asked for: each adds to what is still lit (a choice in the list adds GLOW.select of one). */
@@ -171,7 +206,17 @@ function createMorph(matchWidth: boolean, morphs: boolean) {
   let pushed = false
   let snapped = false
   /** The opening as it played, frame by frame; and where a rewind of it has got to (seconds, or null). */
-  let rec: { t: number; open: number; bridge: number; rc: number; reveal: number; snapped: boolean; cross: number; calm: number; drop: number }[] = []
+  let rec: {
+    t: number
+    open: number
+    bridge: number
+    rc: number
+    reveal: number
+    snapped: boolean
+    cross: number
+    calm: number
+    drop: number
+  }[] = []
   let recT = 0
   let rewind: number | null = null
   let panelDrawn = false
@@ -227,10 +272,17 @@ function createMorph(matchWidth: boolean, morphs: boolean) {
     else if (lastPlace < 0 || count !== placed) {
       lastPlace = 0
       placed = count
-      for (const el of items) lastPlace = Math.max(lastPlace, parseFloat(el.style.getPropertyValue('--glass-i') || getComputedStyle(el).getPropertyValue('--glass-i')) || 0)
+      for (const el of items)
+        lastPlace = Math.max(
+          lastPlace,
+          parseFloat(el.style.getPropertyValue('--glass-i') || getComputedStyle(el).getPropertyValue('--glass-i')) || 0,
+        )
     }
     const fade = Math.max(TUNE.itemsFade, 0.01)
-    put('--glass-items', (lastPlace < 0 ? reveal : Math.min(reveal, Math.max(lastPlace, count) * TUNE.itemsGap + fade)).toFixed(3))
+    put(
+      '--glass-items',
+      (lastPlace < 0 ? reveal : Math.min(reveal, Math.max(lastPlace, count) * TUNE.itemsGap + fade)).toFixed(3),
+    )
     put('--glass-out', out.toFixed(3))
     put('--glass-gap', String(TUNE.itemsGap))
     put('--glass-fade', String(fade))
@@ -253,7 +305,10 @@ function createMorph(matchWidth: boolean, morphs: boolean) {
     el.style.setProperty(name, value)
   }
   let listEl: HTMLElement | null = null
-  const listOf = () => (listEl?.isConnected && content?.contains(listEl) ? listEl : (listEl = content?.querySelector<HTMLElement>(LIST) ?? null))
+  const listOf = () =>
+    listEl?.isConnected && content?.contains(listEl)
+      ? listEl
+      : (listEl = content?.querySelector<HTMLElement>(LIST) ?? null)
   const panelRect = () => {
     const c = content?.getBoundingClientRect()
     return c && c.width > 2 && c.height > 2 ? c : null
@@ -307,7 +362,12 @@ function createMorph(matchWidth: boolean, morphs: boolean) {
     const tune = glowTune()
     const on = opening ? open.x < tune.coverUntil : pressed || glowHold > 0
     glowHold = Math.max(0, glowHold - dt)
-    const a = stepSpring(glow, on ? glowLevel : 0, { omega: on ? tune.riseSpeed : opening ? tune.coverFadeSpeed : tune.fadeSpeed, zeta: 1 }, dt)
+    const a = stepSpring(
+      glow,
+      on ? glowLevel : 0,
+      { omega: on ? tune.riseSpeed : opening ? tune.coverFadeSpeed : tune.fadeSpeed, zeta: 1 },
+      dt,
+    )
     const b = stepSpring(glowSpread, on || glow.x > 0.004 ? 1 : 0, { omega: tune.spreadSpeed, zeta: 1 }, dt)
     // A press held still changes nothing: the loop rests until the hold runs out or the press ends.
     return glowHold > 0 || a || (b && glow.x > 0.004)
@@ -349,7 +409,14 @@ function createMorph(matchWidth: boolean, morphs: boolean) {
   }
 
   /** The surface's glass, whichever way it comes out: Card's frost and bend, and the thin white line at its edge. */
-  const surfaceGlass = () => ({ frost: cardCover, blur: CARD.blur, bendCurve: CARD.bendCurve, bendDepth: CARD.bendDepth, borderAlpha: tint[0] > 0.5 ? LINE.alpha : LINE.darkAlpha, borderWidth: LINE.width })
+  const surfaceGlass = () => ({
+    frost: cardCover,
+    blur: CARD.blur,
+    bendCurve: CARD.bendCurve,
+    bendDepth: CARD.bendDepth,
+    borderAlpha: tint[0] > 0.5 ? LINE.alpha : LINE.darkAlpha,
+    borderWidth: LINE.width,
+  })
 
   /** Everything both canvases need, in viewport px. */
   const measure = () => {
@@ -358,7 +425,15 @@ function createMorph(matchWidth: boolean, morphs: boolean) {
     // scale (see the trigger's lens), so both canvases draw in the page's own space.
     const r = host.getBoundingClientRect()
     const sc = Math.max(0.5, Number(swScale.x.toFixed(4)))
-    const a = sc === 1 ? r : new DOMRect(r.left + (r.width - host.offsetWidth) / 2, r.top + (r.height - host.offsetHeight) / 2, host.offsetWidth, host.offsetHeight)
+    const a =
+      sc === 1
+        ? r
+        : new DOMRect(
+            r.left + (r.width - host.offsetWidth) / 2,
+            r.top + (r.height - host.offsetHeight) / 2,
+            host.offsetWidth,
+            host.offsetHeight,
+          )
     if (a.width < 2 || a.height < 2) return null
     glowSmall = smallness(a.width, a.height)
     const sk = lerp(1, Math.min(PRESS_SCALE, maxScale()), clamp(swPress.x, -0.12, 1.15))
@@ -378,7 +453,11 @@ function createMorph(matchWidth: boolean, morphs: boolean) {
     const body = {
       cx: a.left + a.width / 2,
       // (A morphing control is thrown down by its own weight at the press, before its surface comes out.)
-      cy: a.top + a.height / 2 + dir * (TUNE.triggerSag * hold - TUNE.triggerJolt * rc) + (morphs ? MORPH.throw * thrown : 0),
+      cy:
+        a.top +
+        a.height / 2 +
+        dir * (TUNE.triggerSag * hold - TUNE.triggerJolt * rc) +
+        (morphs ? MORPH.throw * thrown : 0),
       hx: (a.width / 2) * sk + grow * swX.x - 1.5 * hold + 3.2 * rc,
       hy: (a.height / 2) * sk + grow * swY.x + hold - 2 * rc,
     }
@@ -406,7 +485,10 @@ function createMorph(matchWidth: boolean, morphs: boolean) {
       // How small the control is: 1 for a single icon or about five letters (up to twice as wide
       // as it is tall), 0 from 2.4 times as wide (seven letters).
       const small = 1 - smooth(2, 2.4, a.width / a.height)
-      const k = Math.max(lerp(TUNE.neckSoftness, TUNE.smallNeckSoftness, small) * b * smooth(0, 90, dir * (far - edge)), 0.05)
+      const k = Math.max(
+        lerp(TUNE.neckSoftness, TUNE.smallNeckSoftness, small) * b * smooth(0, 90, dir * (far - edge)),
+        0.05,
+      )
       // Two facing edges stay bridged while the softness is over twice the gap between them.
       joined = k > 2 * Math.max(dir * (near - (body.cy + dir * body.hy)), 0)
       blob = {
@@ -420,7 +502,13 @@ function createMorph(matchWidth: boolean, morphs: boolean) {
         // The bridge spans the whole trigger at first and gathers into a neck at its middle. On a
         // small control a neck that narrow would stand out as a ridge: there it is no thinner
         // than the control's height allows, and the softness fades towards its far edge.
-        neck: { x: 0, w: Math.max(a.width * lerp(0.2, 0.6, clamp(b)), small * a.height * lerp(TUNE.smallNeck, TUNE.smallNeckWide, clamp(b))) },
+        neck: {
+          x: 0,
+          w: Math.max(
+            a.width * lerp(0.2, 0.6, clamp(b)),
+            small * a.height * lerp(TUNE.smallNeck, TUNE.smallNeckWide, clamp(b)),
+          ),
+        },
         fade: { amount: clamp(TUNE.smallEdgeFade) * small, reach: TUNE.smallEdgeReach },
         // One surface from start to finish: the card's glass, melted into the control's at the neck.
         material: surfaceGlass(),
@@ -429,7 +517,9 @@ function createMorph(matchWidth: boolean, morphs: boolean) {
     // `opening: 'morph'`: the same two glasses, the surface coming out over the control itself. It
     // grows from the control's box to its own, in the card's glass from the first frame, while the
     // control under it keeps Button's glass until it gives way (`card`, below).
-    let morph: { cx: number; cy: number; hx: number; hy: number; r: number; zoomX: number; zoomY: number; list: Box | null } | undefined
+    let morph:
+      | { cx: number; cy: number; hx: number; hy: number; r: number; zoomX: number; zoomY: number; list: Box | null }
+      | undefined
     if (c && morphs && content) {
       // The side that has further to go leads, on `open`; the other follows on `cross`.
       const tall = Math.abs(c.height - a.height) >= Math.abs(c.width - a.width)
@@ -438,19 +528,37 @@ function createMorph(matchWidth: boolean, morphs: boolean) {
       // Thinner across while the first side is ahead, wider once the other has passed it.
       const lean = clamp(1 - MORPH.pinch * (lead - follow), 0.5, 1.3)
       // It starts round, in the control's middle (MORPH.seed: 0 = a circle as tall as the control, 1 = the control's own box).
-      const hx = Math.max(lerp(lerp(Math.min(body.hx, body.hy), body.hx, clamp(MORPH.seed)), c.width / 2, tall ? follow : lead) * (tall ? lean : 1), 1)
+      const hx = Math.max(
+        lerp(lerp(Math.min(body.hx, body.hy), body.hx, clamp(MORPH.seed)), c.width / 2, tall ? follow : lead) *
+          (tall ? lean : 1),
+        1,
+      )
       const hy = Math.max(lerp(body.hy, c.height / 2, tall ? lead : follow) * (tall ? 1 : lean), 1)
       const cx = lerp(body.cx, c.left + c.width / 2, tall ? follow : lead)
       // It comes out of the control where the throw has taken it, and opens towards its own middle.
       // As it grows it is carried MORPH.drop px above its place, and comes down into it on a soft spring of its own.
-      const cy = lerp(body.cy, c.top + c.height / 2, tall ? lead : follow) - MORPH.drop * (clamp(lead) - Math.min(drop.x, clamp(lead)))
+      const cy =
+        lerp(body.cy, c.top + c.height / 2, tall ? lead : follow) -
+        MORPH.drop * (clamp(lead) - Math.min(drop.x, clamp(lead)))
       // Round all the way while it grows; the surface's own corners as it settles.
-      const r = Math.min(lerp(Math.min(hx, hy), panelRadius, smooth(Math.min(MORPH.cornersFrom, 0.99), 1, clamp(calm.x))), hx, hy)
+      const r = Math.min(
+        lerp(Math.min(hx, hy), panelRadius, smooth(Math.min(MORPH.cornersFrom, 0.99), 1, clamp(calm.x))),
+        hx,
+        hy,
+      )
       const list = listOf()
       // How far the surface sticks out of the control, as the stretch counts it: its shadow comes with it.
       out = smooth(0, 48, 2 * Math.max(hx - body.hx, hy - body.hy))
       // Two shapes laid over each other, with a clean edge where they meet; gooey only if asked for.
-      blob = { x: cx - body.cx, y: cy - body.cy, hx, hy, r, k: MORPH.gooey > 0.5 ? Math.max(MORPH.softness, 0.05) : 0.05, material: surfaceGlass() }
+      blob = {
+        x: cx - body.cx,
+        y: cy - body.cy,
+        hx,
+        hy,
+        r,
+        k: MORPH.gooey > 0.5 ? Math.max(MORPH.softness, 0.05) : 0.05,
+        material: surfaceGlass(),
+      }
       const fx = hx / (c.width / 2)
       const fy = hy / (c.height / 2)
       const even = Math.sqrt(fx * fy)
@@ -464,16 +572,29 @@ function createMorph(matchWidth: boolean, morphs: boolean) {
         // side by side: it takes the swing of each, as far as its text can stretch without showing it.
         zoomX: lerp(1, clamp(even * clamp(fx / even, 1 / MAX_STRETCH, MAX_STRETCH), 0.1, 1.5), clamp(MORPH.zoom)),
         zoomY: lerp(1, clamp(even * clamp(fy / even, 1 / MAX_STRETCH, MAX_STRETCH), 0.1, 1.5), clamp(MORPH.zoom)),
-        list: list && { L: c.left + content.clientLeft + list.offsetLeft, T: c.top + content.clientTop + list.offsetTop, W: list.offsetWidth, H: list.offsetHeight },
+        list: list && {
+          L: c.left + content.clientLeft + list.offsetLeft,
+          T: c.top + content.clientTop + list.offsetTop,
+          W: list.offsetWidth,
+          H: list.offsetHeight,
+        },
       }
     }
     const t = clamp(open.x)
     // The surface turns into the card as the neck lets go, and back before it forms again. A
     // morphing control gives way to the card under it as the surface settles.
-    const card = !c ? 0 : morphs ? smooth(MORPH.frostFrom, Math.max(MORPH.frostTo, MORPH.frostFrom + 0.01), clamp(calm.x)) : (1 - smooth(0, 0.35, clamp(b))) * smooth(0.35, 0.8, t)
+    const card = !c
+      ? 0
+      : morphs
+        ? smooth(MORPH.frostFrom, Math.max(MORPH.frostTo, MORPH.frostFrom + 0.01), clamp(calm.x))
+        : (1 - smooth(0, 0.35, clamp(b))) * smooth(0.35, 0.8, t)
     // Parted: the control draws itself alone, with its own shadow, whatever the card does.
     // What the control's own content takes of all this: the sag and the throw, and the squash.
-    const sway = { y: body.cy - (a.top + a.height / 2), sx: 1 + (3.2 * rc - 1.5 * hold) / (a.width / 2), sy: 1 + (hold - 2 * rc) / (a.height / 2) }
+    const sway = {
+      y: body.cy - (a.top + a.height / 2),
+      sx: 1 + (3.2 * rc - 1.5 * hold) / (a.width / 2),
+      sy: 1 + (hold - 2 * rc) / (a.height / 2),
+    }
     // The list rides the panel the same way (its near edge is thrown twice as far as its far one).
     const ride = c ? 0.75 * dir * TUNE.panelJolt * rc * smooth(0, 0.35, clamp(open.x)) : 0
     // The light: around where the press landed, a little wider as it fades. The light that opens
@@ -484,7 +605,10 @@ function createMorph(matchWidth: boolean, morphs: boolean) {
     const tune = glowTune()
     const wide = glowWide && blob && tune.cover > 0 ? smooth(0, 1, t) : 0
     const spreading = clamp(glowSpread.x)
-    const reach = a.height * sc * (glowList ? tune.selectReach + tune.selectSpread * spreading : tune.reach + tune.spread * spreading)
+    const reach =
+      a.height *
+      sc *
+      (glowList ? tune.selectReach + tune.selectSpread * spreading : tune.reach + tune.spread * spreading)
     const lit =
       glow.x > 0.004
         ? {
@@ -497,7 +621,12 @@ function createMorph(matchWidth: boolean, morphs: boolean) {
           }
         : undefined
     // Borders, read here with the rest: after this, a frame only writes.
-    const edge = { hostLeft: host.clientLeft, hostTop: host.clientTop, left: content?.clientLeft ?? 0, top: content?.clientTop ?? 0 }
+    const edge = {
+      hostLeft: host.clientLeft,
+      hostTop: host.clientTop,
+      left: content?.clientLeft ?? 0,
+      top: content?.clientTop ?? 0,
+    }
     // Once the surface's canvas has drawn, it carries the whole body: the control's own canvas rests.
     const onPanel = !!morph && panelDrawn && (t >= 0.004 || isOpen())
     // Where the two canvases meet: the control's box, on whole device pixels. One draws inside
@@ -505,7 +634,24 @@ function createMorph(matchWidth: boolean, morphs: boolean) {
     const dpr = window.devicePixelRatio || 1
     const snap = (v: number) => Math.round(v * dpr) / dpr
     const seam = { left: snap(a.left), top: snap(a.top), right: snap(a.right), bottom: snap(a.bottom) }
-    return { a, c, sc, seam, body, blob, t, card, out, sway, ride, lit, edge, morph, onPanel, parted: morphs ? !!blob && card >= 0.999 : card > 0 && !joined }
+    return {
+      a,
+      c,
+      sc,
+      seam,
+      body,
+      blob,
+      t,
+      card,
+      out,
+      sway,
+      ride,
+      lit,
+      edge,
+      morph,
+      onPanel,
+      parted: morphs ? !!blob && card >= 0.999 : card > 0 && !joined,
+    }
   }
   // One measurement per frame. Both canvases draw the same shape, and each writes styles as
   // it draws: a second measurement after those writes would lay the page out again.
@@ -553,7 +699,12 @@ function createMorph(matchWidth: boolean, morphs: boolean) {
     set(host, '--glass-lit', litAt(0, 0), '')
     // (A light kept to the control never reaches the surface's content.)
     set(content, '--glass-lit', m && s.lit?.blob ? litAt(m.cx - s.body.cx, m.cy - s.body.cy) : '', '')
-    if (!m || !l || !s.c || (Math.abs(open.x - 1) < 1e-3 && Math.abs(cross.x - 1) < 1e-3 && calm.x > 0.999 && drop.x > 0.9995)) {
+    if (
+      !m ||
+      !l ||
+      !s.c ||
+      (Math.abs(open.x - 1) < 1e-3 && Math.abs(cross.x - 1) < 1e-3 && calm.x > 0.999 && drop.x > 0.9995)
+    ) {
       for (const name of RIDE) set(content, name, '', '')
       return
     }
@@ -564,17 +715,33 @@ function createMorph(matchWidth: boolean, morphs: boolean) {
     // Where the list's middle is on the glass, and from there the glass's box in the list's own space (before its zoom).
     const x = m.cx + (lx - (s.c.left + s.c.width / 2)) * kx
     const y = m.cy + (ly - (s.c.top + s.c.height / 2)) * ky
-    const inset = [l.H / 2 + (m.cy - m.hy - y) / ky, l.W / 2 - (m.cx + m.hx - x) / kx, l.H / 2 - (m.cy + m.hy - y) / ky, l.W / 2 + (m.cx - m.hx - x) / kx]
+    const inset = [
+      l.H / 2 + (m.cy - m.hy - y) / ky,
+      l.W / 2 - (m.cx + m.hx - x) / kx,
+      l.H / 2 - (m.cy + m.hy - y) / ky,
+      l.W / 2 + (m.cx - m.hx - x) / kx,
+    ]
     const soft = MORPH.contentBlur * (1 - smooth(0, 1, clamp(calm.x)))
     set(content, '--glass-ride-x', `${(x - lx).toFixed(2)}px`, '')
     set(content, '--glass-ride-y', `${(y - ly).toFixed(2)}px`, '')
     set(content, '--glass-zoom', `${kx.toFixed(4)} ${ky.toFixed(4)}`, '')
-    set(content, '--glass-clip', `inset(${inset.map((v) => `${v.toFixed(1)}px`).join(' ')} round ${(m.r / kx).toFixed(1)}px / ${(m.r / ky).toFixed(1)}px)`, '')
+    set(
+      content,
+      '--glass-clip',
+      `inset(${inset.map((v) => `${v.toFixed(1)}px`).join(' ')} round ${(m.r / kx).toFixed(1)}px / ${(m.r / ky).toFixed(1)}px)`,
+      '',
+    )
     set(content, '--glass-soft', soft > 0.05 ? `blur(${soft.toFixed(2)}px)` : '', '')
   }
 
   /** `card`: 0 draws the control's glass (the surface melted into it wears its own), 1 the surface alone. */
-  const lensFor = (box: Box, s: NonNullable<ReturnType<typeof shape>>, page: Page, repaint: () => void, card = 0): Omit<GlassLens, 'left' | 'top'> => {
+  const lensFor = (
+    box: Box,
+    s: NonNullable<ReturnType<typeof shape>>,
+    page: Page,
+    repaint: () => void,
+    card = 0,
+  ): Omit<GlassLens, 'left' | 'top'> => {
     // A swollen control's bevel and shadow swell with it, on both canvases alike.
     const unit = (s.a.height * s.sc) / DESIGN_HEIGHT
     return {
@@ -603,7 +770,11 @@ function createMorph(matchWidth: boolean, morphs: boolean) {
       edgeClear: 0.2,
       cursorLight: card < 0.5,
       // The light may spill past the surface's edge, never past the control's.
-      glow: s.lit && (s.blob && !s.parted && s.lit.blob ? { ...s.lit, halo: { around: 'blob' as const, amount: s.out * s.lit.spill } } : s.lit),
+      glow:
+        s.lit &&
+        (s.blob && !s.parted && s.lit.blob
+          ? { ...s.lit, halo: { around: 'blob' as const, amount: s.out * s.lit.spill } }
+          : s.lit),
       refraction: {
         paint: (back) => {
           const fill = rgbCss(surface)
@@ -724,7 +895,7 @@ function createMorph(matchWidth: boolean, morphs: boolean) {
         recT = 0
       }
       // A morphing surface may stay as it is for a moment before it goes back in (MORPH.closeDelay).
-      if (goal) lingered = 0, (rebounding = false)
+      if (goal) ((lingered = 0), (rebounding = false))
       else if (morphs && rewind === null && open.x > 0.004 && lingered < MORPH.closeDelay) {
         lingered += dt
         return (moving = true)
@@ -736,7 +907,13 @@ function createMorph(matchWidth: boolean, morphs: boolean) {
         let i = rec.length - 1
         // (A morph landed past the surface and came back: that swell is undone too, only its rest is skipped.)
         const rested = (f: (typeof rec)[number]) =>
-          morphs ? Math.abs(f.open - 1) < 0.012 && Math.abs(f.cross - 1) < 0.012 && f.calm > 0.95 && Math.abs(f.rc) < 0.01 && f.drop > 0.995 : f.open >= 0.995 && f.bridge <= 0.02 && f.reveal >= shown
+          morphs
+            ? Math.abs(f.open - 1) < 0.012 &&
+              Math.abs(f.cross - 1) < 0.012 &&
+              f.calm > 0.95 &&
+              Math.abs(f.rc) < 0.01 &&
+              f.drop > 0.995
+            : f.open >= 0.995 && f.bridge <= 0.02 && f.reveal >= shown
         while (i > 0 && rested(rec[i])) i--
         rewind = rec[Math.min(i + 1, rec.length - 1)].t
       }
@@ -754,7 +931,19 @@ function createMorph(matchWidth: boolean, morphs: boolean) {
         if (rewind <= 0) {
           rewind = null
           rec = []
-          open.x = open.v = cross.x = cross.v = calm.x = calm.v = drop.x = drop.v = bridge.x = bridge.v = recoil.x = recoil.v = 0
+          open.x =
+            open.v =
+            cross.x =
+            cross.v =
+            calm.x =
+            calm.v =
+            drop.x =
+            drop.v =
+            bridge.x =
+            bridge.v =
+            recoil.x =
+            recoil.v =
+              0
           pushed = snapped = wasJoined = false
           stepItems(0, dt, true)
           rebound()
@@ -797,12 +986,27 @@ function createMorph(matchWidth: boolean, morphs: boolean) {
         const held = goal === 1 && waited < MORPH.openDelay
         if (goal) waited += dt
         const m1 = held || stepSpring(open, goal, goal ? { omega: MORPH.openSpeed, zeta: MORPH.openDamping } : back, dt)
-        const m2 = held || stepSpring(cross, goal, goal ? { omega: MORPH.crossSpeed, zeta: MORPH.crossDamping } : back, dt)
+        const m2 =
+          held || stepSpring(cross, goal, goal ? { omega: MORPH.crossSpeed, zeta: MORPH.crossDamping } : back, dt)
         const m3 = held || stepSpring(calm, goal, goal ? { omega: MORPH.calmSpeed, zeta: 1 } : back, dt)
         // The surface comes down into place on a soft spring of its own, MORPH.dropDelay after the press.
         const falls = goal === 1 && waited >= MORPH.dropDelay
-        const m5 = (goal === 1 && !falls) || stepSpring(drop, falls ? 1 : goal, goal ? { omega: MORPH.dropSpeed, zeta: Math.min(MORPH.dropDamping, 1) } : back, dt)
-        let m4 = stepSpring(recoil, 0, goal || rebounding ? { omega: MORPH.swingSpeed / Math.sqrt(heavy), zeta: Math.min(MORPH.swingDamping, 0.999) } : back, dt)
+        const m5 =
+          (goal === 1 && !falls) ||
+          stepSpring(
+            drop,
+            falls ? 1 : goal,
+            goal ? { omega: MORPH.dropSpeed, zeta: Math.min(MORPH.dropDamping, 1) } : back,
+            dt,
+          )
+        let m4 = stepSpring(
+          recoil,
+          0,
+          goal || rebounding
+            ? { omega: MORPH.swingSpeed / Math.sqrt(heavy), zeta: Math.min(MORPH.swingDamping, 0.999) }
+            : back,
+          dt,
+        )
         if (m4 && Math.abs(recoil.x) < 0.006 && Math.abs(recoil.v) < 0.02) {
           recoil.x = recoil.v = 0
           m4 = false
@@ -826,15 +1030,35 @@ function createMorph(matchWidth: boolean, morphs: boolean) {
         moving = m1 || m2 || m3 || m4 || m5
         if (goal && moving && rec.length < 1500) {
           recT += dt
-          rec.push({ t: recT, open: open.x, bridge: 0, rc: recoil.x, reveal, snapped: false, cross: cross.x, calm: calm.x, drop: drop.x })
+          rec.push({
+            t: recT,
+            open: open.x,
+            bridge: 0,
+            rc: recoil.x,
+            reveal,
+            snapped: false,
+            cross: cross.x,
+            calm: calm.x,
+            drop: drop.x,
+          })
         }
         return moving
       }
       const weight = Math.max(TUNE.weight, 0.1)
       const kick = TUNE.kick / weight
-      const m1 = stepSpring(open, goal, goal ? { omega: TUNE.openSpeed, zeta: TUNE.openDamping } : { omega: TUNE.closeSpeed, zeta: 0.7 }, dt)
+      const m1 = stepSpring(
+        open,
+        goal,
+        goal ? { omega: TUNE.openSpeed, zeta: TUNE.openDamping } : { omega: TUNE.closeSpeed, zeta: 0.7 },
+        dt,
+      )
       const attached = live && (goal ? open.x < TUNE.detachAt : true)
-      const m2 = stepSpring(bridge, attached ? 1 : 0, attached || !goal ? ATTACH : snapped ? LET_GO : { omega: TUNE.snapSpeed, zeta: 1 }, dt)
+      const m2 = stepSpring(
+        bridge,
+        attached ? 1 : 0,
+        attached || !goal ? ATTACH : snapped ? LET_GO : { omega: TUNE.snapSpeed, zeta: 1 },
+        dt,
+      )
       // Jolts: the panel pushing out, the neck snapping, the panel bumping back in.
       if (goal && !pushed && open.x > 0.02) {
         pushed = true
@@ -847,7 +1071,12 @@ function createMorph(matchWidth: boolean, morphs: boolean) {
       }
       if (!wasJoined && joined && !goal) recoil.v += kick * 0.5
       wasJoined = joined
-      let m3 = stepSpring(recoil, 0, { omega: TUNE.recoilSpeed / Math.sqrt(weight), zeta: Math.min(TUNE.recoilDamping, 0.999) }, dt)
+      let m3 = stepSpring(
+        recoil,
+        0,
+        { omega: TUNE.recoilSpeed / Math.sqrt(weight), zeta: Math.min(TUNE.recoilDamping, 0.999) },
+        dt,
+      )
       // The jolt dies out slowly: for its last seconds it moves the glass by less than a
       // fiftieth of a pixel. That is rest, and the loop may stop.
       if (m3 && Math.abs(recoil.x) < 0.006 && Math.abs(recoil.v) < 0.02) {
@@ -883,7 +1112,11 @@ function createMorph(matchWidth: boolean, morphs: boolean) {
         if (s.onPanel) return null
         const { a } = s
         // A morphing control is thrown up when its surface comes back: its canvas leaves room for the furthest that throw can go.
-        const thrownUp = morphs ? Math.ceil((MORPH.throw * MORPH.kick) / (Math.sqrt(Math.max(MORPH.weight, 0.1)) * Math.max(MORPH.swingSpeed, 1))) : 0
+        const thrownUp = morphs
+          ? Math.ceil(
+              (MORPH.throw * MORPH.kick) / (Math.sqrt(Math.max(MORPH.weight, 0.1)) * Math.max(MORPH.swingSpeed, 1)),
+            )
+          : 0
         const box = {
           L: Math.floor(a.left - TRIGGER_PAD),
           T: Math.floor(a.top - TRIGGER_PAD - thrownUp),
@@ -981,7 +1214,15 @@ function createMorph(matchWidth: boolean, morphs: boolean) {
       el.removeEventListener('pointerenter', onEnter)
       el.removeEventListener('pointerleave', onLeave)
       el.style.scale = ''
-      for (const name of ['--glass-sway-y', '--glass-sway-sx', '--glass-sway-sy', '--glass-label', '--glass-label-blur', '--glass-lit']) el.style.removeProperty(name)
+      for (const name of [
+        '--glass-sway-y',
+        '--glass-sway-sx',
+        '--glass-sway-sy',
+        '--glass-label',
+        '--glass-label-blur',
+        '--glass-lit',
+      ])
+        el.style.removeProperty(name)
       delete el.dataset.glassAnchor
       delete el.dataset.glassMorphing
       pressed = hovered = false
@@ -1031,12 +1272,23 @@ function createMorph(matchWidth: boolean, morphs: boolean) {
         // A morphing surface is carried MORPH.drop px off its place on the way out: its canvas leaves room for that.
         const carried = morphs ? MORPH.drop : 0
         const T = Math.floor(Math.min(a.top, c.top) - PAD - Math.max(carried, 0))
-        const box = { L, T, W: Math.ceil(Math.max(a.right, c.right) + PAD - L), H: Math.ceil(Math.max(a.bottom, c.bottom) + PAD_BOTTOM + Math.max(-carried, 0) - T) }
+        const box = {
+          L,
+          T,
+          W: Math.ceil(Math.max(a.right, c.right) + PAD - L),
+          H: Math.ceil(Math.max(a.bottom, c.bottom) + PAD_BOTTOM + Math.max(-carried, 0) - T),
+        }
         // Everything but the trigger's box, which its own canvas draws beneath the label.
         const x0 = s.seam.left - L
         const y0 = s.seam.top - T
         // (A morphing surface lies over the control and draws it too: nothing is cut out.)
-        write(canvas, 'clip-path', s.parted || s.morph ? '' : `path(evenodd,"M0 0H${box.W}V${box.H}H0Z M${x0} ${y0}H${s.seam.right - L}V${s.seam.bottom - T}H${x0}Z")`)
+        write(
+          canvas,
+          'clip-path',
+          s.parted || s.morph
+            ? ''
+            : `path(evenodd,"M0 0H${box.W}V${box.H}H0Z M${x0} ${y0}H${s.seam.right - L}V${s.seam.bottom - T}H${x0}Z")`,
+        )
         // The surface's drop shadow is CSS, the card's own from the start: it follows the surface
         // as it swells out of the control.
         if (cardShadow && s.blob) {
@@ -1063,12 +1315,25 @@ function createMorph(matchWidth: boolean, morphs: boolean) {
                 blob: undefined,
                 // The same light, seen from the surface's own centre.
                 // (A light kept to the control never reaches it.)
-                glow: s.lit && s.lit.blob ? { ...s.lit, x: s.lit.x - s.blob.x, y: s.lit.y - s.blob.y, halo: { around: 'body' as const, amount: s.out * s.lit.spill } } : undefined,
+                glow:
+                  s.lit && s.lit.blob
+                    ? {
+                        ...s.lit,
+                        x: s.lit.x - s.blob.x,
+                        y: s.lit.y - s.blob.y,
+                        halo: { around: 'body' as const, amount: s.out * s.lit.spill },
+                      }
+                    : undefined,
               }
             : {}
         // Joined, the engine draws the surface's glass on the blob; alone, the same glass is the
         // whole lens. Nothing changes as the neck lets go.
-        return { ...lensFor(box, s, page, dirty, s.parted ? 1 : s.morph ? s.card : 0), ...alone, left: L - c.left - s.edge.left, top: T - c.top - s.edge.top }
+        return {
+          ...lensFor(box, s, page, dirty, s.parted ? 1 : s.morph ? s.card : 0),
+          ...alone,
+          left: L - c.left - s.edge.left,
+          top: T - c.top - s.edge.top,
+        }
       },
       drawn: () => {
         if (panelDrawn) return
@@ -1081,7 +1346,8 @@ function createMorph(matchWidth: boolean, morphs: boolean) {
     }
     panelView = view
     // A choice in the list lights the surface where it lands, around the choice alone.
-    const chosen = (item: Element | null | undefined): item is Element => !!item && !item.matches("[data-disabled], [aria-disabled='true']")
+    const chosen = (item: Element | null | undefined): item is Element =>
+      !!item && !item.matches("[data-disabled], [aria-disabled='true']")
     const onPick = (ev: PointerEvent) => {
       if (ev.button > 0 || !(ev.target instanceof Element) || !chosen(ev.target.closest(ITEMS))) return
       light(ev.clientX, ev.clientY, 1, true)
@@ -1115,7 +1381,11 @@ function createMorph(matchWidth: boolean, morphs: boolean) {
       if (isOpen()) view.visible = true
       dirty()
     })
-    mo.observe(el, { attributes: true, attributeOldValue: true, attributeFilter: ['data-open', 'data-closed', 'data-ending-style', 'data-side', 'style'] })
+    mo.observe(el, {
+      attributes: true,
+      attributeOldValue: true,
+      attributeFilter: ['data-open', 'data-closed', 'data-ending-style', 'data-side', 'style'],
+    })
     const ro = new ResizeObserver(dirty)
     ro.observe(el)
     const io = new IntersectionObserver(([entry]) => {
@@ -1146,14 +1416,14 @@ function createMorph(matchWidth: boolean, morphs: boolean) {
   return { setTrigger, setPanel }
 }
 
-export type GlassPopup = ReturnType<typeof createMorph>
+type GlassPopup = ReturnType<typeof createMorph>
 
 /**
  * How the surface comes out. `stretch`: it swells out of the control and holds on by a neck that
  * thins and snaps. `morph`: the control itself becomes the surface, which then lies over it (give
  * the content a negative `sideOffset`, the control's height).
  */
-export type GlassPopupOpening = 'stretch' | 'morph'
+type GlassPopupOpening = 'stretch' | 'morph'
 
 /**
  * Classes that centre a popup over its control, whatever the control's height: UI SDK keeps that
@@ -1161,7 +1431,7 @@ export type GlassPopupOpening = 'stretch' | 'morph'
  * of its own height. Always with a transform: UI SDK places the box as if it had none, while a
  * margin it would take for its own error and undo the moment the control moves (a hover's swell).
  */
-export const OVER_CENTER =
+const OVER_CENTER =
   '[position-try-fallbacks:none]! data-[side=bottom]:-translate-y-1/2 data-[side=top]:translate-y-1/2 data-[side=bottom]:[transform:translateY(calc(var(--anchor-height)*-0.5))] data-[side=top]:[transform:translateY(calc(var(--anchor-height)*0.5))]'
 
 /**
@@ -1170,10 +1440,17 @@ export const OVER_CENTER =
  */
 export const GlassPopupContext = createContext<GlassPopup | null>(null)
 
-const canvasStyle = { position: 'absolute', zIndex: -1, maxWidth: 'none', pointerEvents: 'none', width: 0, height: 0 } as const
+const canvasStyle = {
+  position: 'absolute',
+  zIndex: -1,
+  maxWidth: 'none',
+  pointerEvents: 'none',
+  width: 0,
+  height: 0,
+} as const
 
 /** The surface's share of the glass: the first child of the popup's content. */
-export function GlassPopupSurface({ popup: morph }: { popup: GlassPopup }) {
+function GlassPopupSurface({ popup: morph }: { popup: GlassPopup }) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const holdRef = useRef<HTMLSpanElement>(null)
   const shadowRef = useRef<HTMLSpanElement>(null)
@@ -1188,7 +1465,7 @@ export function GlassPopupSurface({ popup: morph }: { popup: GlassPopup }) {
 }
 
 /** The anchor's share of the glass: the first child of the control that opens the popup. */
-export function GlassPopupAnchor({ popup }: { popup: GlassPopup }) {
+function GlassPopupAnchor({ popup }: { popup: GlassPopup }) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   useEffect(() => popup.setTrigger(canvasRef.current), [popup])
   return (
@@ -1203,6 +1480,12 @@ export function GlassPopupAnchor({ popup }: { popup: GlassPopup }) {
 }
 
 /** One gooey popup: hand the result to its GlassPopupAnchor and GlassPopupSurface. `matchWidth` keeps the surface as wide as the anchor; `opening` picks the motion (see GlassPopupOpening). */
-export function useGlassPopup({ matchWidth = false, opening = 'stretch' }: { matchWidth?: boolean; opening?: GlassPopupOpening } = {}): GlassPopup {
+function useGlassPopup({
+  matchWidth = false,
+  opening = 'stretch',
+}: { matchWidth?: boolean; opening?: GlassPopupOpening } = {}): GlassPopup {
   return useMemo(() => createMorph(matchWidth, opening === 'morph'), [matchWidth, opening])
 }
+
+export { OVER_CENTER, GlassPopupAnchor, GlassPopupSurface, useGlassPopup }
+export type { GlassPopup, GlassPopupOpening }

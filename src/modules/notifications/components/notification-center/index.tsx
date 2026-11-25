@@ -31,7 +31,7 @@ const NotificationCenter = () => {
             {t('notifications.center.clear')}
           </Button>
         </DrawerHeader>
-        <div className="overflow-y-auto px-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pb-2">
           {isLoading && <ListSkeleton rows={3} />}
           {error && <ErrorState error={error} />}
           {isEmpty && (

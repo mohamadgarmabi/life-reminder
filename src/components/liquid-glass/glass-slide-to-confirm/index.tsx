@@ -1,13 +1,25 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 
-import { drawAround, drawDom } from './dom-snapshot'
-import { GlassStyles } from './glass-layer'
-import { SPRINGS, clamp, getGlassEngine, lerp, mixRgb, smooth, stepSpring, surfaceColorOf, type GlassView, type Rgb, type Spring } from './engine'
+import { drawAround, drawDom } from '../shared/dom-snapshot'
+import { GlassStyles } from '../glass-layer/index'
+import {
+  SPRINGS,
+  clamp,
+  getGlassEngine,
+  lerp,
+  mixRgb,
+  smooth,
+  stepSpring,
+  surfaceColorOf,
+  type GlassView,
+  type Rgb,
+  type Spring,
+} from '../shared/engine'
 
-export type GlassSlideState = 'idle' | 'pending' | 'success'
-export type GlassSlideSize = 'sm' | 'md' | 'lg' | 'xl'
+type GlassSlideState = 'idle' | 'pending' | 'success'
+type GlassSlideSize = 'sm' | 'md' | 'lg' | 'xl'
 
-export type GlassSlideToConfirmProps = {
+type GlassSlideToConfirmProps = {
   /** The instruction, written in the track and used as the slider's name: "Slide to send $240". */
   children: string
   /** Runs once the thumb reaches the end. Return a promise to stay pending until it settles. */
@@ -79,7 +91,8 @@ const SQUASH_RATE = 1.15
 const SQUASH = 0.2
 const SQUASH_TALL = 0.6
 /** With `mirror`, the thumb's mark glows while the glass is clear: a faint white light, just around itself. */
-const MARK_GLOW = 'transition-[filter] duration-200 [[data-glass-traveling]_&]:[filter:drop-shadow(0_0_5px_rgb(255_255_255/0.35))]'
+const MARK_GLOW =
+  'transition-[filter] duration-200 [[data-glass-traveling]_&]:[filter:drop-shadow(0_0_5px_rgb(255_255_255/0.35))]'
 /** The fill swells with the track, by this share of the track's bell. */
 const FILL_BULGE = 0.8
 /** Reaching this far (px) out from under the thumb, the fill is fully shown. */
@@ -125,13 +138,43 @@ const HOME = { omega: 22, zeta: 0.75 }
 // Track height, thumb (inset 4 px), the fill's box (8 px taller on both sides than the thumb),
 // and the boxes that keep both copies of the label aligned.
 const sizes: Record<GlassSlideSize, { host: string; thumb: string; fill: string; label: string; copy: string }> = {
-  sm: { host: 'h-10 text-[13px] [&_svg]:size-4', thumb: 'size-8', fill: 'h-12 w-8', label: 'left-10', copy: 'left-9 h-10' },
-  md: { host: 'h-12 text-sm [&_svg]:size-[18px]', thumb: 'size-10', fill: 'h-14 w-10', label: 'left-12', copy: 'left-11 h-12' },
-  lg: { host: 'h-14 text-[15px] [&_svg]:size-5', thumb: 'size-12', fill: 'h-16 w-12', label: 'left-14', copy: 'left-[52px] h-14' },
-  xl: { host: 'h-24 text-[20px] [&_svg]:size-8', thumb: 'size-[88px]', fill: 'h-[104px] w-[88px]', label: 'left-24', copy: 'left-[92px] h-24' },
+  sm: {
+    host: 'h-10 text-[13px] [&_svg]:size-4',
+    thumb: 'size-8',
+    fill: 'h-12 w-8',
+    label: 'left-10',
+    copy: 'left-9 h-10',
+  },
+  md: {
+    host: 'h-12 text-sm [&_svg]:size-[18px]',
+    thumb: 'size-10',
+    fill: 'h-14 w-10',
+    label: 'left-12',
+    copy: 'left-11 h-12',
+  },
+  lg: {
+    host: 'h-14 text-[15px] [&_svg]:size-5',
+    thumb: 'size-12',
+    fill: 'h-16 w-12',
+    label: 'left-14',
+    copy: 'left-[52px] h-14',
+  },
+  xl: {
+    host: 'h-24 text-[20px] [&_svg]:size-8',
+    thumb: 'size-[88px]',
+    fill: 'h-[104px] w-[88px]',
+    label: 'left-24',
+    copy: 'left-[92px] h-24',
+  },
 }
 
-const svg = { viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeLinecap: 'round', strokeLinejoin: 'round' } as const
+const svg = {
+  viewBox: '0 0 24 24',
+  fill: 'none',
+  stroke: 'currentColor',
+  strokeLinecap: 'round',
+  strokeLinejoin: 'round',
+} as const
 // The thumb's mark is one stroke of three points: a chevron at 0, a check at 1.
 const CHEVRON = [9.5, 5.5, 16, 12, 9.5, 18.5]
 const CHECK = [4.5, 12.75, 10.5, 18.75, 19.5, 5.25]
@@ -147,7 +190,7 @@ const Spinner = () => (
 
 type Controller = { unlock: () => void; wake: () => void }
 
-export function GlassSlideToConfirm({
+function GlassSlideToConfirm({
   children,
   onConfirm,
   onConfirmError,
@@ -232,7 +275,21 @@ export function GlassSlideToConfirm({
     const glyph = part('glyph')
     const spinner = part('spinner')
     const check = part('check')
-    if (!track || !bed || !label || !fill || !copy || !status || !thumb || !disc || !done || !mark || !spinner || !check) return
+    if (
+      !track ||
+      !bed ||
+      !label ||
+      !fill ||
+      !copy ||
+      !status ||
+      !thumb ||
+      !disc ||
+      !done ||
+      !mark ||
+      !spinner ||
+      !check
+    )
+      return
     // The default chevron bends into the check; a custom `icon` fades to it instead.
     const ink = mark.querySelector('[data-glass-slide="ink"]')
     const checkPath = check.querySelector('path')
@@ -337,7 +394,10 @@ export function GlassSlideToConfirm({
       const stretch = Math.min(OVERFLOW, RUBBER_TRACK * Math.max(0, at - travel))
       stretchX = (1 + STRETCH_W * speed) * (1 - squash) * (1 + POP * popX.x)
       stretchY = (1 - STRETCH_H * speed) * (1 + SQUASH_TALL * squash) * (1 + POP * popY.x)
-      disc.style.scale = Math.abs(stretchX - 1) > 0.004 || Math.abs(stretchY - 1) > 0.004 ? `${stretchX.toFixed(3)} ${stretchY.toFixed(3)}` : ''
+      disc.style.scale =
+        Math.abs(stretchX - 1) > 0.004 || Math.abs(stretchY - 1) > 0.004
+          ? `${stretchX.toFixed(3)} ${stretchY.toFixed(3)}`
+          : ''
       const fade = String(+((1 - 0.7 * p) * (1 - smooth(0, 1 / 3, c))).toFixed(3))
       // The membrane: how far the held thumb pushes the track outward, and how wide that bell is.
       const amp = Math.max(0, swell.x) * BULGE * h * (1 + BULGE_SPEED * speed)
@@ -489,9 +549,13 @@ export function GlassSlideToConfirm({
         const give = RUBBER_GIVE * h
         // The thumb's own way past the end: as far as the track's overflow lets its end follow.
         const most = OVERFLOW / RUBBER_TRACK
-        goal = over > 0 ? travel + (most * over) / (over + give) : dragGoal < 0 ? (pad * dragGoal) / (d / 2 - dragGoal) : dragGoal
-      }
-      else if (input === 'keys') goal = keyValue * travel
+        goal =
+          over > 0
+            ? travel + (most * over) / (over + give)
+            : dragGoal < 0
+              ? (pad * dragGoal) / (d / 2 - dragGoal)
+              : dragGoal
+      } else if (input === 'keys') goal = keyValue * travel
       else if (input === 'hold') {
         hold = still ? 1 : Math.min(1, hold + dt / HOLD_SECONDS)
         goal = hold * travel
@@ -658,13 +722,24 @@ export function GlassSlideToConfirm({
             ? {
                 height: d,
                 paint: (around, reach) => {
-                  drawAround(around, document.body, { left: box.left - padX, top: box.top - padTop, width: W + 2 * padX, height: h + padTop + padBottom }, reach, {
-                    skip: (el) => el === canvas || el === thumb || el.hasAttribute('data-glass-skip'),
-                    onStale: () => {
-                      view.dirty = true
-                      gl.wake()
+                  drawAround(
+                    around,
+                    document.body,
+                    {
+                      left: box.left - padX,
+                      top: box.top - padTop,
+                      width: W + 2 * padX,
+                      height: h + padTop + padBottom,
                     },
-                  })
+                    reach,
+                    {
+                      skip: (el) => el === canvas || el === thumb || el.hasAttribute('data-glass-skip'),
+                      onStale: () => {
+                        view.dirty = true
+                        gl.wake()
+                      },
+                    },
+                  )
                 },
               }
             : undefined,
@@ -722,7 +797,16 @@ export function GlassSlideToConfirm({
     const onKeyDown = (e: KeyboardEvent) => {
       if (!usable()) return
       const k = e.key
-      const step = k === 'ArrowRight' || k === 'ArrowUp' ? 0.1 : k === 'ArrowLeft' || k === 'ArrowDown' ? -0.1 : k === 'PageUp' ? 0.25 : k === 'PageDown' ? -0.25 : 0
+      const step =
+        k === 'ArrowRight' || k === 'ArrowUp'
+          ? 0.1
+          : k === 'ArrowLeft' || k === 'ArrowDown'
+            ? -0.1
+            : k === 'PageUp'
+              ? 0.25
+              : k === 'PageDown'
+                ? -0.25
+                : 0
       const holds = k === ' ' || k === 'Enter'
       if (!step && !holds && k !== 'Home' && k !== 'End') return
       e.preventDefault()
@@ -788,7 +872,16 @@ export function GlassSlideToConfirm({
     ro.observe(root)
     // The idle nudge: a small push the spring returns, until the thumb has been touched.
     const nudge = setInterval(() => {
-      if (nudged || !live.current.hint || !usable() || input !== 'none' || !view.visible || reduced.matches || document.hidden) return
+      if (
+        nudged ||
+        !live.current.hint ||
+        !usable() ||
+        input !== 'none' ||
+        !view.visible ||
+        reduced.matches ||
+        document.hidden
+      )
+        return
       x.v = 8 * d
       wake()
     }, HINT_EVERY)
@@ -844,23 +937,43 @@ export function GlassSlideToConfirm({
       className={`relative isolate block w-full cursor-grab touch-pan-y rounded-full font-medium whitespace-nowrap text-neutral-600 outline-none select-none focus-visible:ring-2 focus-visible:ring-[#3291FF] focus-visible:ring-offset-2 aria-disabled:cursor-default data-[disabled]:cursor-not-allowed data-[disabled]:opacity-40 dark:text-neutral-300 ${s.host} ${className}`}
     >
       <GlassStyles />
-      <canvas ref={canvasRef} aria-hidden style={{ position: 'absolute', zIndex: 30, maxWidth: 'none', pointerEvents: 'none', width: 0, height: 0 }} />
+      <canvas
+        ref={canvasRef}
+        aria-hidden
+        style={{ position: 'absolute', zIndex: 30, maxWidth: 'none', pointerEvents: 'none', width: 0, height: 0 }}
+      />
       {/* The track. Once confirmed its left edge retreats into the thumb, carrying the status text. */}
       <span aria-hidden data-glass-slide="track" className="absolute inset-y-0 end-0 start-0">
-        <span data-glass-slide="bed" className="absolute inset-x-0 -inset-y-2 rounded-full bg-black/[0.06] dark:bg-white/[0.1]" style={{ clipPath: REST }} />
+        <span
+          data-glass-slide="bed"
+          className="absolute inset-x-0 -inset-y-2 rounded-full bg-black/[0.06] dark:bg-white/[0.1]"
+          style={{ clipPath: REST }}
+        />
         {/* The success disc is rounded, not clipped: a clip-path leaves a dark seam on its edge. */}
         <span data-glass-slide="done" className={`absolute inset-0 rounded-full opacity-0 ${fillClassName}`} />
-        <span data-glass-slide="status" className="absolute top-0 end-full flex h-full items-center pe-3 text-neutral-900 opacity-0 dark:text-white">
+        <span
+          data-glass-slide="status"
+          className="absolute top-0 end-full flex h-full items-center pe-3 text-neutral-900 opacity-0 dark:text-white"
+        >
           <span key={lastStatus.current} {...swap}>
             {lastStatus.current}
           </span>
         </span>
       </span>
-      <span aria-hidden data-glass-slide="label" className={`${centered} inset-y-0 right-0 ${s.label} ${failed ? 'text-red-600 dark:text-red-400' : ''}`}>
+      <span
+        aria-hidden
+        data-glass-slide="label"
+        className={`${centered} inset-y-0 right-0 ${s.label} ${failed ? 'text-red-600 dark:text-red-400' : ''}`}
+      >
         {text}
       </span>
       {/* The fill the thumb pulls behind it, with its own copy of the label. */}
-      <span aria-hidden data-glass-slide="fill" className={`absolute -top-1 left-1 overflow-hidden rounded-full ${s.fill} ${fillClassName}`} style={{ clipPath: REST }}>
+      <span
+        aria-hidden
+        data-glass-slide="fill"
+        className={`absolute -top-1 left-1 overflow-hidden rounded-full ${s.fill} ${fillClassName}`}
+        style={{ clipPath: REST }}
+      >
         <span data-glass-slide="copy" className={`${centered} top-1 ${s.copy}`}>
           {text}
         </span>
@@ -903,4 +1016,5 @@ export function GlassSlideToConfirm({
   )
 }
 
-export default GlassSlideToConfirm
+export { GlassSlideToConfirm }
+export type { GlassSlideState, GlassSlideSize, GlassSlideToConfirmProps, Controller }

@@ -83,7 +83,8 @@ export function Switch({
       }
       // The knob swells into the clear lens while it crosses the track, then settles.
       const travelling = s.dragPos === null && Math.abs(s.pos.x - target) > 0.08
-      const a = s.dragPos !== null ? stepSpring(s.pos, target, 40, 1, dt) : stepSpring(s.pos, target, 15, 1 - knobBounce, dt)
+      const a =
+        s.dragPos !== null ? stepSpring(s.pos, target, 40, 1, dt) : stepSpring(s.pos, target, 15, 1 - knobBounce, dt)
       const b = stepSpring(s.press, s.pressed || travelling ? 1 : 0, PRESS.omega, PRESS.zeta, dt)
       return a || b
     },
@@ -176,10 +177,18 @@ export function Switch({
     </SwitchControl>
   )
 
-  if (!label) return <span data-theme={theme} className="inline-flex">{control}</span>
+  if (!label)
+    return (
+      <span data-theme={theme} className="inline-flex">
+        {control}
+      </span>
+    )
 
   return (
-    <div data-theme={theme} className={`inline-flex items-center gap-3 ${labelSide === 'left' ? 'flex-row-reverse' : ''}`}>
+    <div
+      data-theme={theme}
+      className={`inline-flex items-center gap-3 ${labelSide === 'left' ? 'flex-row-reverse' : ''}`}
+    >
       {control}
       <label htmlFor={id} className="relative flex cursor-pointer flex-col select-none">
         <span className="text-[13px] font-medium text-neutral-900 dark:text-white">{label}</span>

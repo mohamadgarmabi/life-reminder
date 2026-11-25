@@ -1,6 +1,6 @@
 import { Sparkles } from 'lucide-react'
 import { Button } from '#/components/button'
-import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle } from '#/components/drawer'
+import { Drawer, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle } from '#/components/drawer'
 import { useUpdatePrompt } from '#/modules/shell/hooks/update-prompt.hook'
 import { t } from '#/modules/shell/utils/i18n'
 
@@ -17,7 +17,7 @@ const UpdatePrompt = () => {
           <DrawerTitle>{t('shell.update.title')}</DrawerTitle>
           <DrawerDescription>{versionLabel}</DrawerDescription>
         </DrawerHeader>
-        <div className="overflow-y-auto px-4">
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pb-28">
           <h3 className="mb-2 text-sm font-semibold">{t('shell.update.changes')}</h3>
           {hasNotes && (
             <ul className="mb-2 space-y-1.5 rounded-2xl surface p-4 text-sm" dir="auto">
@@ -36,14 +36,14 @@ const UpdatePrompt = () => {
             <p className="mb-2 rounded-2xl surface p-4 text-sm text-muted-foreground">{t('shell.update.noNotes')}</p>
           )}
         </div>
-        <div className="grid gap-2 px-4 pt-3 pb-[max(1.25rem,env(safe-area-inset-bottom))]">
+        <DrawerFooter className="grid gap-2">
           <Button size="lg" onClick={handleApply} disabled={applying}>
             {t('shell.update.apply')}
           </Button>
           <Button size="lg" variant="ghost" onClick={() => handleOpenChange(false)}>
             {t('common.later')}
           </Button>
-        </div>
+        </DrawerFooter>
       </DrawerContent>
     </Drawer>
   )

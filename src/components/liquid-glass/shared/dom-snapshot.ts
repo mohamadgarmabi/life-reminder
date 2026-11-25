@@ -23,7 +23,8 @@ function splitTop(text: string, separator: string) {
 }
 
 /** "40%" or "12px" of a span. */
-const lengthOf = (token: string, span: number) => (token.endsWith('%') ? (span * parseFloat(token)) / 100 : parseFloat(token) || 0)
+const lengthOf = (token: string, span: number) =>
+  token.endsWith('%') ? (span * parseFloat(token)) / 100 : parseFloat(token) || 0
 
 /** One axis of a CSS position ("25%", "12px", "right", "calc(100% - 8px)") inside `free` px of room. */
 function along(token: string | undefined, free: number) {
@@ -38,7 +39,11 @@ function along(token: string | undefined, free: number) {
 function placeOf(position: string, freeX: number, freeY: number): [number, number] {
   let [a, b, c, d] = splitTop(position, ' ')
   // "right 10px bottom 20px": offsets measured from the named edges.
-  if (d) return [a === 'right' ? freeX - along(b, freeX) : along(b, freeX), c === 'bottom' ? freeY - along(d, freeY) : along(d, freeY)]
+  if (d)
+    return [
+      a === 'right' ? freeX - along(b, freeX) : along(b, freeX),
+      c === 'bottom' ? freeY - along(d, freeY) : along(d, freeY),
+    ]
   if (a === 'top' || a === 'bottom' || b === 'left' || b === 'right') [a, b] = [b, a]
   return [along(a, freeX), along(b, freeY)]
 }
@@ -121,13 +126,28 @@ function imageCopy(src: string) {
 }
 
 /** Draws an image or a video frame into its box the way `object-fit` and `object-position` place it. */
-function drawFitted(ctx: CanvasRenderingContext2D, source: Drawable, sw: number, sh: number, box: Box, radius: number, style: CSSStyleDeclaration) {
+function drawFitted(
+  ctx: CanvasRenderingContext2D,
+  source: Drawable,
+  sw: number,
+  sh: number,
+  box: Box,
+  radius: number,
+  style: CSSStyleDeclaration,
+) {
   const fit = style.objectFit
   let w = box.w
   let h = box.h
   if (fit !== 'fill') {
     const contain = Math.min(box.w / sw, box.h / sh)
-    const k = fit === 'cover' ? Math.max(box.w / sw, box.h / sh) : fit === 'none' ? 1 : fit === 'scale-down' ? Math.min(1, contain) : contain
+    const k =
+      fit === 'cover'
+        ? Math.max(box.w / sw, box.h / sh)
+        : fit === 'none'
+          ? 1
+          : fit === 'scale-down'
+            ? Math.min(1, contain)
+            : contain
     w = sw * k
     h = sh * k
   }
@@ -152,7 +172,14 @@ let svgTaints = false
  * Built once per element and rebuilt when the colour, the cache key or the size
  * changes, so an animated SVG keeps its first frame instead of rebuilding every call.
  */
-function drawSvg(ctx: CanvasRenderingContext2D, svg: SVGSVGElement, color: string, box: Box, onStale: (() => void) | undefined, cacheKey: string) {
+function drawSvg(
+  ctx: CanvasRenderingContext2D,
+  svg: SVGSVGElement,
+  color: string,
+  box: Box,
+  onStale: (() => void) | undefined,
+  cacheKey: string,
+) {
   if (svgTaints) return
   const key = `${color}|${cacheKey}|${Math.round(box.w)}x${Math.round(box.h)}`
   let entry = svgCache.get(svg)
@@ -195,7 +222,8 @@ function parseStops(args: string[], currentColor: string): Stop[] | null {
   for (const arg of args) {
     const tokens = splitTop(arg, ' ')
     const positions: string[] = []
-    while (tokens.length && /^-?[\d.]+(%|px)$/.test(tokens[tokens.length - 1])) positions.unshift(tokens.pop() as string)
+    while (tokens.length && /^-?[\d.]+(%|px)$/.test(tokens[tokens.length - 1]))
+      positions.unshift(tokens.pop() as string)
     if (!tokens.length) continue // a colour hint (a position alone) is skipped
     const color = tokens.join(' ').replace(/currentcolor/gi, currentColor)
     if (!positions.length) stops.push({ color, at: null, px: false })
@@ -225,11 +253,18 @@ function parseImage(text: string, currentColor: string): BackgroundImage | null 
       const v = /top/.test(head) ? 't' : /bottom/.test(head) ? 'b' : ''
       const hz = /left/.test(head) ? 'l' : /right/.test(head) ? 'r' : ''
       if (v && hz) corner = v + hz
-      else angle = ({ t: 0, r: Math.PI / 2, b: Math.PI, l: Math.PI * 1.5 } as Record<string, number>)[v || hz] ?? Math.PI
+      else
+        angle = ({ t: 0, r: Math.PI / 2, b: Math.PI, l: Math.PI * 1.5 } as Record<string, number>)[v || hz] ?? Math.PI
       isDirection = true
     } else if (/^-?[\d.]+(deg|grad|rad|turn)$/.test(head)) {
       const n = parseFloat(head)
-      angle = head.endsWith('turn') ? n * Math.PI * 2 : head.endsWith('grad') ? (n * Math.PI) / 200 : head.endsWith('rad') ? n : (n * Math.PI) / 180
+      angle = head.endsWith('turn')
+        ? n * Math.PI * 2
+        : head.endsWith('grad')
+          ? (n * Math.PI) / 200
+          : head.endsWith('rad')
+            ? n
+            : (n * Math.PI) / 180
       isDirection = true
     }
     const stops = parseStops(isDirection ? args.slice(1) : args, currentColor)
@@ -322,7 +357,11 @@ function rampOf(stops: Stop[], length: number, repeating: boolean, reach = 1) {
   }
   // Stops that all share one position are a hard edge: keep the line a hair long, or canvas paints nothing.
   const span = Math.max(to - from, 0.02 / Math.max(length, 1e-6))
-  return { from, to: from + span, stops: list.map(([p, color]): [number, string] => [Math.min(1, Math.max(0, (p - from) / span)), color]) }
+  return {
+    from,
+    to: from + span,
+    stops: list.map(([p, color]): [number, string] => [Math.min(1, Math.max(0, (p - from) / span)), color]),
+  }
 }
 
 /** Fills (0, 0, w, h) with a CSS gradient. */
@@ -332,7 +371,9 @@ function fillGradient(ctx: CanvasRenderingContext2D, gradient: Gradient, w: numb
     if (gradient.corner) {
       // "to top right": the line that puts the two neighbouring corners on the 50 % mark.
       const base = Math.atan2(h, w)
-      angle = ({ tr: base, br: Math.PI - base, bl: Math.PI + base, tl: -base } as Record<string, number>)[gradient.corner] ?? base
+      angle =
+        ({ tr: base, br: Math.PI - base, bl: Math.PI + base, tl: -base } as Record<string, number>)[gradient.corner] ??
+        base
     }
     const sin = Math.sin(angle)
     const cos = Math.cos(angle)
@@ -381,7 +422,13 @@ function fillGradient(ctx: CanvasRenderingContext2D, gradient: Gradient, w: numb
  * Paints an element's `background-image` layers. `area` is the box they are sized and
  * positioned in, `bounds` the part of it worth painting. The caller has clipped to the box.
  */
-function paintBackgrounds(ctx: CanvasRenderingContext2D, style: CSSStyleDeclaration, area: Box, bounds: Box, onStale?: () => void) {
+function paintBackgrounds(
+  ctx: CanvasRenderingContext2D,
+  style: CSSStyleDeclaration,
+  area: Box,
+  bounds: Box,
+  onStale?: () => void,
+) {
   const images = imagesOf(style)
   const sizes = splitTop(style.backgroundSize, ',')
   const positions = splitTop(style.backgroundPosition, ',')
@@ -470,7 +517,8 @@ function drawText(
   const transform = style.textTransform
   if (transform === 'uppercase') text = text.toLocaleUpperCase(lang)
   else if (transform === 'lowercase') text = text.toLocaleLowerCase(lang)
-  else if (transform === 'capitalize') text = text.replace(/(^|\s)(\S)/g, (_, gap: string, letter: string) => gap + letter.toUpperCase())
+  else if (transform === 'capitalize')
+    text = text.replace(/(^|\s)(\S)/g, (_, gap: string, letter: string) => gap + letter.toUpperCase())
   const rtl = style.direction === 'rtl'
   ctx.font = `${style.fontStyle} ${style.fontWeight} ${style.fontSize} ${style.fontFamily}`
   if ('letterSpacing' in ctx) ctx.letterSpacing = style.letterSpacing === 'normal' ? '0px' : style.letterSpacing
@@ -499,7 +547,8 @@ function drawText(
     if (!line || !isVisible(rect)) return
     // A leading space takes room only after an inline neighbour (not at the start of a
     // block): then the line box is wider than its words, and the text starts further in.
-    const lead = i === 0 && !rtl && /^\s/.test(raw) && rect.width - ctx.measureText(line).width > space * 0.5 ? space : 0
+    const lead =
+      i === 0 && !rtl && /^\s/.test(raw) && rect.width - ctx.measureText(line).width > space * 0.5 ? space : 0
     const baseline = rect.top - originY + (rect.height - (ascent + descent)) / 2 + ascent
     ctx.fillText(line, rect.left - originX + lead, baseline)
   })
@@ -603,7 +652,8 @@ function clipShape(value: string, box: Box): Path2D | null {
   const inset = /^inset\((.*)\)$/s.exec(value)
   if (!inset) return null
   const [sides, round = ''] = inset[1].split(/\s+round\s+/)
-  const length = (token: string, of: number) => (token.endsWith('%') ? (parseFloat(token) / 100) * of : parseFloat(token) || 0)
+  const length = (token: string, of: number) =>
+    token.endsWith('%') ? (parseFloat(token) / 100) * of : parseFloat(token) || 0
   const t = sides.trim().split(/\s+/)
   const top = length(t[0], box.h)
   const right = length(t[1] ?? t[0], box.w)
@@ -612,7 +662,13 @@ function clipShape(value: string, box: Box): Path2D | null {
   const w = Math.max(0, box.w - left - right)
   const h = Math.max(0, box.h - top - bottom)
   const shape = new Path2D()
-  shape.roundRect(box.x + left, box.y + top, w, h, Math.min(round ? length(round.trim().split(/\s+/)[0], Math.min(w, h)) : 0, w / 2, h / 2))
+  shape.roundRect(
+    box.x + left,
+    box.y + top,
+    w,
+    h,
+    Math.min(round ? length(round.trim().split(/\s+/)[0], Math.min(w, h)) : 0, w / 2, h / 2),
+  )
   return shape
 }
 
@@ -622,7 +678,8 @@ export function drawDom(ctx: CanvasRenderingContext2D, root: Element, options: D
   const originY = origin.top
   const deferred: { element: Element; opacity: number }[] = []
   const intersects = (rect: DOMRect) =>
-    !region || (rect.right > region.left && rect.left < region.right && rect.bottom > region.top && rect.top < region.bottom)
+    !region ||
+    (rect.right > region.left && rect.left < region.right && rect.bottom > region.top && rect.top < region.bottom)
   let lang: string | undefined
   try {
     lang = Intl.getCanonicalLocales(document.documentElement.lang)[0]
@@ -689,7 +746,14 @@ export function drawDom(ctx: CanvasRenderingContext2D, root: Element, options: D
       if (shape) ctx.restore()
     }
   }
-  const paintBox = (element: Element, style: CSSStyleDeclaration, rect: DOMRect, box: Box, opacity: number, drawChildren: () => void) => {
+  const paintBox = (
+    element: Element,
+    style: CSSStyleDeclaration,
+    rect: DOMRect,
+    box: Box,
+    opacity: number,
+    drawChildren: () => void,
+  ) => {
     const radius = Math.min(parseFloat(style.borderTopLeftRadius) || 0, rect.width / 2, rect.height / 2)
     // Frosted veil (backdrop-filter: blur): blur what is already painted beneath it first,
     // otherwise text behind a translucent veil shows up sharp in the glass.
@@ -714,7 +778,9 @@ export function drawDom(ctx: CanvasRenderingContext2D, root: Element, options: D
         bounds.h = Math.min(box.y + box.h, region.bottom - originY) - bounds.y
       }
       // A fixed background is laid out in the viewport, whatever the element's box.
-      const area: Box = style.backgroundAttachment.includes('fixed') ? { x: -originX, y: -originY, w: innerWidth, h: innerHeight } : box
+      const area: Box = style.backgroundAttachment.includes('fixed')
+        ? { x: -originX, y: -originY, w: innerWidth, h: innerHeight }
+        : box
       ctx.save()
       ctx.beginPath()
       ctx.roundRect(box.x, box.y, box.w, box.h, radius)
@@ -725,7 +791,13 @@ export function drawDom(ctx: CanvasRenderingContext2D, root: Element, options: D
     const borderWidth = parseFloat(style.borderTopWidth) || 0
     if (borderWidth > 0 && style.borderTopStyle !== 'none' && isVisibleColor(style.borderTopColor)) {
       ctx.beginPath()
-      ctx.roundRect(box.x + borderWidth / 2, box.y + borderWidth / 2, box.w - borderWidth, box.h - borderWidth, Math.max(0, radius - borderWidth / 2))
+      ctx.roundRect(
+        box.x + borderWidth / 2,
+        box.y + borderWidth / 2,
+        box.w - borderWidth,
+        box.h - borderWidth,
+        Math.max(0, radius - borderWidth / 2),
+      )
       ctx.lineWidth = borderWidth
       ctx.strokeStyle = style.borderTopColor
       ctx.setLineDash(style.borderTopStyle === 'dashed' ? [4, 3] : [])
@@ -745,15 +817,21 @@ export function drawDom(ctx: CanvasRenderingContext2D, root: Element, options: D
       if (!src) return
       // The element itself when the canvas stays readable, otherwise our own CORS copy.
       const image = element.complete && element.naturalWidth && isClean(element, src) ? element : imageCopy(src)
-      if (isLoaded(image, onStale) && isClean(image, src)) drawFitted(ctx, image, image.naturalWidth, image.naturalHeight, box, radius, style)
+      if (isLoaded(image, onStale) && isClean(image, src))
+        drawFitted(ctx, image, image.naturalWidth, image.naturalHeight, box, radius, style)
       return
     }
     if (element instanceof HTMLVideoElement) {
       // The current frame; `live` glass follows the playback.
-      if (element.readyState >= 2 && element.videoWidth && isClean(element, element.currentSrc)) drawFitted(ctx, element, element.videoWidth, element.videoHeight, box, radius, style)
+      if (element.readyState >= 2 && element.videoWidth && isClean(element, element.currentSrc))
+        drawFitted(ctx, element, element.videoWidth, element.videoHeight, box, radius, style)
       return
     }
-    const clips = element !== root && style.overflow !== 'visible' && element !== document.body && element !== document.documentElement
+    const clips =
+      element !== root &&
+      style.overflow !== 'visible' &&
+      element !== document.body &&
+      element !== document.documentElement
     if (clips) {
       ctx.save()
       ctx.beginPath()
@@ -782,6 +860,11 @@ export function drawAround(
   drawDom(ctx, root, {
     ...options,
     origin: box,
-    region: { left: box.left - reach, top: box.top - reach, right: box.left + box.width + reach, bottom: box.top + box.height + reach },
+    region: {
+      left: box.left - reach,
+      top: box.top - reach,
+      right: box.left + box.width + reach,
+      bottom: box.top + box.height + reach,
+    },
   })
 }

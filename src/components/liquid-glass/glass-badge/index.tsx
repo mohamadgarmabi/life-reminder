@@ -15,11 +15,11 @@
 
 import { useEffect, useRef } from 'react'
 
-import { drawAround, drawDom } from './dom-snapshot'
-import { GlassStyles } from './glass-layer'
-import { getGlassEngine, rgbCss, surfaceColorOf, type GlassView, type Rgb } from './engine'
+import { drawAround, drawDom } from '../shared/dom-snapshot'
+import { GlassStyles } from '../glass-layer/index'
+import { getGlassEngine, rgbCss, surfaceColorOf, type GlassView, type Rgb } from '../shared/engine'
 
-export type GlassBadgeProps = {
+type GlassBadgeProps = {
   children: string
   /** Separator colour (CSS). Default: the text colour. */
   dotColor?: string
@@ -35,7 +35,7 @@ const OPTICS = (OPTION_UNITS * 1.35) / 120
 const HOVER_SPEED = 3.5
 const HOVER_ACCEL = 1.6
 
-export function GlassBadge({ children, dotColor, speed = 0.4, tint = 0.82, className = '' }: GlassBadgeProps) {
+function GlassBadge({ children, dotColor, speed = 0.4, tint = 0.82, className = '' }: GlassBadgeProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
   useEffect(() => {
@@ -56,7 +56,12 @@ export function GlassBadge({ children, dotColor, speed = 0.4, tint = 0.82, class
     let still = false
     let rate = 1
     let hovered = false
-    const snap = { canvas: document.createElement('canvas'), small: document.createElement('canvas'), stale: true, at: 0 }
+    const snap = {
+      canvas: document.createElement('canvas'),
+      small: document.createElement('canvas'),
+      stale: true,
+      at: 0,
+    }
 
     const measure = () => {
       w = host.offsetWidth
@@ -137,7 +142,12 @@ export function GlassBadge({ children, dotColor, speed = 0.4, tint = 0.82, class
                   const root = host.offsetParent ?? document.body
                   drawDom(sc, root, {
                     origin: { left: box.left, top: box.top },
-                    region: { left: box.left - padX, top: box.top - padTop, right: box.right + padX, bottom: box.bottom + padBottom },
+                    region: {
+                      left: box.left - padX,
+                      top: box.top - padTop,
+                      right: box.right + padX,
+                      bottom: box.bottom + padBottom,
+                    },
                     skip: (el) => el === host,
                     onStale: () => {
                       snap.stale = true
@@ -190,10 +200,21 @@ export function GlassBadge({ children, dotColor, speed = 0.4, tint = 0.82, class
               : {
                   height: h,
                   paint: (around, reach) => {
-                    drawAround(around, document.body, { left: box.left - padX, top: box.top - padTop, width: w + 2 * padX, height: h + padTop + padBottom }, reach, {
-                      skip: (el) => el === host || el.hasAttribute('data-glass-skip'),
-                      onStale: dirty,
-                    })
+                    drawAround(
+                      around,
+                      document.body,
+                      {
+                        left: box.left - padX,
+                        top: box.top - padTop,
+                        width: w + 2 * padX,
+                        height: h + padTop + padBottom,
+                      },
+                      reach,
+                      {
+                        skip: (el) => el === host || el.hasAttribute('data-glass-skip'),
+                        onStale: dirty,
+                      },
+                    )
                   },
                 },
           screenX: box.left + w / 2,
@@ -275,4 +296,5 @@ export function GlassBadge({ children, dotColor, speed = 0.4, tint = 0.82, class
   )
 }
 
-export default GlassBadge
+export { GlassBadge }
+export type { GlassBadgeProps }

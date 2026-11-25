@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
 import { RotateCcw, SlidersHorizontal } from 'lucide-react'
 import { Button } from '#/components/button'
-import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle, DrawerTrigger } from '#/components/drawer'
+import { Drawer, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger } from '#/components/drawer'
 import { useFilterSheet } from '#/modules/shell/hooks/filter-sheet.hook'
 import { t } from '#/modules/shell/utils/i18n'
 
@@ -30,15 +30,15 @@ const FilterSheet = ({
           <DrawerTitle>{t('shell.filter.title')}</DrawerTitle>
           <DrawerDescription className="sr-only">{t('shell.filter.description')}</DrawerDescription>
         </DrawerHeader>
-        <div className="space-y-3 overflow-y-auto px-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pb-24">
           <div className="grid gap-2 *:w-full">{children}</div>
-          <div className="grid grid-cols-2 gap-2 pt-1">
-            <Button variant="outline" onClick={onReset} disabled={!isActive}>
-              <RotateCcw /> {t('shell.filter.reset')}
-            </Button>
-            <Button onClick={() => setOpen(false)}>{t('shell.filter.apply')}</Button>
-          </div>
         </div>
+        <DrawerFooter className="grid grid-cols-2 gap-2">
+          <Button variant="outline" onClick={onReset} disabled={!isActive}>
+            <RotateCcw /> {t('shell.filter.reset')}
+          </Button>
+          <Button onClick={() => setOpen(false)}>{t('shell.filter.apply')}</Button>
+        </DrawerFooter>
       </DrawerContent>
     </Drawer>
   )

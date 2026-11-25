@@ -10,13 +10,13 @@ import {
   type ReactNode,
 } from 'react'
 
-import { GlassLayer, type GlassMaterial } from './glass-layer'
-import { GlassPopupAnchor, GlassPopupContext } from './glass-popup'
+import { GlassLayer, type GlassMaterial } from '../glass-layer/index'
+import { GlassPopupAnchor, GlassPopupContext } from '../glass-popup/index'
 
-export type GlassButtonGroupSize = 'sm' | 'md' | 'lg'
-export type GlassButtonGroupOrientation = 'horizontal' | 'vertical'
+type GlassButtonGroupSize = 'sm' | 'md' | 'lg'
+type GlassButtonGroupOrientation = 'horizontal' | 'vertical'
 
-export type GlassButtonGroupProps = {
+type GlassButtonGroupProps = {
   children?: ReactNode
   /** Side by side (default) or stacked. */
   orientation?: GlassButtonGroupOrientation
@@ -29,7 +29,7 @@ export type GlassButtonGroupProps = {
   className?: string
 } & Omit<HTMLAttributes<HTMLDivElement>, 'children' | 'className'>
 
-export type GlassButtonGroupItemProps = {
+type GlassButtonGroupItemProps = {
   children?: ReactNode
   /** Render the item on the single child element (a router `<Link>`, a menu trigger) instead of a `<button>`. */
   asChild?: boolean
@@ -69,7 +69,7 @@ const fallback: Record<GlassMaterial, string> = {
   tinted: '',
 }
 
-export function GlassButtonGroup({
+function GlassButtonGroup({
   children,
   orientation = 'horizontal',
   size = 'md',
@@ -85,7 +85,12 @@ export function GlassButtonGroup({
   // is its own body of glass, so some actions sit together and some apart.
   if (Children.toArray(children).some((child) => isValidElement(child) && child.type === GlassButtonGroup)) {
     return (
-      <div role="group" data-orientation={orientation} className={`inline-flex shrink-0 gap-2 ${vertical ? 'flex-col items-stretch' : 'items-center'} ${className}`} {...rest}>
+      <div
+        role="group"
+        data-orientation={orientation}
+        className={`inline-flex shrink-0 gap-2 ${vertical ? 'flex-col items-stretch' : 'items-center'} ${className}`}
+        {...rest}
+      >
         {children}
       </div>
     )
@@ -103,20 +108,33 @@ export function GlassButtonGroup({
       {...rest}
     >
       {/* The glass layer must be the host's first child. */}
-      {popup ? <GlassPopupAnchor popup={popup} /> : <GlassLayer material={material} tint={tint} optics={vertical ? STACKED : undefined} />}
+      {popup ? (
+        <GlassPopupAnchor popup={popup} />
+      ) : (
+        <GlassLayer material={material} tint={tint} optics={vertical ? STACKED : undefined} />
+      )}
       <GroupContext.Provider value={{ size, vertical }}>{children}</GroupContext.Provider>
     </div>
   )
 }
 
 /** One action of the group: a plain button that lies in the group's glass. */
-export function GlassButtonGroupItem({ children, asChild = false, className = '', type = 'button', ...rest }: GlassButtonGroupItemProps) {
+function GlassButtonGroupItem({
+  children,
+  asChild = false,
+  className = '',
+  type = 'button',
+  ...rest
+}: GlassButtonGroupItemProps) {
   const { size } = useContext(GroupContext)
   // No fill of its own, under the pointer either: the glass answers for the whole group.
   const classes = `inline-flex shrink-0 cursor-pointer items-center justify-center rounded-full ${items[size]} outline-none focus-visible:ring-2 focus-visible:ring-[#3291FF] disabled:pointer-events-none disabled:opacity-40 aria-disabled:pointer-events-none aria-disabled:opacity-40 [&_svg]:shrink-0`
   if (asChild) {
     const child = Children.only(children) as ReactElement<{ className?: string }>
-    return cloneElement(child, { ...rest, className: `${classes} ${child.props.className ?? ''} ${className}` } as Record<string, unknown>)
+    return cloneElement(child, {
+      ...rest,
+      className: `${classes} ${child.props.className ?? ''} ${className}`,
+    } as Record<string, unknown>)
   }
   return (
     <button type={type} className={`${classes} ${className}`} {...rest}>
@@ -126,7 +144,7 @@ export function GlassButtonGroupItem({ children, asChild = false, className = ''
 }
 
 /** A hairline between two items. It turns with the group. */
-export function GlassButtonGroupSeparator({ className = '' }: { className?: string }) {
+function GlassButtonGroupSeparator({ className = '' }: { className?: string }) {
   const { vertical } = useContext(GroupContext)
   return (
     <span
@@ -138,13 +156,21 @@ export function GlassButtonGroupSeparator({ className = '' }: { className?: stri
 }
 
 /** Text that is not a button: a unit, a count, a label for the items next to it. */
-export function GlassButtonGroupText({ children, className = '', ...rest }: { children?: ReactNode; className?: string } & Omit<HTMLAttributes<HTMLSpanElement>, 'children' | 'className'>) {
+function GlassButtonGroupText({
+  children,
+  className = '',
+  ...rest
+}: { children?: ReactNode; className?: string } & Omit<HTMLAttributes<HTMLSpanElement>, 'children' | 'className'>) {
   const { size } = useContext(GroupContext)
   return (
-    <span className={`inline-flex shrink-0 items-center justify-center ${items[size]} font-medium opacity-70 ${className}`} {...rest}>
+    <span
+      className={`inline-flex shrink-0 items-center justify-center ${items[size]} font-medium opacity-70 ${className}`}
+      {...rest}
+    >
       {children}
     </span>
   )
 }
 
-export default GlassButtonGroup
+export { GlassButtonGroup, GlassButtonGroupItem, GlassButtonGroupSeparator, GlassButtonGroupText }
+export type { GlassButtonGroupSize, GlassButtonGroupOrientation, GlassButtonGroupProps, GlassButtonGroupItemProps }

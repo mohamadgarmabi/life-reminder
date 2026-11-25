@@ -5,6 +5,9 @@ import type { buttonVariants } from './button.styles'
 type ButtonProps = React.ComponentProps<'button'> &
   VariantProps<typeof buttonVariants> & {
     asChild?: boolean
+    glass?: boolean
+    glassMaterial?: 'clear' | 'tinted'
+    glassTint?: number
   }
 
 export type { ButtonProps }

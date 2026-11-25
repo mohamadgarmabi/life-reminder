@@ -2,12 +2,16 @@ import { cn } from '#/modules/shell/utils/cn'
 import { Slot } from 'radix-ui'
 import { buttonVariants } from './button.styles'
 import type { ButtonProps } from './button.types'
+import { GlassLayer } from '#/components/liquid-glass/glass-layer'
 
 const Button = ({
   className,
   variant = 'default',
   size = 'default',
   asChild = false,
+  glass = false,
+  glassMaterial = 'clear',
+  glassTint,
   children,
   ...props
 }: ButtonProps) => {
@@ -20,9 +24,15 @@ const Button = ({
       data-slot="button"
       data-variant={variant}
       data-size={size}
-      className={cn(buttonVariants({ variant, size, className }), pill && 'bg-card bg-clip-padding shadow-none')}
+      className={cn(
+        buttonVariants({ variant, size, className }),
+        pill && 'bg-card bg-clip-padding shadow-none',
+        glass && 'font-semibold',
+      )}
+      data-glass-host={glass ? '' : undefined}
       {...props}
     >
+      {glass && <GlassLayer material={glassMaterial} tint={glassTint} />}
       {children}
     </Comp>
   )

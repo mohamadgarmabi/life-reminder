@@ -1,8 +1,8 @@
 import { useMemo, type CSSProperties, type HTMLAttributes, type ReactNode } from 'react'
 
-import { GlassLayer, type GlassMaterial, type GlassOptics } from './glass-layer'
+import { GlassLayer, type GlassMaterial, type GlassOptics } from '../glass-layer/index'
 
-export type GlassCardProps = {
+type GlassCardProps = {
   children?: ReactNode
   /** Glass look. Default `clear`: frosts and bends what is behind. `tinted` takes the card's own background colour. */
   material?: GlassMaterial
@@ -52,7 +52,17 @@ const fallback: Record<GlassMaterial, string> = {
   tinted: '',
 }
 
-export function GlassCard({ children, material = 'clear', tint = TINT, blur = BLUR, live = false, optics, className = '', style, ...rest }: GlassCardProps) {
+function GlassCard({
+  children,
+  material = 'clear',
+  tint = TINT,
+  blur = BLUR,
+  live = false,
+  optics,
+  className = '',
+  style,
+  ...rest
+}: GlassCardProps) {
   // Rounded unless you bring your own corners: any `rounded-*` class replaces the default
   // (the stylesheet's order, not the class order, would otherwise decide which one wins).
   const corners = /(^|\s)!?rounded-/.test(className) ? '' : 'rounded-[28px]'
@@ -62,18 +72,32 @@ export function GlassCard({ children, material = 'clear', tint = TINT, blur = BL
   } as CSSProperties
   // Yours over the card's own; on dark glass the rim line takes its dark opacity.
   const glass = useMemo<GlassOptics>(
-    () => ({ ...CARD_OPTICS, ...optics, dark: { borderAlpha: optics?.borderAlpha ?? DARK_BORDER_ALPHA, ...optics?.dark } }),
+    () => ({
+      ...CARD_OPTICS,
+      ...optics,
+      dark: { borderAlpha: optics?.borderAlpha ?? DARK_BORDER_ALPHA, ...optics?.dark },
+    }),
     [optics],
   )
   return (
-    <div data-glass-host="" className={`${corners} ${fallback[material]} ${className}`} style={{ ...look, ...style }} {...rest}>
+    <div
+      data-glass-host=""
+      className={`${corners} ${fallback[material]} ${className}`}
+      style={{ ...look, ...style }}
+      {...rest}
+    >
       {/* The glass layer must be the host's first child. */}
       <GlassLayer material={material} tint={tint} blur={blur} live={live} swell={false} optics={glass} />
       {/* The drop shadow, under the glass: an outer box-shadow never paints inside its own box. */}
-      <span aria-hidden className="pointer-events-none absolute inset-0 rounded-[inherit]" style={{ zIndex: -2, boxShadow: SHADOW }} />
+      <span
+        aria-hidden
+        className="pointer-events-none absolute inset-0 rounded-[inherit]"
+        style={{ zIndex: -2, boxShadow: SHADOW }}
+      />
       {children}
     </div>
   )
 }
 
-export default GlassCard
+export { GlassCard }
+export type { GlassCardProps }

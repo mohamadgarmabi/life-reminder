@@ -94,10 +94,15 @@ export function drawIcon(
 }
 
 /** Scales the slider's spatial optics (designed for a 120-unit lens) to another lens height. */
-export function scaleOptics<T extends { refraction: number; restRefraction: number; bevelWidth: number; shadowSoftness: number; shadowOffset: number }>(
-  o: T,
-  k: number,
-): T {
+export function scaleOptics<
+  T extends {
+    refraction: number
+    restRefraction: number
+    bevelWidth: number
+    shadowSoftness: number
+    shadowOffset: number
+  },
+>(o: T, k: number): T {
   return {
     ...o,
     refraction: o.refraction * k,

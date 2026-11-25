@@ -1,8 +1,8 @@
-import { Field } from '#/components/field'
 import { TagInput } from '#/modules/shell/components/tag-input'
 import { usePlanForm } from '#/modules/plans/hooks/plan-form.hook'
 import type { PlanFormProps } from '#/modules/plans/types'
 import { t } from '#/modules/shell/utils/i18n'
+import { DrawerFooter } from '#/components/drawer'
 
 const PlanForm = (props: PlanFormProps) => {
   const { form, knownTags, yearOptions, statusOptions, submitLabel, handleSubmit } = usePlanForm(props)
@@ -33,11 +33,11 @@ const PlanForm = (props: PlanFormProps) => {
           />
         )}
       </form.Field>
-      <Field>
+      <DrawerFooter>
         <form.AppForm>
           <form.SubmitButton>{submitLabel}</form.SubmitButton>
         </form.AppForm>
-      </Field>
+      </DrawerFooter>
     </form>
   )
 }

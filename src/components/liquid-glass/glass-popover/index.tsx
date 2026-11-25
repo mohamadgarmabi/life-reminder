@@ -21,16 +21,33 @@
 // the kit's engine owns the material. Needs @ui-sdk/core and @ui-sdk/react.
 // Without WebGL2 it is a plain frosted panel.
 
-import { Popover, PopoverClose, PopoverContent, PopoverDescription, PopoverTitle, PopoverTrigger, type PopoverProps } from '@ui-sdk/react/popover'
+import {
+  Popover,
+  PopoverClose,
+  PopoverContent,
+  PopoverDescription,
+  PopoverTitle,
+  PopoverTrigger,
+  type PopoverProps,
+} from '@ui-sdk/react/popover'
 import { useContext, type ComponentProps, type ReactNode } from 'react'
 
-import { GlassPopupAnchor, GlassPopupContext, GlassPopupSurface, OVER_CENTER, useGlassPopup } from './glass-popup'
+import {
+  GlassPopupAnchor,
+  GlassPopupContext,
+  GlassPopupSurface,
+  OVER_CENTER,
+  useGlassPopup,
+} from '../glass-popup/index'
 
-export type GlassPopoverProps = PopoverProps
+type GlassPopoverProps = PopoverProps
 
-export type GlassPopoverTriggerProps = { children?: ReactNode; className?: string } & Omit<ComponentProps<typeof PopoverTrigger>, 'children' | 'className' | 'render'>
+type GlassPopoverTriggerProps = { children?: ReactNode; className?: string } & Omit<
+  ComponentProps<typeof PopoverTrigger>,
+  'children' | 'className' | 'render'
+>
 
-export type GlassPopoverContentProps = {
+type GlassPopoverContentProps = {
   children?: ReactNode
   className?: string
   /**
@@ -42,7 +59,7 @@ export type GlassPopoverContentProps = {
   side?: 'top' | 'bottom'
 } & Omit<ComponentProps<typeof PopoverContent>, 'children' | 'className' | 'render' | 'side' | 'inline'>
 
-export type GlassPopoverCloseProps = {
+type GlassPopoverCloseProps = {
   /** `quiet`: a soft button in the popover's own tone. `solid`: the main action. */
   variant?: 'quiet' | 'solid'
   className?: string
@@ -60,7 +77,7 @@ const OVER = {
   edge: 'data-[side=bottom]:[transform:translateY(calc(var(--anchor-height)*-1))] data-[side=top]:[transform:translateY(var(--anchor-height))]',
 }
 
-export function GlassPopover({ children, ...options }: GlassPopoverProps) {
+function GlassPopover({ children, ...options }: GlassPopoverProps) {
   const popup = useGlassPopup({ opening: 'morph' })
   return (
     <Popover {...options}>
@@ -70,7 +87,7 @@ export function GlassPopover({ children, ...options }: GlassPopoverProps) {
 }
 
 /** The button that unfolds into the popover: Select's button, in Button's glass with its light and shadow. */
-export function GlassPopoverTrigger({ children, className = '', ...rest }: GlassPopoverTriggerProps) {
+function GlassPopoverTrigger({ children, className = '', ...rest }: GlassPopoverTriggerProps) {
   const popup = useContext(GlassPopupContext)
   return (
     <PopoverTrigger
@@ -86,7 +103,15 @@ export function GlassPopoverTrigger({ children, className = '', ...rest }: Glass
 }
 
 /** The popover, from its button's edge (`over="center"`: around it) and centred on it unless `align` says otherwise. Its children are yours. Pass `sideOffset` to place it yourself. */
-export function GlassPopoverContent({ children, className = '', over = 'edge', side = 'bottom', align = 'center', sideOffset, ...rest }: GlassPopoverContentProps) {
+function GlassPopoverContent({
+  children,
+  className = '',
+  over = 'edge',
+  side = 'bottom',
+  align = 'center',
+  sideOffset,
+  ...rest
+}: GlassPopoverContentProps) {
   const popup = useContext(GlassPopupContext)
   return (
     <PopoverContent
@@ -110,17 +135,23 @@ export function GlassPopoverContent({ children, className = '', over = 'edge', s
 }
 
 /** Names the popover (an `h2`). */
-export function GlassPopoverTitle({ className = '', ...rest }: { className?: string } & Omit<ComponentProps<typeof PopoverTitle>, 'className' | 'render'>) {
+function GlassPopoverTitle({
+  className = '',
+  ...rest
+}: { className?: string } & Omit<ComponentProps<typeof PopoverTitle>, 'className' | 'render'>) {
   return <PopoverTitle className={`px-1 text-base font-semibold tracking-tight ${className}`} {...rest} />
 }
 
 /** Says what the popover is for (a `p`). */
-export function GlassPopoverDescription({ className = '', ...rest }: { className?: string } & Omit<ComponentProps<typeof PopoverDescription>, 'className' | 'render'>) {
+function GlassPopoverDescription({
+  className = '',
+  ...rest
+}: { className?: string } & Omit<ComponentProps<typeof PopoverDescription>, 'className' | 'render'>) {
   return <PopoverDescription className={`-mt-2 px-1 text-sm leading-relaxed opacity-70 ${className}`} {...rest} />
 }
 
 /** A button that closes the popover; `onClick` runs as it does. */
-export function GlassPopoverClose({ variant = 'quiet', className = '', ...rest }: GlassPopoverCloseProps) {
+function GlassPopoverClose({ variant = 'quiet', className = '', ...rest }: GlassPopoverCloseProps) {
   const look =
     variant === 'solid'
       ? 'bg-neutral-900 text-white hover:bg-neutral-800 group-data-[glass-tone=dark]/glass:bg-white group-data-[glass-tone=dark]/glass:text-neutral-900 group-data-[glass-tone=dark]/glass:hover:bg-neutral-200'
@@ -133,4 +164,12 @@ export function GlassPopoverClose({ variant = 'quiet', className = '', ...rest }
   )
 }
 
-export default GlassPopover
+export {
+  GlassPopover,
+  GlassPopoverTrigger,
+  GlassPopoverContent,
+  GlassPopoverTitle,
+  GlassPopoverDescription,
+  GlassPopoverClose,
+}
+export type { GlassPopoverProps, GlassPopoverTriggerProps, GlassPopoverContentProps, GlassPopoverCloseProps }

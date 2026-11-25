@@ -17,8 +17,7 @@ export function useSyncedState<T>(value: T, onChange?: (value: T) => void) {
   return [state, update] as const
 }
 
-export const focusRing =
-  'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3291FF]'
+export const focusRing = 'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3291FF]'
 
 // Tracks an element's border-box size (0 × 0 until mounted).
 export function useElementSize<T extends HTMLElement>() {

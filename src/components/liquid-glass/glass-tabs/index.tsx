@@ -18,7 +18,7 @@
 import { SegmentedControl, SegmentedControlItem } from '@ui-sdk/react/segmented-control'
 import type { ReactNode } from 'react'
 
-import { GlassLens } from './glass-lens'
+import { GlassLens } from '../glass-lens/index'
 
 export type GlassTabOption<T extends string> = { value: T; label: ReactNode; icon?: ReactNode; 'aria-label'?: string }
 
@@ -41,7 +41,7 @@ const sizes = {
   lg: 'h-10 px-4 text-sm gap-2 [&_svg]:size-4',
 }
 
-export function GlassTabs<T extends string>({
+function GlassTabs<T extends string>({
   options,
   value,
   onValueChange,
@@ -84,7 +84,9 @@ export function GlassTabs<T extends string>({
               />
             )}
             {o.icon && <span className="relative z-20 flex">{o.icon}</span>}
-            {o.label !== undefined && o.label !== null && o.label !== '' && <span className="relative z-20">{o.label}</span>}
+            {o.label !== undefined && o.label !== null && o.label !== '' && (
+              <span className="relative z-20">{o.label}</span>
+            )}
           </SegmentedControlItem>
         )
       })}
@@ -92,4 +94,5 @@ export function GlassTabs<T extends string>({
   )
 }
 
-export default GlassTabs
+export { GlassTabs }
+export type {}

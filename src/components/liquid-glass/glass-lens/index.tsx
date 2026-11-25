@@ -1,8 +1,18 @@
 import { useEffect, useRef } from 'react'
 
-import { drawAround } from './dom-snapshot'
-import { GlassStyles } from './glass-layer'
-import { SPRINGS, clamp, getGlassEngine, lerp, stepSpring, surfaceColorOf, type GlassView, type Rgb, type Spring } from './engine'
+import { drawAround } from '../shared/dom-snapshot'
+import { GlassStyles } from '../glass-layer/index'
+import {
+  SPRINGS,
+  clamp,
+  getGlassEngine,
+  lerp,
+  stepSpring,
+  surfaceColorOf,
+  type GlassView,
+  type Rgb,
+  type Spring,
+} from '../shared/engine'
 
 /** One option is designed 80 units tall; the optics are scaled to the slider's 120-unit lens. */
 const OPTION_UNITS = 80
@@ -22,7 +32,16 @@ function cornerOf(el: Element, w: number, h: number) {
 
 const svgCache = new WeakMap<Element, Map<string, HTMLImageElement>>()
 
-function drawSvg(ctx: CanvasRenderingContext2D, el: SVGSVGElement, color: string, x: number, y: number, w: number, h: number, redraw: () => void) {
+function drawSvg(
+  ctx: CanvasRenderingContext2D,
+  el: SVGSVGElement,
+  color: string,
+  x: number,
+  y: number,
+  w: number,
+  h: number,
+  redraw: () => void,
+) {
   let byColor = svgCache.get(el)
   if (!byColor) svgCache.set(el, (byColor = new Map()))
   let img = byColor.get(color)
@@ -44,7 +63,13 @@ function drawSvg(ctx: CanvasRenderingContext2D, el: SVGSVGElement, color: string
 const visible = (c: string) => !!c && c !== 'transparent' && !/rgba\(.*,\s*0\)$/.test(c) && !/\/\s*0\)$/.test(c)
 
 /** Paints the container into `back` (everything beneath the lens) and the labels into `front` in the selected colour. */
-function paintOptions(back: CanvasRenderingContext2D, front: CanvasRenderingContext2D, root: HTMLElement, selectedColor: string, redraw: () => void) {
+function paintOptions(
+  back: CanvasRenderingContext2D,
+  front: CanvasRenderingContext2D,
+  root: HTMLElement,
+  selectedColor: string,
+  redraw: () => void,
+) {
   const o = root.getBoundingClientRect()
   let lang: string | undefined
   try {
@@ -91,7 +116,12 @@ function paintOptions(back: CanvasRenderingContext2D, front: CanvasRenderingCont
         if (m.width < 1) continue
         // Labels are drawn as the page shows them (`uppercase` tabs).
         const raw = n.textContent.trim()
-        const text = st.textTransform === 'uppercase' ? raw.toLocaleUpperCase(lang) : st.textTransform === 'lowercase' ? raw.toLocaleLowerCase(lang) : raw
+        const text =
+          st.textTransform === 'uppercase'
+            ? raw.toLocaleUpperCase(lang)
+            : st.textTransform === 'lowercase'
+              ? raw.toLocaleLowerCase(lang)
+              : raw
         for (const [ctx, color] of [
           [back, st.color],
           [front, selectedColor],
@@ -102,7 +132,14 @@ function paintOptions(back: CanvasRenderingContext2D, front: CanvasRenderingCont
           ctx.textBaseline = 'alphabetic'
           const mt = ctx.measureText(text)
           ctx.fillStyle = color
-          ctx.fillText(text, m.left - o.left, m.top - o.top + (m.height - mt.fontBoundingBoxAscent - mt.fontBoundingBoxDescent) / 2 + mt.fontBoundingBoxAscent)
+          ctx.fillText(
+            text,
+            m.left - o.left,
+            m.top -
+              o.top +
+              (m.height - mt.fontBoundingBoxAscent - mt.fontBoundingBoxDescent) / 2 +
+              mt.fontBoundingBoxAscent,
+          )
         }
       }
     }
@@ -110,13 +147,13 @@ function paintOptions(back: CanvasRenderingContext2D, front: CanvasRenderingCont
   walk(root)
 }
 
-export type GlassLensProps = {
+type GlassLensProps = {
   /** The selected value (any change slides the lens). `null` = nothing selected. */
   value: string | number | null
   disabled?: boolean
 }
 
-export function GlassLens({ value, disabled = false }: GlassLensProps) {
+function GlassLens({ value, disabled = false }: GlassLensProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const syncRef = useRef<((slide: boolean) => void) | null>(null)
 
@@ -286,13 +323,24 @@ export function GlassLens({ value, disabled = false }: GlassLensProps) {
           reflection: {
             height: tall,
             paint: (around, reach) => {
-              drawAround(around, document.body, { left: box.left - padX, top: box.top - padTop, width: root.offsetWidth + 2 * padX, height: root.offsetHeight + padTop + padBottom }, reach, {
-                skip: (el) => el === canvas || el.hasAttribute('data-glass-skip'),
-                onStale: () => {
-                  view.dirty = true
-                  engine.wake()
+              drawAround(
+                around,
+                document.body,
+                {
+                  left: box.left - padX,
+                  top: box.top - padTop,
+                  width: root.offsetWidth + 2 * padX,
+                  height: root.offsetHeight + padTop + padBottom,
                 },
-              })
+                reach,
+                {
+                  skip: (el) => el === canvas || el.hasAttribute('data-glass-skip'),
+                  onStale: () => {
+                    view.dirty = true
+                    engine.wake()
+                  },
+                },
+              )
             },
           },
           screenX: box.left + mx.x,
@@ -441,4 +489,5 @@ export function GlassLens({ value, disabled = false }: GlassLensProps) {
   )
 }
 
-export default GlassLens
+export { cornerOf, drawSvg, paintOptions, GlassLens }
+export type { Box, GlassLensProps }

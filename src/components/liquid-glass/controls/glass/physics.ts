@@ -148,4 +148,3 @@ export function pressedLens(
     shadowOffset: o.shadowOffset * lerp(0.5, 1, pc),
   }
 }
-

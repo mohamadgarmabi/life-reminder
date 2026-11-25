@@ -2,6 +2,7 @@ import { ErrorState, ListSkeleton } from '#/modules/shell/components/states'
 import { useWateringHistory } from '#/modules/plants/hooks/watering-history.hook'
 import type { WateringHistoryProps } from '#/modules/plants/types'
 import { t } from '#/modules/shell/utils/i18n'
+import { DrawerFooter } from '#/components/drawer'
 
 const WateringHistory = (props: WateringHistoryProps) => {
   const { form, hasMisting, kindOptions, handleSubmit, isLoading, error, isEmpty, rows } = useWateringHistory(props)
@@ -17,9 +18,11 @@ const WateringHistory = (props: WateringHistoryProps) => {
         <form.AppField name="date">
           {(f) => <f.DateField label={t('plants.logDate')} description={t('plants.logDateHint')} />}
         </form.AppField>
-        <form.AppForm>
-          <form.SubmitButton>{t('plants.logSubmit')}</form.SubmitButton>
-        </form.AppForm>
+        <DrawerFooter>
+          <form.AppForm>
+            <form.SubmitButton>{t('plants.logSubmit')}</form.SubmitButton>
+          </form.AppForm>
+        </DrawerFooter>
       </form>
 
       {isLoading && <ListSkeleton rows={2} />}

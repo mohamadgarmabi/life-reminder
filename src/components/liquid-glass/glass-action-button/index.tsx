@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState, type ButtonHTMLAttributes, type ReactNode } from 'react'
 
-import { GlassLayer, type GlassMaterial } from './glass-layer'
+import { GlassLayer, type GlassMaterial } from '../glass-layer/index'
 
-export type GlassActionState = 'idle' | 'pending' | 'success'
+type GlassActionState = 'idle' | 'pending' | 'success'
 
-export type GlassActionButtonProps = {
+type GlassActionButtonProps = {
   /** The idle label; also the button's accessible name. */
   children: ReactNode
   /** Runs on press. Return a promise to stay pending until it settles. */
@@ -46,7 +46,14 @@ const fallback: Record<GlassMaterial, string> = {
 
 const ease = 'duration-300 ease-[cubic-bezier(.2,.8,.2,1)] motion-reduce:transition-none'
 
-const svg = { viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeLinecap: 'round', strokeLinejoin: 'round', 'aria-hidden': true } as const
+const svg = {
+  viewBox: '0 0 24 24',
+  fill: 'none',
+  stroke: 'currentColor',
+  strokeLinecap: 'round',
+  strokeLinejoin: 'round',
+  'aria-hidden': true,
+} as const
 // Optically centred: the head carries the weight, so the arrow sits one unit left of the
 // box centre and reads as centred in the droplet.
 const Arrow = () => (
@@ -66,7 +73,7 @@ const Check = () => (
   </svg>
 )
 
-export function GlassActionButton({
+function GlassActionButton({
   children,
   onAction,
   onActionError,
@@ -91,7 +98,8 @@ export function GlassActionButton({
   const sizer = useRef<HTMLSpanElement>(null)
   const alive = useRef(true)
 
-  const label = state === 'pending' ? (pendingLabel ?? children) : state === 'success' ? (successLabel ?? children) : children
+  const label =
+    state === 'pending' ? (pendingLabel ?? children) : state === 'success' ? (successLabel ?? children) : children
 
   // The label's width springs to fit the new text (the sizer holds it, unclipped).
   useEffect(() => {
@@ -156,7 +164,11 @@ export function GlassActionButton({
       {...rest}
     >
       <GlassLayer material={material} tint={tint} droplet={state === 'idle' ? 'apart' : 'merged'} />
-      <span aria-hidden className={`relative inline-flex overflow-hidden transition-[width] ${ease}`} style={{ width: labelWidth }}>
+      <span
+        aria-hidden
+        className={`relative inline-flex overflow-hidden transition-[width] ${ease}`}
+        style={{ width: labelWidth }}
+      >
         <span ref={sizer} className="invisible absolute">
           {label}
         </span>
@@ -164,12 +176,25 @@ export function GlassActionButton({
           {label}
         </span>
       </span>
-      <span aria-hidden className={`shrink-0 transition-[width] ${ease}`} style={{ width: state === 'idle' ? s.apart - s.merged : 0 }} />
+      <span
+        aria-hidden
+        className={`shrink-0 transition-[width] ${ease}`}
+        style={{ width: state === 'idle' ? s.apart - s.merged : 0 }}
+      />
       {/* Divider for the plain CSS look; hidden once the glass draws the droplet itself. */}
       {state === 'idle' && (
-        <span aria-hidden data-glass-fallback="" className="pointer-events-none absolute inset-y-2 w-px bg-current opacity-20" style={{ right: s.cap }} />
+        <span
+          aria-hidden
+          data-glass-fallback=""
+          className="pointer-events-none absolute inset-y-2 w-px bg-current opacity-20"
+          style={{ right: s.cap }}
+        />
       )}
-      <span aria-hidden data-glass-drop="" className={`pointer-events-none absolute top-0 right-0 flex items-center justify-center [&_svg]:shrink-0 ${s.drop}`}>
+      <span
+        aria-hidden
+        data-glass-drop=""
+        className={`pointer-events-none absolute top-0 right-0 flex items-center justify-center [&_svg]:shrink-0 ${s.drop}`}
+      >
         <span key={state} className="flex" {...swap}>
           {state === 'pending' ? <Spinner /> : state === 'success' ? <Check /> : (icon ?? <Arrow />)}
         </span>
@@ -182,4 +207,5 @@ export function GlassActionButton({
   )
 }
 
-export default GlassActionButton
+export { GlassActionButton }
+export type { GlassActionState, GlassActionButtonProps }

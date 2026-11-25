@@ -2,3 +2,17 @@ allowBuilds:
   '@ybouane/liquidglass': false # postinstall only runs patch-package for its own dev build; dist is prebuilt
   esbuild: true
   lightningcss: true
+permissions:
+  '@tanstack/react-router':
+    skills: [migrate-from-react-router, react-router, router-query]
+  '@tanstack/react-start':
+    skills: [migrate-from-nextjs, react-start]
+  '@ui-sdk/core':
+    skills: true
+skills:
+  dirs:
+    - .agent/skills
+    - .agents/skills
+    - .claude/skills
+    - .cursor/skills
+    - .github/skills

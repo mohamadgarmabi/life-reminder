@@ -1,9 +1,10 @@
 import { t } from '#/modules/shell/utils/i18n'
-import { Field, FieldDescription, FieldLegend, FieldSet } from '#/components/field'
+import { FieldDescription, FieldLegend, FieldSet } from '#/components/field'
 import { Button } from '#/components/button'
 import { TagInput } from '#/modules/shell/components/tag-input'
 import { useInstallmentForm } from '#/modules/installments/hooks/installment-form.hook'
 import type { InstallmentFormProps } from '#/modules/installments/types'
+import { DrawerFooter } from '#/components/drawer'
 
 const InstallmentForm = ({ initial, onSubmit }: InstallmentFormProps) => {
   const { form, dayOptions, getLeadOptions, knownTags, isCreate, submitLabel, handleSubmit } = useInstallmentForm({
@@ -83,11 +84,11 @@ const InstallmentForm = ({ initial, onSubmit }: InstallmentFormProps) => {
       <form.AppField name="notes">
         {(f) => <f.TextareaField label={t('installments.form.notes')} placeholder={t('installments.form.optional')} />}
       </form.AppField>
-      <Field>
+      <DrawerFooter>
         <form.AppForm>
           <form.SubmitButton>{submitLabel}</form.SubmitButton>
         </form.AppForm>
-      </Field>
+      </DrawerFooter>
     </form>
   )
 }

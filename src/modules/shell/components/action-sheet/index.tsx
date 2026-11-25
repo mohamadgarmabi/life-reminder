@@ -24,12 +24,12 @@ const ActionSheet = ({
   return (
     <Drawer open={open} onOpenChange={setOpen}>
       <DrawerTrigger asChild>{trigger}</DrawerTrigger>
-      <DrawerContent>
+      <DrawerContent size="auto">
         <DrawerHeader>
           <DrawerTitle className="truncate">{title}</DrawerTitle>
           <DrawerDescription className="sr-only">{t('common.options')}</DrawerDescription>
         </DrawerHeader>
-        <div className="overflow-y-auto px-2 pb-[max(1rem,env(safe-area-inset-bottom))]">
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-2 pb-2">
           {groups.map((g, i) => (
             <div key={g.label ?? i}>
               {i > 0 && <Separator className="my-1" />}

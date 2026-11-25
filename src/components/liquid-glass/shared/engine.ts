@@ -41,7 +41,14 @@ export type GlassLens = {
      * bend's falloff and depth (as `tune.bendCurve` / `tune.bendDepth`) and a white rim line
      * (opacity, width in CSS px). It casts no shadow then, and the two glasses melt at the neck.
      */
-    material?: { frost: number; blur: number; bendCurve: number; bendDepth: number; borderAlpha: number; borderWidth: number }
+    material?: {
+      frost: number
+      blur: number
+      bendCurve: number
+      bendDepth: number
+      borderAlpha: number
+      borderWidth: number
+    }
   }
   /** Bevel width (design units). */
   bevel: number
@@ -130,7 +137,14 @@ export type GlassLens = {
    * spill past one edge, the body's or the blob's (0–1, how much): there
    * it brightens the page's colour the same way. Without it nothing shows outside the glass.
    */
-  glow?: { x: number; y: number; r: number; amount: number; blob?: number; halo?: { around: 'body' | 'blob'; amount: number } }
+  glow?: {
+    x: number
+    y: number
+    r: number
+    amount: number
+    blob?: number
+    halo?: { around: 'body' | 'blob'; amount: number }
+  }
   /** Lens centre on screen, for aiming the cursor light. */
   screenX: number
   screenY: number
@@ -424,7 +438,11 @@ export const smooth = (a: number, b: number, v: number) => {
   const t = clamp((v - a) / (b - a))
   return t * t * (3 - 2 * t)
 }
-export const mixRgb = (a: Rgb, b: Rgb, t: number): Rgb => [lerp(a[0], b[0], t), lerp(a[1], b[1], t), lerp(a[2], b[2], t)]
+export const mixRgb = (a: Rgb, b: Rgb, t: number): Rgb => [
+  lerp(a[0], b[0], t),
+  lerp(a[1], b[1], t),
+  lerp(a[2], b[2], t),
+]
 export const rgbCss = (c: Rgb) => `rgb(${Math.round(c[0] * 255)} ${Math.round(c[1] * 255)} ${Math.round(c[2] * 255)})`
 
 const isVisibleColor = (c: string) => !!c && c !== 'transparent' && !/rgba\(.*,\s*0\)$/.test(c) && !/\/\s*0\)$/.test(c)
@@ -857,7 +875,17 @@ function createEngine(): GlassEngine | null {
   // where the picture was taken (the canvas's box then, CSS px) and how far past it it reaches.
   const around = layer()
   if (!around.ctx) return null
-  type Mirrored = { tex: WebGLTexture | null; w: number; h: number; at: number; left: number; top: number; reach: number; due: boolean; timer: number }
+  type Mirrored = {
+    tex: WebGLTexture | null
+    w: number
+    h: number
+    at: number
+    left: number
+    top: number
+    reach: number
+    due: boolean
+    timer: number
+  }
   const mirrored = new Map<GlassView, Mirrored>()
   /** Texels per CSS px of that picture: it is only ever seen blurred. */
   const AROUND_SCALE = 0.5
@@ -901,7 +929,8 @@ function createEngine(): GlassEngine | null {
   const probe = probeCanvas.getContext('2d', { willReadFrequently: true })
   // A colour that means the same on every page and in every theme is resolved once: a scroll
   // or a hover asks for the same few again and again, and asking touches the DOM.
-  const ABSOLUTE = /^(?:#[0-9a-f]{3,8}|(?:rgba?|hsla?|hwb|lab|lch|oklab|oklch|color)\([^()]*\)|black|white|transparent)$/i
+  const ABSOLUTE =
+    /^(?:#[0-9a-f]{3,8}|(?:rgba?|hsla?|hwb|lab|lch|oklab|oklch|color)\([^()]*\)|black|white|transparent)$/i
   const resolved = new Map<string, Rgba>()
   const resolveColor = (css: string): Rgba => {
     if (!probe) return [1, 1, 1, 1]
@@ -1027,7 +1056,8 @@ function createEngine(): GlassEngine | null {
     gl.activeTexture(gl.TEXTURE2)
     if (f) {
       let a = mirrored.get(v)
-      if (!a) mirrored.set(v, (a = { tex: texture(true), w: 0, h: 0, at: 0, left: 0, top: 0, reach: 0, due: true, timer: 0 }))
+      if (!a)
+        mirrored.set(v, (a = { tex: texture(true), w: 0, h: 0, at: 0, left: 0, top: 0, reach: 0, due: true, timer: 0 }))
       const taken = a
       const reach = clamp(f.height * MIRROR.reach, MIRROR.reachMin, Math.max(MIRROR.reachMin, MIRROR.reachMax))
       const aw = Math.max(2, Math.ceil((m.width + 2 * reach) * AROUND_SCALE))
@@ -1067,7 +1097,13 @@ function createEngine(): GlassEngine | null {
         a.reach = reach
         fresh = false
       }
-      set('uAroundBox', (a.left - m.left - a.reach) / unit, (a.top - m.top - a.reach) / unit, a.w / AROUND_SCALE / unit, a.h / AROUND_SCALE / unit)
+      set(
+        'uAroundBox',
+        (a.left - m.left - a.reach) / unit,
+        (a.top - m.top - a.reach) / unit,
+        a.w / AROUND_SCALE / unit,
+        a.h / AROUND_SCALE / unit,
+      )
       set('uAroundScale', AROUND_SCALE * unit)
       set('uReach', reach / unit)
     } else {
@@ -1109,7 +1145,13 @@ function createEngine(): GlassEngine | null {
     set('uBlobNeck', (blob?.neck?.x ?? 0) / unit, (blob?.neck?.w ?? 0) / unit)
     set('uBlobFade', blob?.fade?.amount ?? 0, blob?.fade?.reach ?? 0.5)
     const mat = blob?.material
-    set('uBlobMat', clamp(mat?.frost ?? 0), Math.max(0, mat?.blur ?? 0) / unit, Math.max(0.05, mat?.bendCurve ?? 1.6), 0.35 * Math.max(0.05, mat?.bendDepth ?? 1))
+    set(
+      'uBlobMat',
+      clamp(mat?.frost ?? 0),
+      Math.max(0, mat?.blur ?? 0) / unit,
+      Math.max(0.05, mat?.bendCurve ?? 1.6),
+      0.35 * Math.max(0.05, mat?.bendDepth ?? 1),
+    )
     set('uBlobLine', Math.max(0, mat?.borderWidth ?? 0) / unit, clamp(mat?.borderAlpha ?? 0), mat ? 1 : 0)
     set('uBevel', Math.max(m.bevel, 2))
     const k = m.tune ?? {}
@@ -1121,7 +1163,9 @@ function createEngine(): GlassEngine | null {
     set('uRimWidth', Math.max(0.05, k.rimWidth ?? 1))
     set('uFresnel', 0.02 * (k.fresnel ?? 1))
     // The band is as deep as a share of the glass's shorter half, and of its reach on glass taller than that.
-    const reached = m.reflection ? clamp(m.reflection.height * MIRROR.reach, MIRROR.reachMin, Math.max(MIRROR.reachMin, MIRROR.reachMax)) : 0
+    const reached = m.reflection
+      ? clamp(m.reflection.height * MIRROR.reach, MIRROR.reachMin, Math.max(MIRROR.reachMin, MIRROR.reachMax))
+      : 0
     const deep = (Math.max(0.01, MIRROR.depth) * Math.max(1, Math.min(m.hx, m.hy, reached || Infinity))) / unit
     set('uMirror', clamp(MIRROR.line) * mirror, MIRROR.band * mirror, deep, clamp(MIRROR.dim))
     set('uSoft', (Math.max(0, MIRROR.soft) * reached) / unit)
@@ -1150,7 +1194,8 @@ function createEngine(): GlassEngine | null {
     // 8-bit screen), and stays put while it is off: a cursor moving far away, or over glass
     // without cursor light, leaves the frame as it is.
     const lightMix = m.cursorLight ? pointer.mix : 0
-    const aim = lightMix > 0 && d > 0.5 ? (Math.round(Math.atan2(dy, dx) * (360 / Math.PI)) * Math.PI) / 360 : -Math.PI / 2
+    const aim =
+      lightMix > 0 && d > 0.5 ? (Math.round(Math.atan2(dy, dx) * (360 / Math.PI)) * Math.PI) / 360 : -Math.PI / 2
     set('uLightDir', Math.cos(aim), Math.sin(aim))
     set('uLightMix', lightMix)
     const glow = m.glow
@@ -1230,7 +1275,11 @@ function createEngine(): GlassEngine | null {
     attributes: true,
     attributeFilter: ['class', 'data-theme', 'style'],
   })
-  new MutationObserver(invalidateAll).observe(document.body, { attributes: true, attributeFilter: ['data-theme'], subtree: true })
+  new MutationObserver(invalidateAll).observe(document.body, {
+    attributes: true,
+    attributeFilter: ['data-theme'],
+    subtree: true,
+  })
   window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', invalidateAll)
   // A radial bend scales with the viewport.
   window.addEventListener('resize', invalidateAll, { passive: true })

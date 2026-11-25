@@ -43,7 +43,12 @@ export type GlassViewSpec = {
   /** Advance animation; return true while anything still moves. */
   step?: (dt: number, reducedMotion: boolean) => boolean
   /** Paint both layers (contexts are cleared and scaled to CSS px) and return the lens. */
-  draw: (bg: CanvasRenderingContext2D, fg: CanvasRenderingContext2D, tokens: GlassTokens, theme: GlassThemeName) => LensState
+  draw: (
+    bg: CanvasRenderingContext2D,
+    fg: CanvasRenderingContext2D,
+    tokens: GlassTokens,
+    theme: GlassThemeName,
+  ) => LensState
   /** 1 = foreground hides inside the clear lens so the refracted backdrop shows (segmented labels). */
   fgUnderLens?: number
   /** Rim highlight leans toward the cursor. Off = fixed studio lighting. */
@@ -138,7 +143,9 @@ const RIM_WIDTH = 1.1
 function createMaterial(u: ReturnType<typeof createUniforms>, bgTex: any, fgTex: any) {
   const sdRoundRect = Fn(([p, half, r]: any[]) => {
     const q = abs(p).sub(half).add(r)
-    return length(max(q, 0)).add(min(max(q.x, q.y), 0)).sub(r)
+    return length(max(q, 0))
+      .add(min(max(q.x, q.y), 0))
+      .sub(r)
   })
   // The three/webgpu shim is untyped (src/types/three-webgpu.d.ts), hence the `any`s.
   // design units → texture uv (CanvasTexture is flipped: top row at v = 1)
@@ -184,7 +191,9 @@ function createMaterial(u: ReturnType<typeof createUniforms>, bgTex: any, fgTex:
     // Surface normal from the bevel height field
     const eps = float(1.25)
     const h = glassHeight(local).toVar()
-    const hGrad = vec2(glassHeight(local.add(vec2(eps, 0))).sub(h), glassHeight(local.add(vec2(0, eps))).sub(h)).div(eps)
+    const hGrad = vec2(glassHeight(local.add(vec2(eps, 0))).sub(h), glassHeight(local.add(vec2(0, eps))).sub(h)).div(
+      eps,
+    )
     const normal = normalize(vec3(hGrad.mul(NORMAL_STRENGTH).negate(), 1)).toVar()
     const depth = clamp(oneMinus(h), 0, 1).toVar()
     const edge = smoothstep(u.bevel.mul(0.35), 0, dist.negate()).toVar()
@@ -250,7 +259,6 @@ function createMaterial(u: ReturnType<typeof createUniforms>, bgTex: any, fgTex:
     const rimCol = mix(vec3(1), warmCool, down.mul(0.6)).toVar()
     rimCol.assign(mix(rimCol, vec3(0.12, 0.6, 1.2), rimBack.mul(0.85)))
     glass.addAssign(rimCol.mul(rim.mul(rimDir).mul(u.rim).add(fresnel.mul(rimFront).mul(0.02))))
-
 
     // Caustic
     glass.addAssign(vec3(1, 0.92, 0.86).mul(smoothstep(0.72, 0.98, depth).mul(down).mul(u.caustic)))
@@ -482,7 +490,8 @@ async function createRuntime() {
     setVec3(u.frostCenter, lens.frostCenter ?? tokens.frostCenter)
     setVec3(u.frostEdge, lens.frostEdge ?? tokens.frostEdge)
     // What the glass sits on (a card, the page) comes from CSS so nested glass matches it.
-    if (refresh || !v.surface) v.surface = getComputedStyle(v.canvas).getPropertyValue('--glass-surface').trim() || tokens.surface
+    if (refresh || !v.surface)
+      v.surface = getComputedStyle(v.canvas).getPropertyValue('--glass-surface').trim() || tokens.surface
     setVec3(u.surface, v.surface.startsWith('#') ? v.surface : tokens.surface)
     u.lensOn.value = lens.visible === false ? 0 : 1
     u.fgHide.value = spec.fgUnderLens ?? 0

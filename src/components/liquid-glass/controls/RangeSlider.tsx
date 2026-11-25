@@ -82,7 +82,12 @@ export function RangeSlider({
   const areaH = REST.h * unit + 8
   const fraction = max > min ? saturate((current - min) / (max - min)) : 0
 
-  const sim = useRef({ value: { x: fraction, v: 0 } as Spring, press: { x: 0, v: 0 } as Spring, stretch: 0, pressed: false })
+  const sim = useRef({
+    value: { x: fraction, v: 0 } as Spring,
+    press: { x: 0, v: 0 } as Spring,
+    stretch: 0,
+    pressed: false,
+  })
   const drag = useRef<{ startX: number; startFraction: number } | null>(null)
   const optics = { ...sliderOptics, refraction, dispersion, rimIntensity, magnification }
 
@@ -191,7 +196,9 @@ export function RangeSlider({
         name={name}
         className="flex items-center gap-4 text-neutral-500"
       >
-        {startIcon !== 'none' && <Icon name={startIcon} size={Math.max(14, trackHeights[size] + 4)} className="relative z-10" />}
+        {startIcon !== 'none' && (
+          <Icon name={startIcon} size={Math.max(14, trackHeights[size] + 4)} className="relative z-10" />
+        )}
         <SliderTrack
           ref={areaRef}
           onPointerDown={onPointerDown}
@@ -215,7 +222,9 @@ export function RangeSlider({
           {/* The thumb carries the input that takes focus; the canvas draws the glass. */}
           <SliderThumb className="pointer-events-none size-px" />
         </SliderTrack>
-        {endIcon !== 'none' && <Icon name={endIcon} size={Math.max(14, trackHeights[size] + 4)} className="relative z-10" />}
+        {endIcon !== 'none' && (
+          <Icon name={endIcon} size={Math.max(14, trackHeights[size] + 4)} className="relative z-10" />
+        )}
       </Slider>
     </Field>
   )

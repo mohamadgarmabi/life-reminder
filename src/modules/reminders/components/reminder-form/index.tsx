@@ -1,5 +1,6 @@
 import { useReminderForm } from '#/modules/reminders/hooks/reminder-form.hook'
 import type { ReminderFormProps } from '#/modules/reminders/types'
+import { DrawerFooter } from '#/components/drawer'
 import { t } from '#/modules/shell/utils/i18n'
 
 const ReminderForm = (props: ReminderFormProps) => {
@@ -21,9 +22,11 @@ const ReminderForm = (props: ReminderFormProps) => {
         </form.AppField>
       </div>
       {isEdit && <p className="text-xs text-muted-foreground">{t('reminders.form.resetHint')}</p>}
-      <form.AppForm>
-        <form.SubmitButton>{submitLabel}</form.SubmitButton>
-      </form.AppForm>
+      <DrawerFooter>
+        <form.AppForm>
+          <form.SubmitButton>{submitLabel}</form.SubmitButton>
+        </form.AppForm>
+      </DrawerFooter>
     </form>
   )
 }

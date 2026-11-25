@@ -1,10 +1,13 @@
+import type { ComponentProps } from 'react'
 import { Drawer as DrawerPrimitive } from 'vaul'
 import { cn } from '#/modules/shell/utils/cn'
+import { useDrawerViewport } from './drawer.hook'
 import {
   drawerOverlayVariants,
   drawerContentVariants,
   drawerHandleVariants,
   drawerHeaderVariants,
+  drawerFooterVariants,
   drawerTitleVariants,
   drawerDescriptionVariants,
 } from './drawer.styles'
@@ -27,11 +30,29 @@ const Drawer = (props: DrawerProps) => {
 
 const DrawerTrigger = DrawerPrimitive.Trigger
 
-const DrawerContent = ({ className, children, ...props }: DrawerContentProps) => {
+const DrawerContent = ({ className, children, size = 'auto', ...props }: DrawerContentProps) => {
+  const { contentRef, fillsViewport, contentStyle, handleAnimationEnd, handleTransitionEnd } = useDrawerViewport({
+    size,
+    onAnimationEnd: props.onAnimationEnd,
+    onTransitionEnd: props.onTransitionEnd,
+  })
+
   return (
     <DrawerPrimitive.Portal>
       <DrawerPrimitive.Overlay data-slot="drawer-overlay" className={drawerOverlayVariants()} />
-      <DrawerPrimitive.Content data-slot="drawer-content" className={cn(drawerContentVariants(), className)} {...props}>
+      <DrawerPrimitive.Content
+        ref={contentRef}
+        data-slot="drawer-content"
+        data-fullscreen={fillsViewport || undefined}
+        className={cn(drawerContentVariants({ size }), className)}
+        {...props}
+        style={{
+          ...props.style,
+          ...contentStyle,
+        }}
+        onAnimationEnd={handleAnimationEnd}
+        onTransitionEnd={handleTransitionEnd}
+      >
         <div aria-hidden className={drawerHandleVariants()} />
         {children}
       </DrawerPrimitive.Content>
@@ -42,6 +63,14 @@ const DrawerContent = ({ className, children, ...props }: DrawerContentProps) =>
 const DrawerHeader = ({ className, ...props }: DrawerHeaderProps) => {
   return <div data-slot="drawer-header" className={cn(drawerHeaderVariants(), className)} {...props} />
 }
+
+const DrawerFooter = ({ className, ...props }: ComponentProps<'div'>) => (
+  <div
+    data-slot="drawer-footer"
+    className={cn(drawerFooterVariants(), className)}
+    {...props}
+  />
+)
 
 const DrawerTitle = ({ className, ...props }: DrawerTitleProps) => {
   return <DrawerPrimitive.Title data-slot="drawer-title" className={cn(drawerTitleVariants(), className)} {...props} />
@@ -57,4 +86,5 @@ const DrawerDescription = ({ className, ...props }: DrawerDescriptionProps) => {
   )
 }
 
-export { Drawer, DrawerTrigger, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription }
+export { Drawer, DrawerTrigger, DrawerContent, DrawerHeader, DrawerFooter, DrawerTitle, DrawerDescription }
+export type { DrawerSize } from './drawer.types'

@@ -22,7 +22,7 @@
 
 import { useEffect, useRef } from 'react'
 
-import { drawAround, drawDom } from './dom-snapshot'
+import { drawAround, drawDom } from '../shared/dom-snapshot'
 import {
   DESIGN_HEIGHT,
   SPRINGS,
@@ -37,16 +37,16 @@ import {
   type GlassView,
   type Rgb,
   type Spring,
-} from './engine'
+} from '../shared/engine'
 
-export type GlassMaterial = 'clear' | 'tinted'
-export type GlassDroplet = 'none' | 'apart' | 'merged'
+type GlassMaterial = 'clear' | 'tinted'
+type GlassDroplet = 'none' | 'apart' | 'merged'
 
 /**
  * Fine-tuning of the glass. Read on every frame: changing a value redraws the glass without
  * rebuilding it, so it can follow a slider. Colours and frost apply to clear glass.
  */
-export type GlassOptics = {
+type GlassOptics = {
   /** Tint colour, any CSS colour. Default: white on a light page, black on a dark one. */
   tintColor?: string
   /** A line just inside the rim: its colour, opacity (0–1, default 0: none) and width in px (default 1). */
@@ -102,7 +102,7 @@ export type GlassOptics = {
   dark?: { tint?: number; borderColor?: string; borderAlpha?: number }
 }
 
-export type GlassLayerProps = {
+type GlassLayerProps = {
   /**
    * `clear`: transparent glass that bends the page behind it (default).
    * `tinted`: glass painted in the host's own CSS background colour, with light and shadow.
@@ -140,7 +140,7 @@ const MAX_GROW_PX = 6
 const DROPLET_GAP = 0.25
 
 /** The CSS the glass relies on. Rendered once per page by <GlassStyles /> (React 19 dedupes it). */
-export const GLASS_CSS = `
+const GLASS_CSS = `
 /* Layered, so a utility class on the host (absolute, fixed) still wins over relative. */
 @layer components{:where([data-glass-host]){position:relative;isolation:isolate}}
 /* Unlayered on purpose: once the glass draws, it must beat the host's own fill utilities. */
@@ -159,7 +159,7 @@ export const GLASS_CSS = `
 `
 
 /** Injects GLASS_CSS once (React 19 hoists and dedupes `<style href precedence>`). */
-export function GlassStyles() {
+function GlassStyles() {
   return (
     <style href="liquid-glass" precedence="default">
       {GLASS_CSS}
@@ -167,7 +167,7 @@ export function GlassStyles() {
   )
 }
 
-export function GlassLayer({
+function GlassLayer({
   material = 'clear',
   droplet = 'none',
   tint = 0.6,
@@ -267,7 +267,9 @@ export function GlassLayer({
         const c = stepSpring(growY, hov, SPRINGS.hoverY, dt)
         const d = stepSpring(scale, target, SPRINGS.press, dt)
         const apart = dropletRef.current === 'apart' && view.visible && !pressed
-        const e = hasDroplet ? stepSpring(drop, apart ? 1 : 0, apart ? SPRINGS.dropletOut : SPRINGS.dropletIn, dt) : false
+        const e = hasDroplet
+          ? stepSpring(drop, apart ? 1 : 0, apart ? SPRINGS.dropletOut : SPRINGS.dropletIn, dt)
+          : false
         host.style.scale = scale.x === 1 ? '' : scale.x.toFixed(4)
         const fading = 1 - colorT > 0.004
         colorT = fading ? colorT + (1 - colorT) * Math.min(1, dt * 14) : 1
@@ -283,7 +285,8 @@ export function GlassLayer({
           corner = px >= Math.min(w, h) / 2 - 0.5 ? null : px
           // The droplet: a direct child marked `data-glass-drop`, laid out by its owner at the end.
           const had = hasDroplet
-          hasDroplet = dropletRef.current !== 'none' && [...host.children].some((c) => c.hasAttribute('data-glass-drop'))
+          hasDroplet =
+            dropletRef.current !== 'none' && [...host.children].some((c) => c.hasAttribute('data-glass-drop'))
           // Springs step before shapes are read: one more frame lets the droplet start moving.
           if (hasDroplet !== had) engine.wake()
           const s = engine.resolveColor(surfaceColorOf(host.parentElement))
@@ -302,7 +305,12 @@ export function GlassLayer({
             // An optional line just inside the rim.
             const line = darkGlass ? { ...o, ...o?.dark } : o
             const bc = line?.borderColor && (line.borderAlpha ?? 0) > 0 ? engine.resolveColor(line.borderColor) : null
-            border = bc ? [[bc[0], bc[1], bc[2]], [bc[0], bc[1], bc[2]]] : null
+            border = bc
+              ? [
+                  [bc[0], bc[1], bc[2]],
+                  [bc[0], bc[1], bc[2]],
+                ]
+              : null
             borderAlpha = bc ? clamp((line?.borderAlpha ?? 0) * bc[3]) : 1
             colorT = 1
             sampled = true
@@ -316,7 +324,8 @@ export function GlassLayer({
             const fill = engine.resolveColor(st.backgroundColor)
             const bw = st.borderTopStyle === 'solid' ? parseFloat(st.borderTopWidth) || 0 : 0
             const bc = engine.resolveColor(st.borderTopColor)
-            const cannot = st.backgroundImage !== 'none' || (st.borderTopStyle !== 'solid' && st.borderTopStyle !== 'none')
+            const cannot =
+              st.backgroundImage !== 'none' || (st.borderTopStyle !== 'solid' && st.borderTopStyle !== 'none')
             if (had) {
               host.dataset.glassReady = ''
               void getComputedStyle(host).backgroundColor
@@ -414,18 +423,25 @@ export function GlassLayer({
           edgeClear: 0.2,
           cursorLight: o?.cursorLight ?? true,
           // What the rim of clear glass mirrors: the page around it. Tinted glass mirrors nothing.
-          reflection: !clear ? undefined : {
-            height: h,
-            live,
-            paint: (around, reach) => {
-              const r = host.getBoundingClientRect()
-              const box = { left: r.left + (r.width - w) / 2 - padX, top: r.top + (r.height - h) / 2 - padTop, width: w + 2 * padX, height: h + padTop + padBottom }
-              drawAround(around, (backdrop ? host.closest(backdrop) : null) ?? document.body, box, reach, {
-                skip: (el) => el === host || el.hasAttribute('data-glass-skip'),
-                onStale: dirty,
-              })
-            },
-          },
+          reflection: !clear
+            ? undefined
+            : {
+                height: h,
+                live,
+                paint: (around, reach) => {
+                  const r = host.getBoundingClientRect()
+                  const box = {
+                    left: r.left + (r.width - w) / 2 - padX,
+                    top: r.top + (r.height - h) / 2 - padTop,
+                    width: w + 2 * padX,
+                    height: h + padTop + padBottom,
+                  }
+                  drawAround(around, (backdrop ? host.closest(backdrop) : null) ?? document.body, box, reach, {
+                    skip: (el) => el === host || el.hasAttribute('data-glass-skip'),
+                    onStale: dirty,
+                  })
+                },
+              },
           refraction: clear
             ? {
                 paint: (back) => {
@@ -455,11 +471,19 @@ export function GlassLayer({
                     Math.abs(ly - page.ly + scrollY - page.sy) < 0.05 &&
                     !page.pinned.some((el) => {
                       const b = el.getBoundingClientRect()
-                      return b.width > 0 && b.height > 0 && b.right > region.left && b.left < region.right && b.bottom > region.top && b.top < region.bottom
+                      return (
+                        b.width > 0 &&
+                        b.height > 0 &&
+                        b.right > region.left &&
+                        b.left < region.right &&
+                        b.bottom > region.top &&
+                        b.top < region.bottom
+                      )
                     })
                   // The page is re-painted when the glass moves over it, and at most every 120 ms otherwise.
                   // `live` reads it again every frame at 60 Hz, and every second or third frame on a faster display.
-                  const again = !!page.ctx && (page.stale || (key !== page.key && !rides) || now - page.at > (live ? 12 : 120))
+                  const again =
+                    !!page.ctx && (page.stale || (key !== page.key && !rides) || now - page.at > (live ? 12 : 120))
                   if (page.ctx && again) {
                     page.stale = false
                     page.key = key
@@ -568,7 +592,15 @@ export function GlassLayer({
     mo.observe(host, {
       childList: true,
       attributes: true,
-      attributeFilter: ['class', 'disabled', 'aria-pressed', 'aria-checked', 'aria-selected', 'aria-expanded', 'data-state'],
+      attributeFilter: [
+        'class',
+        'disabled',
+        'aria-pressed',
+        'aria-checked',
+        'aria-selected',
+        'aria-expanded',
+        'data-state',
+      ],
     })
     // A scroll changes what lies behind, never the glass: sizes and colours are not read again.
     const onScroll = () => {
@@ -609,4 +641,5 @@ export function GlassLayer({
   )
 }
 
-export default GlassLayer
+export { GlassLayer, GlassStyles, GLASS_CSS }
+export type { GlassLayerProps, GlassMaterial, GlassDroplet, GlassOptics }

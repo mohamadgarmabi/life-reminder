@@ -5,6 +5,7 @@ import { usePlantForm } from '#/modules/plants/hooks/plant-form.hook'
 import type { PlantFormProps } from '#/modules/plants/types'
 import Image from '#/components/image'
 import { t } from '#/modules/shell/utils/i18n'
+import { DrawerFooter } from '#/components/drawer'
 
 const PlantForm = ({ initial, onSubmit }: PlantFormProps) => {
   const {
@@ -111,9 +112,11 @@ const PlantForm = ({ initial, onSubmit }: PlantFormProps) => {
       <form.AppField name="notes">
         {(f) => <f.TextareaField label={t('plants.notes')} placeholder={t('plants.notesPlaceholder')} />}
       </form.AppField>
-      <form.AppForm>
-        <form.SubmitButton>{submitLabel}</form.SubmitButton>
-      </form.AppForm>
+      <DrawerFooter>
+        <form.AppForm>
+          <form.SubmitButton>{submitLabel}</form.SubmitButton>
+        </form.AppForm>
+      </DrawerFooter>
     </form>
   )
 }

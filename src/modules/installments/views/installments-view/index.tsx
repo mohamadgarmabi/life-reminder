@@ -156,7 +156,7 @@ const InstallmentsView = () => {
         ))}
       </AnimatedList>
 
-      <FormDialog open={isFormOpen} onOpenChange={handleOpenChange} title={formTitle}>
+      <FormDialog open={isFormOpen} onOpenChange={handleOpenChange} title={formTitle} size="full">
         {isCreate && <InstallmentForm onSubmit={handleCreate} />}
         {editItem && <InstallmentForm initial={editItem} onSubmit={handleUpdate} />}
       </FormDialog>
